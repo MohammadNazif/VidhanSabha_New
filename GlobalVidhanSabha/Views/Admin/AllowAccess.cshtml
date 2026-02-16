@@ -1,0 +1,231 @@
+﻿
+@{
+    ViewBag.Title = "AllowAccess";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+        text-align: left;
+        vertical-align: middle;
+        font-size: 11px;
+    }
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+</style>
+
+<div class="container-fluid m-3 mt-5">
+    <div class="card p-4">
+        <h3 class="mb-4" style=" color: #FF8C42;">Allow Access</h3>
+        <form>
+               <div class="table-wrapper shadow rounded P-2"  style="overflow-x:auto; width:100%;">
+            <!-- Dropdowns Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6" style="font-size:12px;">
+                    <label class="form-label">Select One</label>
+                    <select class="form-select" id="mainSelect" style="font-size:12px;">
+                        <option selected disabled>-- Select One --</option>
+                        <option value="Sector">Sector</option>
+                        <option value="Booth">Booth</option>
+
+                    </select>
+                </div>
+                <div class="col-md-6" style="font-size:12px;">
+                    <label class="form-label">Select Sector/Booth </label>
+                    <select class="form-select" id="subSelect" style="font-size:12px;" multiple>
+                        <option  disabled>-- Select Sector/Booth --</option>
+
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 10%; background: #FF8C42 !important; color: white;">S.N.</th>
+                            <th style="width: 60%; background: #FF8C42 !important; color: white; ">Allow Permission</th>
+                            <th style="width: 30%; background: #FF8C42 !important; color: white; ">Allow</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Create Panna Pramukh</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Create New Voters</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Create Booth Voter Description</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Create Double Voters</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Create Pravasi Voters</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Create BoothSamiti</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Create EffectivePerson</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Create Activity</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Create Senior Or Disabled</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Create SocialMediaPost</td>
+                            <td><input type="checkbox" class="form-check-input border border-primary border-2 shadow-lg"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary px-4">Submit</button>
+            </div>
+</div>
+        </form>
+    </div>
+</div>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#subSelect').select2();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#mainSelect").on("change", function () {
+            let type = $(this).val();
+
+            $.ajax({
+                url: '/Admin/GetDropdownData',
+                type: 'GET',
+                data: { type: type },
+                success: function (data) {
+                    console.log("Response from server:", data);
+
+                    let subSelect = $("#subSelect");
+                    subSelect.empty();
+                    subSelect.append('<option  disabled>-- Select ' + type + ' --</option>');
+
+
+                    $.each(data, function (i, item) {
+                        subSelect.append('<option value="' + item.value + '">' + item.Data + '</option>');
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error in AJAX:", error);
+                }
+            });
+        });
+    });
+
+</script>
+<script>
+    $(document).on("submit", "form", function (e) {
+        e.preventDefault();
+
+        let type = $("#mainSelect").val();
+        let subSelect = $("#subSelect").val(); 
+        let permissions = [];
+
+      
+        $("table tbody tr").each(function () {
+            let checkbox = $(this).find("input[type=checkbox]");
+            if (checkbox.is(":checked")) {
+                let permName = $(this).find("td:nth-child(2)").text().trim();
+                permissions.push(permName);
+            }
+        });
+
+       
+        let subSelectCsv = subSelect ? subSelect.join(",") : "";
+        let permissionCsv = permissions.join(",");
+
+        $.ajax({
+            url: '/Admin/InsertAuthorization',
+            type: 'POST',
+            data: {
+                Type: type,
+                sectorboothId: subSelectCsv,
+                AllowedPermissions: permissionCsv
+            },
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: res.message,
+                        didClose: () => {
+                            location.reload(true);
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: res.message,
+                        didClose: () => {
+                            location.reload(true);
+                        }
+                    });
+                }
+            },
+            error: function (xhr,status) {
+                console.log(xhr, status);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "Some error occured!!",
+                    didClose: () => {
+                        location.reload(true);
+                    }
+                });
+
+            }
+        });
+    });
+
+
+</script>

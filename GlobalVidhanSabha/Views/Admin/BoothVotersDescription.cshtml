@@ -1,0 +1,1811 @@
+﻿@model List<VishanSabha.Models.BoothVotersDes>
+
+@{
+    ViewBag.Title = "BoothVotersDescription";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var boothlist = ViewData["BoothList"] as List<VishanSabha.Models.BoothVotersDes>;
+    var castVotersList = ViewData["GetCastVotersDesData"] as List<VishanSabha.Models.CastVotersDes>;
+    var SubCategoryList = ViewData["GetSubCaste"] as List<VishanSabha.Models.SubCaste>;
+    var casteList = ViewData["CasteList"] as List<VishanSabha.Models.SubCaste>;
+}
+
+
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap JS (with Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 520px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+    .modal-header {
+        background-color: #FF8C42 !important;
+        color: white !important;
+    }
+
+    #submit {
+        background-color: #FF8C42 !important;
+        color: white !important;
+    }
+  
+</style>
+
+
+<!-- Button trigger modal -->
+
+<div class="container-fluid  m-3">
+    <div class="d-flex justify-content-between mb-2">
+        <h3 style="color: #FF8C42;">Booth Voters Description</h3>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+           Create
+        </button>
+    </div>
+    <div class="row ">
+        @*<div class="col-sm-3">
+                <label for="boothFilter" class="form-label fw-bold">Filter by Booth</label>
+
+                @{
+                    var boothList = ViewData["BoothList"] as List<VishanSabha.Models.BoothVotersDes>;
+                    var selectedBooth = ViewBag.SelectedBooth?.ToString() ?? "all";
+                }
+
+
+                <select id="boothFilter" class="selectpicker form-control" multiple data-live-search="true" data-actions-box="true" data-width="150px">
+                    <option value="all">All Booths</option>
+                    @foreach (var booth in ViewData["BoothList"] as List<VishanSabha.Models.BoothVotersDes>)
+                    {
+                        <option value="@booth.BoothId">@booth.BoothNumber</option>
+                    }
+                </select>
+            </div>*@
+    </div>
+
+    <div class="table-wrapper shadow rounded p-3">
+        <div class="table-controls d-flex justify-content-between align-items-center mb-2 flex-wrap">
+            <div id="entriesAndExport"></div>
+            <div id="searchBox"></div>
+        </div>
+
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head">
+                    <tr class="myhead">
+                        <th class="text-white " style="text-align:center!important;">S.N.</th>
+                        <th class="text-white">Polling Station</th>
+                        <th class="text-white">Booth No</th>
+                        <th class="text-white">Village</th>
+                        <th class="text-white">Total Voters</th>
+                        <th class="text-white">Male</th>
+                        <th class="text-white">Female</th>
+                        <th class="text-white">Other</th>
+                        <th class="text-white">Cast Voter Des...</th>
+                        <th class="text-white">Cast Voter Details</th>
+
+
+                        <th class="text-white py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        int srNo = 1;
+                        foreach (var data in Model)
+                        {
+                            <tr>
+                                <td style="text-align:center!important;">@srNo</td>
+                                <td>@data.BoothName</td>
+                                <td style="text-align:center!important;">@data.BoothNumber</td>
+                                <td style="text-align:left!important;">@data.VillageName</td>
+                                <td style="text-align:center!important;">@data.TotalVoters</td>
+                                <td style="text-align:center!important;">@data.TotalMan</td>
+                                <td style="text-align:center!important;">@data.TotalWoman</td>
+                                <td style="text-align:center!important;">@data.TotalOther</td>
+
+
+
+                                <td style="text-align: center !important;">
+                                    <button type="button"
+                                            class="btn btn-outline-orange open-modal "
+                                            style="border-radius: 50%; width: 25px; height: 25px; padding: 0; background: #FF8C42 !important;"
+                                            title="Add Voter" data-id="@data.Id">
+                                        +
+                                    </button>
+                                </td>
+
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-primary view-cast-btn"
+                                            data-id="@data.Id"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#detailsModal">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </td>
+                                <!-- Edit button -->
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-sm  btn-sm me-1 edit-btn"
+                                            data-id="@data.Id">
+                                        <i class="fas fa-edit text-success"></i>
+                                    </button>
+
+
+                                    <!-- Delete button -->
+
+                                    <button type="button"
+                                            class="btn btn-sm  me-1 delete-btn "
+                                            data-id="@data.Id">
+                                        <i class="fas fa-trash-alt delete-icon"></i>
+                                    </button>
+
+
+                                </td>
+
+                            </tr>
+                            srNo++;
+                        }
+                    }
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<!-- Cast Voter Description Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <!-- you can adjust width -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cast Voters Description</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered text-center" id="castVoterTable">
+                    <thead class="" style="background-color: #FF8C42!important;color:white!important;">
+                        <tr>
+                            <th class="text-light"  style="text-align:center!important;">S.N.</th>
+                            @*<th>Id</th>*@
+                            <th class="text-light">Caste </th>
+                            <th class="text-light">Number</th>
+                            <th class="text-light">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="3">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="voterModal" tabindex="-1" aria-labelledby="voterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <!-- Adjust size as needed -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 style="color: white;">Caste Voters Description</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="voterForm">
+                <input type="hidden" name="VoterDes" id="voterDesInput" value="3" />
+                <!-- example value -->
+
+                <div class="caste-container p-2">
+                    <div class="row mb-2 caste-row" style=" margin-left: 80px;">
+                        <div class="col-md-5">
+                            @*<label class="form-label">Caste </label>
+                                <input type="text" name="CastName[]" class="form-control" placeholder="Caste " required />*@
+                            <label for="subCasteSelect" class="form-label">SubCaste</label>
+                            <select id="subCasteSelect" class="form-select" name="CastName[]">
+                                <option value="">-- Select SubCaste --</option>
+                                @if (casteList != null && casteList.Any())
+                                {
+                                    foreach (var data in casteList)
+                                    {
+                                        <option value="@data.SubCaste_Id">@data.SubCasteName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label">Number</label>
+                            <input type="number" name="Number[]" class="form-control" placeholder="Number" min="1" required />
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center mt-4">
+                            <button type="button" class="btn btn-success add-caste">+</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary m-2" style="transform: translateX(90px);">Save</button>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Booth Voter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="boothVoterForm">
+                    <div class="row mb-3">
+
+                        <input type="hidden" id="Id" name="Id" value="0" />
+
+
+                        <div class="col-6 mb-3">
+                            <label>Polling Station</label>
+                            <select id="BoothName" name="BoothName" class="form-select">
+                                <option value="">Select Booth</option>
+                                @foreach (var data in boothlist)
+                                {
+                                    <option value="@data.BoothId">@data.BoothName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label>Booth Number</label>
+                            <select id="BoothNumber" name="BoothNumber" class="form-select">
+                                <option value="">Select Booth Number</option>
+                                @foreach (var data in boothlist)
+                                {
+                                    <option value="@data.BoothId">@data.BoothNumber</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small">Village </label>
+                            <select class="form-select js-example-basic-multiple" name="VillageListId" required id="VillageDropdown" multiple="multiple">
+                                <option value="">-- Select Village --</option>
+
+                            </select>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="TotalVoters">Total Voters</label>
+                            <input type="number" class="form-control" id="TotalVoters" name="TotalVoters" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        @*<div class="col-12 mb-3">
+                                <label for="TotalVoters">Total Voters</label>
+                                <input type="number" class="form-control" id="TotalVoters" name="TotalVoters" />
+                            </div>*@
+                        <div class="col-4 mb-3">
+                            <label>Male</label>
+                            <input type="number" class="form-control" id="Man" name="TotalMan" />
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label>Female</label>
+                            <input type="number" class="form-control" id="Woman" name="TotalWoman" />
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label>Other</label>
+                            <input type="number" class="form-control" id="Other" name="TotalOther" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
+
+
+<script>
+    document.getElementById('exampleModal').addEventListener('hidden.bs.modal', function () {
+        const form = document.getElementById('boothVoterForm');
+        form.reset();
+
+
+        const hiddenId = document.getElementById('Id');
+        if (hiddenId) hiddenId.value = '';
+
+
+        const villageField = $('#VillageDropdown');
+        if (villageField.length) {
+            villageField.val(null).trigger('change');
+        }
+
+
+        //$('#boothno, #Category, #Caste, #Occupation').val('').trigger('change');
+
+
+        //$('#name, #mobile, #currentAddress').val('');
+
+
+        const url = new URL(window.location);
+        if (url.search) {
+            url.search = '';
+            window.history.replaceState({}, document.title, url.toString());
+        }
+
+        // Optional: reset button text
+        // $('#submitPravasiVoter').text('Submit');
+    });
+</script>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#boothFilter').selectpicker();
+
+
+        const url = $('#boothFilter').data('url');
+
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const boothIds = urlParams.get("boothId") ? urlParams.get("boothId").split(",") : ["all"];
+        $('#boothFilter').selectpicker('val', boothIds);
+
+
+        $('#boothFilter').on('changed.bs.select', function () {
+            let selectedBooths = $(this).val();
+
+            if (!selectedBooths || selectedBooths.includes('all')) {
+                selectedBooths = 'all';
+            } else {
+                selectedBooths = selectedBooths.join(',');
+            }
+
+            console.log("AJAX URL:", url, "Selected Booths:", selectedBooths);
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { boothId: selectedBooths },
+                success: function (data) {
+
+                    const newTableBody = $(data).find('#myTable tbody').html();
+                    $('#myTable tbody').html(newTableBody);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching booth data:', error);
+                    alert('Error fetching booth data!');
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        // initialize bootstrap-select
+        $('#boothFilter').selectpicker();
+    });
+</script>
+
+<script>
+    const boothNameSelect = document.getElementById("BoothName");
+    const boothNumberSelect = document.getElementById("BoothNumber");
+
+    // When Polling Station changes
+    boothNameSelect.addEventListener("change", function () {
+        debugger
+        const selectedId = this.value;
+        const selectedOption = this.options[this.selectedIndex];
+        const boothNumber = selectedOption.getAttribute("data-boothnumber");
+
+        // Loop through booth number dropdown to find matching
+        for (let i = 0; i < boothNumberSelect.options.length; i++) {
+            if (boothNumberSelect.options[i].value === selectedId) {
+                boothNumberSelect.selectedIndex = i;
+                break;
+            }
+        }
+    });
+
+    // When Booth Number changes
+    boothNumberSelect.addEventListener("change", function () {
+        const selectedId = this.value;
+        const selectedOption = this.options[this.selectedIndex];
+        const boothName = selectedOption.getAttribute("data-boothname");
+
+        for (let i = 0; i < boothNameSelect.options.length; i++) {
+            if (boothNameSelect.options[i].value === selectedId) {
+                boothNameSelect.selectedIndex = i;
+                break;
+            }
+        }
+    });
+</script>
+
+<script>
+    const totalInput = document.getElementById("TotalVoters");
+    const manInput = document.getElementById("Man");
+    const womanInput = document.getElementById("Woman");
+    const otherInput = document.getElementById("Other");
+
+    let isOtherManuallyChanged = false;
+
+    // Flag to check if "Other" was manually changed
+    otherInput.addEventListener('input', () => {
+        isOtherManuallyChanged = true;
+        validateVoters(); // Re-validate when user types manually
+    });
+
+    function autoFillOther() {
+        const total = parseInt(totalInput.value) || 0;
+        const man = parseInt(manInput.value) || 0;
+        const woman = parseInt(womanInput.value) || 0;
+
+        // Sirf tabhi auto-calc kare jab tino values fill ho
+        if (total > 0 && man > 0 && woman > 0 && !isOtherManuallyChanged) {
+            const remaining = total - (man + woman);
+            if (remaining >= 0) {
+                otherInput.value = remaining;
+            } else {
+                otherInput.value = '';
+            }
+        }
+
+        validateVoters(); // Always validate
+    }
+
+    function validateVoters() {
+        const total = parseInt(totalInput.value) || 0;
+        const man = parseInt(manInput.value) || 0;
+        const woman = parseInt(womanInput.value) || 0;
+        const other = parseInt(otherInput.value) || 0;
+
+        const sum = man + woman + other;
+
+        if (sum > total) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Invalid Voter Count',
+                text: `Sum of Man, Woman, and Other voters (${sum}) cannot exceed Total Voters (${total}).`,
+                confirmButtonColor: '#FF8C42'
+            });
+        }
+    }
+
+    // Attach input listeners
+    manInput.addEventListener('input', autoFillOther);
+    womanInput.addEventListener('input', autoFillOther);
+    totalInput.addEventListener('input', autoFillOther);
+</script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $('#boothVoterForm').on('submit', function (e) {
+        e.preventDefault();
+
+        const form = document.getElementById('boothVoterForm');
+        const formData = new FormData(form);
+
+        // Get booth ID and name for your select box
+        const boothId = $('#BoothName option:selected').val();
+        const boothName = $('#BoothName option:selected').text();
+
+        formData.set('BoothId', boothId);
+        formData.set('BoothName', boothName);
+
+
+        // ✅ Get all selected village IDs
+        const selectedVillages = $('#VillageDropdown').val(); // returns array of selected values
+
+        if (selectedVillages && selectedVillages.length > 0) {
+            // Convert array to comma-separated string
+            const villageIds = selectedVillages.join(',');
+            formData.set('VillageListId', villageIds); // override with comma-separated value
+        } else {
+            formData.set('VillageListId', ''); // no selection
+        }
+
+        $.ajax({
+            url: '@Url.Action("BoothVotersDescription", "Admin")',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                Swal.fire({
+                    icon: res.success ? 'success' : 'error',
+                    title: res.success ? 'Success' : 'Error',
+                    text: res.message,
+                    confirmButtonColor: res.success ? '#28a745' : '#dc3545'
+                }).then(() => {
+                    if (res.success) {
+                        // Close modal, reset form
+                        $('#exampleModal').modal('hide');
+                        $('#boothVoterForm')[0].reset();
+                        $('#Id').val(0);
+
+                        // Reload page to reflect changes
+                        location.reload();
+                    }
+                });
+            },
+            error: function () {
+                Swal.fire('Error', 'Server error occurred!', 'error');
+            }
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $(document).on("click", ".open-modal", function () {
+            $("#voterModal").modal("show"); // Bootstrap 4/5 compatible
+        });
+    });
+</script>
+
+
+<script>
+    var addCastVoterUrl = '@Url.Action("AddCastVoter", "Admin", new { area = "Admin" })';
+</script>
+
+<script>
+
+    // When "+" button clicked
+    $(document).on('click', '.open-modal', function () {
+        const voterDesId = $(this).data('id');
+        $('#voterDesInput').val(voterDesId);              // set hidden input
+        $('#voterForm')[0].reset();                        // reset form
+        $('.caste-row').not(':first').remove();            // remove extra rows
+        var modal = new bootstrap.Modal(document.getElementById('voterModal'));
+        modal.show();
+    });
+
+
+
+    $('#voterForm').on('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]); // Debug
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: addCastVoterUrl,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire({ icon: 'success', title: 'Saved!', text: res.message })
+                        .then(() => $('#voterModal').modal('hide'));
+                    //location.reload();
+                } else {
+                    Swal.fire({ icon: 'warning', title: 'Limit Exceeded', text: res.message });
+                }
+            },
+            error: function (xhr) {
+                Swal.fire({ icon: 'error', title: 'Server Error', text: xhr.responseText || 'Unexpected error occurred.' });
+            }
+        });
+    });
+
+</script>
+
+
+@*soft delete booth voter des and cast voter des*@
+<script>
+    $(document).on('click', '.delete-btn', function () {
+        var id = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This record will be deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/DeleteBoothVoterDes',  // Adjust if your controller or route is different
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: response.message,
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload(); // Or remove the row dynamically
+                            });
+                        } else {
+                            Swal.fire('Error', response.message || 'Deletion failed.', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Server error occurred!', 'error');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+@*//bind boothvoter des*@
+<script>
+    $(document).ready(function () {
+
+        $('.edit-btn').on('click', function () {
+            const id = $(this).data('id');
+
+            $.ajax({
+                url: '/Admin/GetBoothVoterById',
+                type: 'GET',
+                data: { id },
+                success: function (data) {
+
+                    // Fill form fields
+                    $('#Id').val(data.Id);
+                    $('#BoothName').val(data.BoothId);
+                    $('#BoothNumber').val(data.BoothId);
+                    $('#TotalVoters').val(data.TotalVoters);
+                    $('#Man').val(data.TotalMan);
+                    $('#Woman').val(data.TotalWoman);
+                    $('#Other').val(data.TotalOther);
+
+                    // 🟢 Store selected village id BEFORE triggering change
+                    window.selectedVillages = data.VillageListId
+                        ? [data.VillageListId.toString()]
+                        : [];
+
+                    // Trigger booth change — this will load village list and auto-select it
+                    $('#BoothName').trigger('change');
+
+                    // Show modal after a short delay
+                    setTimeout(() => {
+                        $('#exampleModal').modal('show');
+                    }, 500);
+
+                    // Optional: show text label if you have a label
+                    if (data.VillageName) {
+                        $('#SelectedVillageNames').text(data.VillageName);
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Failed to load record details.', 'error');
+                }
+            });
+        });
+    });
+
+
+</script>
+
+@*<script>
+        $(document).ready(function () {
+
+            // Handle edit button click
+            $('.edit-btn').on('click', function () {
+                var id = $(this).data('id');
+
+                $.ajax({
+                    url: '/Admin/GetBoothVoterById',
+                    type: 'GET',
+                    data: { id: id },
+                    success: function (data) {
+
+
+                        $('#Id').val(data.Id);
+
+                        $('#BoothName').val(data.BoothId);
+
+                        $('#BoothNumber').val(data.BoothId);
+
+                        $('#TotalVoters').val(data.TotalVoters);
+                        $('#Man').val(data.TotalMan);
+                        $('#Woman').val(data.TotalWoman);
+                        $('#Other').val(data.TotalOther);
+
+                        // Show modal
+                        $('#exampleModal').modal('show');
+                    },
+                    error: function () {
+                        alert('Error loading data');
+                    }
+                });
+            });
+        });
+    </script>*@
+
+
+<!--show data on click view-->
+<script>
+    $(document).on('click', '.delete-row', function () {
+        var id = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This record will be deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/DeleteCastVoter',  // Adjust if your controller or route is different
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: response.message,
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload(); // Or remove the row dynamically
+                            });
+                        } else {
+                            Swal.fire('Error', response.message || 'Deletion failed.', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Server error occurred!', 'error');
+                    }
+                });
+            }
+        });
+    });
+
+
+    //$(document).on('click', '.view-cast-btn', function () {
+    //    const voterDesId = $(this).data('id');
+
+    //    // Show loading message
+    //    $('#castVoterTable tbody').html('<tr><td colspan="4">Loading...</td></tr>');
+
+    //    $.ajax({
+    //        url: '/Admin/GetCastVotersById', // API endpoint
+    //        type: 'GET',
+    //        data: { voterDesId: voterDesId },
+    //        success: function (response) {
+    //            console.log("voter data:", response);
+    //            let html = '';
+
+    //            if (response && response.length > 0) {
+    //                let serial = 1; // Serial number for each row
+
+    //                response.forEach(item => {
+    //                    const castNames = item.CastName || [];       // Array of caste names
+    //                    const numbers = item.Number || [];           // Array of numbers
+    //                    const castIds = item.castNameId || [];       // Array of cast IDs
+    //                    const castVoterIds = item.castVoterId || []; // Array of CastVoterIds
+
+    //                    for (let i = 0; i < castNames.length; i++) {
+    //                        // Use the first CastVoterId if array has only one, else get i-th
+    //                        const castVoterId = castVoterIds[i] || castVoterIds[0] || 0;
+
+    //                        html += `
+    //                    <tr>
+    //                        <td>${serial}</td>
+    //                        <td>${castNames[i]}</td>
+    //                        <td>${numbers[i]}</td>
+    //                        <td>
+    //                            <button class="btn btn-sm me-1 edit-row"
+    //                                    data-castvoterid="${castVoterId}"
+    //                                    data-castid="${castIds[i]}"
+    //                                    data-number="${numbers[i]}">
+    //                                <i class="fas fa-edit text-success"></i>
+    //                            </button>
+    //                            <button class="btn btn-sm me-1 delete-row text-danger"
+    //                                    data-castvoterid="${castVoterId}"
+    //                                    data-castid="${castIds[i]}">
+    //                                <i class="fas fa-trash-alt text-red"></i>
+    //                            </button>
+    //                        </td>
+    //                    </tr>`;
+    //                        serial++;
+    //                    }
+    //                });
+    //            } else {
+    //                html = '<tr><td colspan="4">No records found</td></tr>';
+    //            }
+
+    //            // Bind rows to the table
+    //            $('#castVoterTable tbody').html(html);
+    //        },
+    //        error: function () {
+    //            Swal.fire('Error', 'Something went wrong while loading data.', 'error');
+    //        }
+    //    });
+    //});
+
+    // ==================== VIEW CAST VOTERS ====================
+    //$(document).on('click', '.view-cast-btn', function () {
+    //    const voterDesId = $(this).data('id');
+
+    //    // Show loading message
+    //    $('#castVoterTable tbody').html('<tr><td colspan="4">Loading...</td></tr>');
+
+    //    $.ajax({
+    //        url: '/Admin/GetCastVotersById',
+    //        type: 'GET',
+    //        data: { voterDesId: voterDesId },
+    //        success: function (response) {
+    //            let html = '';
+
+    //            if (response && response.length > 0) {
+    //                let serial = 1;
+
+    //                response.forEach(item => {
+    //                    const castNames = item.CastName || [];
+    //                    const numbers = item.Number || [];
+    //                    const castIds = item.castNameId || [];
+    //                    const castVoterIds = item.castVoterId || [];
+
+    //                    for (let i = 0; i < castNames.length; i++) {
+    //                        const castVoterId = castVoterIds[i] || castVoterIds[0] || 0;
+
+    //                        html += `
+    //                    <tr>
+    //                        <td>${serial}</td>
+    //                        <td>${castNames[i]}</td>
+    //                        <td>${numbers[i]}</td>
+    //                        <td>
+    //                            <button class="btn btn-sm me-1 edit-row"
+    //                                    data-castvoterid="${castVoterId}"
+    //                                    data-castid="${castIds[i]}"
+    //                                    data-number="${numbers[i]}">
+    //                                <i class="fas fa-edit text-success"></i>
+    //                            </button>
+    //                            <button class="btn btn-sm me-1 delete-row text-danger"
+    //                                    data-castvoterid="${castVoterId}"
+    //                                    data-castid="${castIds[i]}">
+    //                                <i class="fas fa-trash-alt text-red"></i>
+    //                            </button>
+    //                        </td>
+    //                    </tr>`;
+    //                        serial++;
+    //                    }
+    //                });
+    //            } else {
+    //                html = '<tr><td colspan="4">No records found</td></tr>';
+    //            }
+
+    //            $('#castVoterTable tbody').html(html);
+    //        },
+    //        error: function () {
+    //            Swal.fire('Error', 'Something went wrong while loading data.', 'error');
+    //        }
+    //    });
+    //});
+    
+    // ==================== EDIT ROW ====================
+    $(document).on('click', '.edit-row', function () {
+        let castVoterId = $(this).data('castvoterid');
+        let row = $(this).closest('tr');
+        let serialNo = row.find('td:first').text();
+
+        $.ajax({
+            url: '/Admin/GetCastById',
+            type: 'GET',
+            data: { castVoterId: castVoterId },
+            success: function (data) {
+                console.log("new data", data);
+                if (data && data.length > 0) {
+                    let record = data[0];
+                    let subCastValue = record.castNameId || $(this).data('castid');
+                    console.log("sub", subCastValue);
+                    let numberValue = record.Number || $(this).data('number');
+
+                    let editHtml = `
+                    <td>${serialNo}</td>
+                    <td>
+                        <select class="form-select subCasteSelect">
+                            ${generateSubCasteOptions(subCastValue)}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="form-control numberInput"
+                               value="${numberValue}" min="1" required />
+                    </td>
+                    <td>
+                        <button class="btn btn-success save-row"
+                                data-castvoterid="${castVoterId}"
+                                data-castNameId="${subCastValue}"
+                                data-Number="${numberValue}">
+                            Update
+                        </button>
+                    </td>`;
+                    row.html(editHtml);
+                }
+            },
+            error: function () {
+                Swal.fire("Error", "Failed to load caste data.", "error");
+            }
+        });
+    });
+
+    // ==================== SAVE ROW ====================
+    // When Update button is clicked
+    $(document).on('click', '.save-row', function () {
+        let row = $(this).closest('tr');
+
+        // Get updated values from inputs/select
+        let castVoterId = $(this).data('castvoterid'); // original id
+        let castId = row.find('.subCasteSelect').val(); // selected cast id
+        let number = row.find('.numberInput').val(); // updated number
+        let serialNo = row.find('td:first').text(); // serial number
+        //let castNameText = row.find('.subCasteSelect option:selected').text();
+        console.log("castName");
+        // Optional: validate before sending
+        if (!castId || number < 1) {
+            Swal.fire('Error', 'Please select a caste and enter a valid number.', 'error');
+            return;
+        }
+
+        // Send updated data to server
+        $.ajax({
+            url: '/Admin/UpdateCastVoter',
+            type: 'POST',
+            data: {
+                castVoterId: castVoterId,
+                castId: castId,
+                number: number
+            },
+            success: function (updatedData) {
+                console.log("updated data", updatedData);
+
+                if (!updatedData.success) {
+                    Swal.fire('Error', updatedData.message || 'Update failed', 'error');
+                    return;
+                }
+
+                // Get caste name text from dropdown (user selected value)
+                //let castNameText = $('#CastList option:selected').text();
+
+                // Create table row HTML using returned data
+            //    let html = `
+            //<td>${serialNo}</td>
+            //<td>${castNameText}</td>
+            //<td>${updatedData.Number}</td>
+            //<td>
+            //    <button class="btn btn-sm me-1 edit-row"
+            //            data-castvoterid="${updatedData.CastVoterId}"
+            //            data-castid="${updatedData.CastNameId}"
+            //            data-number="${updatedData.Number}">
+            //        <i class="fas fa-edit text-success"></i>
+            //    </button>
+            //    <button class="btn btn-sm me-1 delete-row text-danger"
+            //            data-castvoterid="${updatedData.CastVoterId}"
+            //            data-castid="${updatedData.CastNameId}">
+            //        <i class="fas fa-trash-alt text-red"></i>
+            //    </button>
+            //</td>`;
+
+                // Replace the edited row content
+                //row.html(html);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: "Updated successfully!",
+                    timer: 1500,
+                    showConfirmButton: true
+                }).then(() => {
+                    location.reload(); // Or remove the row dynamically
+                });
+                location.reload(true);
+            },
+            error: function () {
+                Swal.fire('Error', 'Failed to update record.', 'error');
+            }
+        });
+
+    });
+
+
+    // ==================== GENERATE SUBCASTE OPTIONS ====================
+    function generateSubCasteOptions(selectedValue) {
+        console.log("new sub", selectedValue);
+        let options = '<option value="">-- Select SubCaste --</option>';
+
+        if (!window.casteList || casteList.length === 0) {
+            console.error("⚠️ casteList is empty or undefined.");
+            return options;
+        }
+
+        casteList.forEach(function (item) {
+            console.log("item", item);
+            let isSelected = String(item.SubCaste_Id
+            ) === String(selectedValue);
+
+
+
+            options += `<option value="${item.SubCaste_Id}" ${isSelected ? "selected" : ""}>
+                        ${item.SubCasteName}
+                    </option>`;
+        });
+
+        return options;
+    }
+
+
+
+
+
+
+    // 🟢 EDIT ROW
+    //$(document).on('click', '.edit-row', function () {
+    //    let castVoterId = $(this).data('castvoterid'); // <-- use this
+    //    let castId = $(this).data('castid');
+    //    let number = $(this).data('number');
+    //    let row = $(this).closest('tr');
+    //    let serialNo = row.find('td:first').text();
+
+    //    $.ajax({
+    //        url: '/Admin/GetCastById',
+    //        type: 'GET',
+    //        data: { castVoterId: castVoterId },  // <-- send castVoterId
+    //        success: function (data) {
+    //            if (data && data.length > 0) {
+    //                let record = data[0];
+
+    //                let subCastValue = record.castNameId || castId;
+    //                let numberValue = record.Number || number;
+
+    //                let editHtml = `
+    //                <td>${serialNo}</td>
+    //                <td>
+    //                    <select class="form-select subCasteSelect">
+    //                        ${generateSubCasteOptions(subCastValue)}
+    //                    </select>
+    //                </td>
+    //                <td>
+    //                    <input type="number" class="form-control numberInput"
+    //                           value="${numberValue}" min="1" required />
+    //                </td>
+    //                <td>
+    //                    <button class="btn btn-success save-row"
+    //                            data-castvoterid="${castVoterId}"
+    //                            data-casteid="${subCastValue}"
+    //                            data-number="${numberValue}">
+    //                        Update
+    //                    </button>
+    //                </td>`;
+    //                row.html(editHtml);
+    //            }
+    //        },
+    //        error: function () {
+    //            Swal.fire("Error", "Failed to load caste data.", "error");
+    //        }
+    //    });
+    //});
+
+
+    //function generateSubCasteOptions(selectedValue) {
+    //    let options = '<option value="">-- Select SubCaste --</option>';
+
+    //    if (!window.casteList || casteList.length === 0) {
+    //        console.error("⚠️ casteList is empty or undefined.");
+    //        return options;
+    //    }
+
+    //    casteList.forEach(function (item) {
+    //        // Use flexible matching (convert to string for safety)
+    //        let isSelected = String(item.castNameId) === String(selectedValue);
+    //        options += `<option value="${item.castNameId}" ${isSelected ? "selected" : ""}>
+    //                    ${item.SubCasteName}
+    //                </option>`;
+    //    });
+
+    //    return options;
+    //}
+
+    // 🟢 SAVE UPDATED ROW
+    //$(document).on('click', '.save-row', function () {
+    //    let button = $(this);
+    //    let row = button.closest('tr');
+
+    //    // Data attributes se pehle wali values
+    //    let id = button.data('id');
+    //    let casteId = button.data('casteid');
+    //    let number = button.data('number');
+
+    //    // User ne agar naye values change kiye ho to unhe le lo
+    //    let updatedCasteId = row.find('.subCasteSelect').val() || casteId;
+    //    let updatedNumber = row.find('.numberInput').val() || number;
+
+    //    // Simple validation (optional)
+    //    if (!updatedCasteId || !updatedNumber) {
+    //        Swal.fire("Warning", "Please select caste and enter number.", "warning");
+    //        return;
+    //    }
+
+    //    // AJAX request to update record
+    //    $.ajax({
+    //        url: '/Admin/UpdateCastVoter', // 🔁 <-- apna actual update endpoint yahan likho
+    //        type: 'POST',
+    //        data: {
+    //            id: id,
+    //            casteId: updatedCasteId,
+    //            number: updatedNumber
+    //        },
+    //        success: function (response) {
+    //            Swal.fire("Success", "Record updated successfully!", "success");
+
+    //            // Optional: Table reload ya row update
+    //            // reloadTable();  // Agar koi table reload function hai
+    //        },
+    //        error: function () {
+    //            Swal.fire("Error", "Failed to update record.", "error");
+    //        }
+    //    });
+    //});
+
+    //$(document).on('click', '.edit-row', function () {
+    //    let id = $(this).data('id');
+    //    let row = $(this).closest('tr');
+    //    let serialNo = row.find('td:first').text();
+
+    //    $.ajax({
+    //        url: '/Admin/GetCastById',
+    //        type: 'GET',
+    //        data: { id: id },
+    //        success: function (data) {
+    //            console.log("Server Response:", data);
+
+    //            if (data && data.length > 0) {
+    //                let subCastValue = data[0].SubCastName[0] || "";
+    //                let numberValue = data[0].Number[0] || "";
+
+    //                let editHtml = `
+    //                <td>${serialNo}</td>
+    //                <td>
+    //                    <select class="form-select subCasteSelect">
+    //                        ${generateSubCasteOptions(subCastValue)}
+    //                    </select>
+    //                </td>
+    //                <td>
+    //                    <input type="number" class="form-control numberInput" value="${numberValue}" min="1" required />
+    //                </td>
+    //                <td>
+    //                    <button class="btn btn-success save-row" data-id="${id}">Update</button>
+    //                </td>
+    //            `;
+
+    //                row.html(editHtml);
+    //            } else {
+    //                alert("No data found for this record.");
+    //            }
+    //        },
+    //        error: function () {
+    //            alert("Error fetching data.");
+    //        }
+    //    });
+    //});
+
+    //function generateSubCasteOptions(selectedValue) {
+    //    let options = '<option value="">-- Select SubCaste --</option>';
+    //    casteList.forEach(function (item) {
+    //        let selected = (item.SubCasteName === selectedValue) ? "selected" : "";
+    //        options += `<option value="${item.Id}" ${selected}>${item.SubCasteName}</option>`;
+    //    });
+    //    return options;
+    //}
+
+    //$(document).on('click', '.save-row', function () {
+    //    let row = $(this).closest('tr');
+    //    let id = $(this).data('id');
+
+    //    let updatedCastId = row.find('.subCasteSelect').val();
+    //    let updatedCastName = row.find('.subCasteSelect option:selected').text();
+    //    let updatedNumber = row.find('.numberInput').val();
+
+    //    let serialNo = row.find("td:first").text();
+
+    //    $.ajax({
+    //        url: '/Admin/UpdateCastVoter',
+    //        type: 'POST',
+    //        data: {
+    //            id: id,
+    //            castId: updatedCastId,
+    //            number: updatedNumber
+    //        },
+    //        success: function (res) {
+    //            if (res.success) {
+    //                Swal.fire({
+    //                    title: "Updated!",
+    //                    text: "Caste voter details have been updated successfully.",
+    //                    icon: "success",
+    //                    timer: 2000,
+    //                    showConfirmButton: true
+    //                });
+
+    //                row.html(`
+    //                <td>${serialNo}</td>
+    //                <td>${updatedCastName}</td>
+    //                <td>${updatedNumber}</td>
+    //                <td>
+    //                    <button class="btn btn-sm me-1 edit-row"
+    //                            data-id="${id}"
+    //                            data-cast="${updatedCastId}"
+    //                            data-number="${updatedNumber}">
+    //                        <i class="fas fa-edit text-success"></i>
+    //                    </button>
+    //                    <button class="btn btn-sm me-1 delete-row"
+    //                            data-id="${id}"
+    //                            data-cast="${updatedCastId}">
+    //                        <i class="fas fa-trash-alt text-red"></i>
+    //                    </button>
+    //                </td>
+    //            `);
+    //            } else {
+    //                Swal.fire("Failed", "Failed to update record.", "error");
+    //            }
+    //        },
+    //        error: function () {
+    //            Swal.fire("Error", "Something went wrong while updating.", "error");
+    //        }
+    //    });
+    //});
+    function showCastVoterDes() {
+        $(document).on('click', '.view-cast-btn', function () {
+            const voterDesId = $(this).data('id');
+
+            // Show loading message
+            $('#castVoterTable tbody').html('<tr><td colspan="4">Loading...</td></tr>');
+
+            $.ajax({
+                url: '/Admin/GetCastVotersById',
+                type: 'GET',
+                data: { voterDesId: voterDesId },
+                success: function (response) {
+                    let html = '';
+
+                    if (response && response.length > 0) {
+                        let serial = 1;
+
+                        response.forEach(item => {
+                            const castNames = item.CastName || [];
+                            const numbers = item.Number || [];
+                            const castIds = item.castNameId || [];
+                            const castVoterIds = item.castVoterId || [];
+
+                            for (let i = 0; i < castNames.length; i++) {
+                                const castVoterId = castVoterIds[i] || castVoterIds[0] || 0;
+
+                                html += `
+                        <tr>
+                            <td>${serial}</td>
+                            <td>${castNames[i]}</td>
+                            <td>${numbers[i]}</td>
+                            <td>
+                                <button class="btn btn-sm me-1 edit-row"
+                                        data-castvoterid="${castVoterId}"
+                                        data-castid="${castIds[i]}"
+                                        data-number="${numbers[i]}">
+                                    <i class="fas fa-edit text-success"></i>
+                                </button>
+                                <button class="btn btn-sm me-1 delete-row text-danger"
+                                        data-castvoterid="${castVoterId}"
+                                        data-castid="${castIds[i]}">
+                                    <i class="fas fa-trash-alt text-red"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                                serial++;
+                            }
+                        });
+                    } else {
+                        html = '<tr><td colspan="4">No records found</td></tr>';
+                    }
+
+                    $('#castVoterTable tbody').html(html);
+                },
+                error: function () {
+                    Swal.fire('Error', 'Something went wrong while loading data.', 'error');
+                }
+            });
+        });
+
+    }
+    showCastVoterDes();
+</script>
+
+<script>
+    var casteList = @Html.Raw(Json.Encode(ViewBag.CasteList));
+</script>
+
+
+<script>
+
+
+    $(document).on('click', '.add-caste', function () {
+    // Build SubCaste options dynamically
+    let subCasteOptions = `<option value="">-- Select SubCaste --</option>`;
+    @* Razor code to loop over casteList *@
+    @if (casteList != null && casteList.Any())
+    {
+        foreach (var data in casteList)
+        {
+            <text>
+            subCasteOptions += `<option value="@data.SubCasteName">@data.SubCasteName</option>`;
+            </text>
+        }
+    }
+
+    // Append new row
+    $('.caste-container').append(`
+        <div class="row mb-2 caste-row">
+            <div class="col-md-5">
+                <label class="form-label">SubCaste</label>
+                <select name="CastName[]" class="form-select" required>
+                    ${subCasteOptions}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label">Number</label>
+                <input type="number" name="Number[]" class="form-control" min="1" required />
+            </div>
+            <div class="col-md-2 d-flex align-items-center mt-4">
+                <button type="button" class="btn btn-danger remove-caste">-</button>
+            </div>
+        </div>
+    `);
+});
+
+// Remove caste input row
+$(document).on('click', '.remove-caste', function () {
+    $(this).closest('.caste-row').remove();
+});
+
+
+
+</script>
+<script>
+    $(document).ready(function () {
+
+// 🔹 Global variable to hold selected village IDs
+    window.selectedVillages = [];
+
+    // 🔸 Booth change event
+    $('#BoothName, #BoothNumber').on('change', function () {
+        const boothId = $(this).val();
+        if (!boothId) return;
+
+        // Keep both Booth dropdowns in sync
+        $('#BoothName').val(boothId);
+        $('#BoothNumber').val(boothId);
+
+        // Load villages dynamically
+        $.ajax({
+            url: '@Url.Action("GetVillagesByBoothId", "Admin")',
+            type: 'GET',
+            data: { boothId },
+            success: function (villages) {
+                const $villageList = $('#VillageDropdown'); // must match your dropdown id
+                $villageList.empty();
+
+                // Append all villages
+                villages.forEach(v => {
+                    $villageList.append(`<option value="${v.villageId}">${v.Villagename}</option>`);
+                });
+
+                // ✅ Preselect if editing
+                if (window.selectedVillages.length > 0) {
+                    $villageList.val(window.selectedVillages).trigger('change');
+                }
+            },
+            error: function () {
+                console.error('Error fetching villages.');
+            }
+        });
+    });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 335
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/BoothVotersDescription?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>

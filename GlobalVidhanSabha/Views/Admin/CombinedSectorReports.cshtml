@@ -1,0 +1,1069 @@
+﻿@{
+    ViewBag.Title = "Combined Sector Reports";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var sectorList = ViewData["SectorListUseToCimbinedReport"] as List<VishanSabha.Models.Sector>;
+    var boothDataDict = ViewData["BoothDataBySector"] as Dictionary<int, List<VishanSabha.Models.Booth>>;
+    var MandalList = ViewData["MandalList"] as List<VishanSabha.Models.Mandal>;
+    var SectorList = ViewData["SectorList"] as List<VishanSabha.Models.Sector>;
+    var casteList = ViewData["CasteList"] as List<VishanSabha.Models.SubCaste>;
+    var villageList = ViewData["VillageList11"] as List<VishanSabha.Models.VillageList>;
+    var BoothList1 = ViewData["BoothListtt"] as List<VishanSabha.Models.Booth>;
+
+}
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color:white!important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+    #myTable th {
+        color:white!important;
+    }
+        .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 500px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+     
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 110px!important;
+    }
+</style>
+
+@*<style>
+        body {
+            background-color: #fdfaf6;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .table-head {
+            background-color: #FF8C42;
+        }
+
+            .table-head th {
+                color: white;
+            }
+
+        .myhead {
+            font-size: 12px;
+            color: white;
+            padding: 15px 10px;
+        }
+
+        .table-head th, #myTable td {
+            text-align: left;
+            vertical-align: middle;
+            padding: 2px 6px;
+            font-size: 11px;
+        }
+
+        #myTable img {
+            width: 50px !important;
+            height: auto;
+        }
+
+        /* .table-responsive {
+            overflow-x: auto;
+            white-space: nowrap;
+            max-height: 80vh !important;
+        }
+    */
+        #myTable td,
+        #myTable th {
+            white-space: nowrap;
+            padding: 3px 6px !important; /* kam padding → row height kam */
+            font-size: 11px !important; /* chhota text */
+            line-height: 1.2 !important; /* compact vertical spacing */
+            height: 26px !important;
+        }
+
+        .btn-outline-orange {
+            border-color: orange;
+            color: orange;
+            font-size: 12px;
+            padding: 4px 10px;
+        }
+
+            .btn-outline-orange:hover {
+                background-color: #FF8C42;
+                color: white;
+            }
+
+        .btn-xs {
+            padding: 1px 5px;
+            font-size: 8px;
+            line-height: 1.2;
+            border-radius: 3px;
+        }
+
+        .edit-icon, .delete-icon {
+            font-size: 14px;
+        }
+
+        .edit-icon {
+            color: green;
+        }
+
+        .edit-btn:hover .edit-icon {
+            color: white;
+        }
+
+        .delete-icon {
+            color: red;
+        }
+
+        .delete-btn:hover .delete-icon {
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        .dataTables_length select {
+            font-size: 12px !important;
+            padding: 2px 5px !important;
+            width: 54px !important;
+            height: 28px !important;
+        }
+
+        .dataTables_filter input {
+            font-size: 12px !important;
+            padding: 3px 6px !important;
+            width: 150px !important;
+            height: 28px !important;
+            border-radius: 4px;
+        }
+
+        div.dataTables_filter input[type="search"] {
+            border: 1px solid #FF8C42 !important;
+        }
+
+        #myTable_paginate .paginate_button {
+            font-size: 12px; /* font size chhota ya bada karne ke liye */
+            margin-top: 10px;
+            padding: 5px 10px; /* button ke andar ki padding */
+            min-width: 40px; /* button ki minimum width */
+            height: 30px; /* button ki height */
+            border-radius: 5px; /* corners round karne ke liye */
+            margin: 0 2px; /* buttons ke beech thodi gap */
+            cursor: pointer;
+            background-color: #FF8C42;
+            color: black;
+            border: none;
+        }
+
+        #exportIcons a {
+            text-decoration: none;
+        }
+
+
+        .table-wrapper {
+            margin-top: 2px; /* 👈 filter section ke neeche gap */
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .table-controls {
+            position: sticky;
+            top: 0;
+            z-index: 15;
+            background: #fff;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table-scroll {
+            max-height: 400px; /* adjust height */
+            overflow-y: auto;
+            overflow-x: auto;
+            position: relative;
+            overflow: auto;
+            z-index: 1;
+        }
+
+            .table-scroll table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            /* Sticky header */
+            .table-scroll thead th {
+                position: sticky !important;
+                top: 0;
+                background-color: #FF8C42;
+                color: white;
+                z-index: 10;
+                box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+            }
+
+            .table-scroll::-webkit-scrollbar {
+                height: 8px;
+                width: 8px;
+            }
+
+            .table-scroll::-webkit-scrollbar-thumb {
+                background-color: #a4a4a4;
+                border-radius: 4px;
+            }
+
+        .table-responsive {
+            max-height: 400px; /* scroll area height */
+            overflow-y: auto;
+        }
+
+        .select2-container {
+            z-index: 999 !important;
+        }
+
+        .container-fluid {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 40px !important; /* 👈 Header ke niche thoda extra space */
+            position: relative;
+            z-index: 1;
+        }
+
+        .dataTables_length label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+            letter-spacing: 0.5px; /* 👈 thoda wide look */
+        }
+
+        div.dataTables_filter input[type="search"] {
+            border: 1px solid #FF8C42 !important; /* Default border */
+            outline: none !important; /* Default blue outline hatayega */
+            box-shadow: none !important; /* Shadow remove karega */
+        }
+
+            div.dataTables_filter input[type="search"]:focus {
+                border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+                outline: none !important;
+                box-shadow: none !important;
+            }
+
+        .divSize {
+            width: 150px !important;
+        }
+    .table-wrapper {
+        height: calc(100vh - 151px)!important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+</style>*@
+
+<div class="container-fluid mt-5 ms-4">
+    <h4 class="mb-3" style="color: #FF8C42;">Combined Sector Reports</h4>
+    <div class="row g-1">
+        <div class="col-sm-2 divSize">
+            <select class="form-select form-select-sm shadow-sm !rounded-pill border-primary" multiple id="mandalFilter">
+
+                @if (MandalList != null && MandalList.Any())
+                {
+                    foreach (var data in MandalList)
+                    {
+                        <option value="@data.Id">@data.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2 divSize">
+            <select class="form-select form-select-sm shadow-sm !rounded-pill border-primary" multiple id="sectorFilter">
+
+                @if (SectorList != null && SectorList.Any())
+                {
+                    foreach (var data in SectorList)
+                    {
+                        <option value="@data.Id">@data.SectorName</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2 divSize">
+            <select class="form-select form-select-sm shadow-sm !rounded-pill border-primary" multiple id="boothFilter" name="boothIds">
+
+                @if (BoothList1 != null && BoothList1.Any())
+                {
+                    foreach (var data in BoothList1)
+                    {
+                        <option value="@data.Booth_Id">@data.BoothNumber</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2 divSize">
+            <select class="form-select form-select-sm shadow-sm rounded-pill border-primary" multiple id="villageFilter">
+
+                @if (villageList != null && villageList.Any())
+                {
+                    foreach (var data in villageList)
+                    {
+                        <option value="@data.villageId">@data.Villagename</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2 divSize">
+            <select class="form-select form-select-sm shadow-sm rounded-pill border-primary" multiple id="casteFilter">
+
+                @if (casteList != null && casteList.Any())
+                {
+                    foreach (var data in casteList)
+                    {
+                        <option value="@data.SubCaste_Id">@data.SubCasteName</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2 divSize">
+            <button type="button" class="btn btn-outline-secondary w-100 shadow-sm round-0" id="filterButton" title="Filters">
+                <i class="bi bi-arrow-clockwise"></i> Filter
+            </button>
+        </div>
+        <div class="col-sm-2 divSize">
+            <button type="button" class="btn btn-outline-secondary w-100 shadow-sm round-0" id="resetFilters" title="Reset Filters">
+                <i class="bi bi-arrow-clockwise"></i> Reset Filter
+            </button>
+        </div>
+    </div>
+
+    <div class="table-wrapper shadow rounded p-2">
+
+        <div class="table-controls d-flex justify-content-between align-items-center mb-2 flex-wrap ">
+            <div id="entriesAndExport" class="d-flex align-items-center gap-2">
+                <div id="exportIcons" class="d-flex align-items-center gap-1">
+
+                    <!-- Excel Export -->
+                    <a href="#" id="sectorDownloadExcel" title="Download Excel">
+                        <i class="bi bi-file-earmark-excel-fill"
+                           style="font-size: 1.3rem; color: #1D6F42; cursor:pointer;"></i>
+                    </a>
+
+                    <!-- PDF Export -->
+                    <a href="#" id="sectorDownloadPdf" title="Download PDF">
+                        <i class="bi bi-file-earmark-pdf-fill"
+                           style="font-size: 1.3rem; color: #D32F2F; cursor:pointer;"></i>
+                    </a>
+
+                    @*<a href="@Url.Action("CombinedSectorExportReport", "Export", new { format = "excel" })"
+                       <i class="bi bi-file-earmark-excel-fill"  style="font-size: 1.3rem; color: #1D6F42; cursor:pointer;"></i>
+                    </a>
+
+                            <a href="@Url.Action("CombinedSectorExportReport", "Export", new { format = "pdf" })"
+                    <i class="bi bi-file-earmark-pdf-fill"  style="font-size: 1.3rem; color: #D32F2F; cursor: pointer;"></i>
+                    </a>*@
+                </div>
+
+            </div>
+            <div id="searchBox"></div>
+        </div>
+
+
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle" >
+
+
+                <thead class="table-head">
+                    <tr class="text-light myhead" style="color:white!important;">
+                        <th style="text-align:center!important;">S.N.</th>
+                        <th>Mandal</th>
+                        <th>Sector</th>
+                        <th>Sector Sanyojak</th>
+                        <th>Contact</th>
+                        <th>Village</th>
+                        <th>Father Name</th>
+                        <th>Age</th>
+                        <th>Caste</th>
+                        <th>Address</th>
+
+                        <th>Image</th>
+                        @*<th>View</th>*@
+
+                        <!-- Booth Columns -->
+                        <th>Booth No</th>
+                        @*<th >Booth Name</th>*@
+                        <th>Polling Station</th>
+                        <th>Booth Adhyaksh</th>
+                        <th>Contact</th>
+                        <th>Village</th>
+                        <th>Father Name</th>
+                        <th>Age</th>
+                        <th>Caste</th>
+                        <th>Address</th>
+                        <th>Education</th>
+                        <th>Profile Image</th>
+                        <th>View</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int i = 1;
+                        if (sectorList != null && sectorList.Any())
+                        {
+                            foreach (var sector in sectorList)
+                            {
+                                //var booths = boothDataDict?.ContainsKey(sector.Id) == true
+                                //    ? boothDataDict[sector.Id]
+                                //    : new List<VishanSabha.Models.Booth>();
+
+                                //if (booths != null && booths.Any())
+                                //{
+                                //    foreach (var booth in booths)
+                                //    {
+                                <tr class="text-center bg-light">
+                                    <td class="text-center">@i</td>
+                                    <td>@sector.MandalName</td>
+                                    <td>@sector.SectorName</td>
+                                    <td>@sector.InchargeName</td>
+                                    <td>@sector.PhoneNumber</td>
+                                    <td>
+                                        @foreach (var village in sector.VillageNames ?? new List<string>())
+                                        {
+                                            @village <br />
+                                        }
+                                    </td>
+                                    <td>@sector.FatherName</td>
+                                    @if (sector.Age != 0)
+                                    {
+                                        <td>@sector.Age</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+
+
+                                    <td>@sector.subcaste</td>
+                                    <td>@sector.Address</td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(sector.ProfileImage))
+                                        {
+                                            <img src="@Url.Content(sector.ProfileImage)" class="img-thumbnail" />
+                                        }
+                                        else
+                                        { <span>No Image</span>}
+                                    </td>
+                                    @*<td>
+                                        <a href="#" data-sectorid="@sector.Id" class="profileModal">
+                                            <i class="fa fa-info-circle fa-sm text-primary"></i>
+                                        </a>
+                                    </td>*@
+
+                                    <!-- Booth Data -->
+                                    <td>@sector.BoothNumber</td>
+                                    @*<td>@booth.PollingStationBoothName</td>*@
+                                    <td>@sector.BoothName</td>
+                                    <td>@sector.BoothIncharge</td>
+                                    <td>@sector.BoothPhone</td>
+                                    <td>
+                                        @foreach (var village in sector.VillageNames ?? new List<string>())
+                                        {
+                                            @village <br />
+                                        }
+                                    </td>
+                                    <td>@sector.BoothFatherName</td>
+                                    @if (sector.BoothAge != 0)
+                                    {
+                                        <td>@sector.BoothAge</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+
+                                    <td>@sector.BoothCaste</td>
+                                    <td>@sector.BoothAddress</td>
+                                    <td>@sector.BoothEducation</td>
+
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(sector.BoothProfileImage))
+                                        {
+                                            <img src="@Url.Content(sector.BoothProfileImage)" class="img-thumbnail" />
+                                        }
+                                        else
+                                        { <span>No Image</span>}
+                                    </td>
+                                    <td>
+                                        <a href="#" data-sectorid="@sector.Id" class="profileModal">
+                                            <i class="fa fa-eye fa-sm text-primary"></i>
+
+                                        </a>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+
+                        }
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<!--profile modal-->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered profileModals">
+        <div class="modal-content shadow-lg rounded-4 border-0">
+
+            <!-- Header -->
+            <div class="modal-header text-white" style="background-color: #fd7e14;">
+                <h5 class="modal-title fw-bold" id="profileModalLabel">Sector Sanyojak Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body p-4">
+                <div class="row g-3">
+
+                    <!-- Profile Image -->
+                    <div class="col-md-4 text-center border-end">
+                        <div class="position-relative d-inline-block">
+                            <img src="~/Content/Images/Mausam.jpeg"
+                                 class="rounded-circle border border-3 shadow-sm mb-3"
+                                 alt="Profile picture of Ravi Kumar"
+                                 width="120" height="120" style="border-color:#fd7e14;">
+                            <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-white" style="width:12px; height:12px;"></span>
+                        </div>
+                        <h5 class="fw-bold mt-2" style="font-size: 16px;">Ravi Kumar</h5>
+                        <small class="text-muted" style="font-size: 13px;">Sector Sanyojak</small>
+                    </div>
+
+                    <!-- Profile Details -->
+                    <div class="col-md-8">
+                        <div class="row row-cols-2 g-3" style="font-size: 14px;">
+                            <div class="col"><strong>Mandal Name:</strong> Mandal 1</div>
+                            <div class="col"><strong>Sector Name:</strong> Sector 1</div>
+                            <div class="col"><strong>Sector No:</strong> 1</div>
+                            <div class="col"><strong>InchargeName:</strong> Ravi Kumar</div>
+                            <div class="col"><strong>Father's Name:</strong> Suresh Kumar</div>
+                            <div class="col"><strong>Phone:</strong> +91 9876543210</div>
+                            <div class="col"><strong>Age:</strong> 32</div>
+                            <div class="col"><strong>Caste:</strong> General</div>
+                            <div class="col"><strong>Subcaste:</strong> Kayastha</div>
+                            <div class="col"><strong>Address:</strong> Lucknow, Uttar Pradesh, India</div>
+                            <div class="col"><strong>Education:</strong> B.Tech in Computer Science</div>
+                            <div class="col"><strong>Userid:</strong> User1</div>
+                            <div class="col"><strong>Password:</strong> 12345</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+<!--Filter Script-->
+<script>
+    $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const casteId = urlParams.get('casteIds') ? urlParams.get('casteIds').split(',') : [];
+        const mandalId = urlParams.get('mandalIds') ? urlParams.get('mandalIds').split(',') : [];
+        const sectorId = urlParams.get('sectorIds') ? urlParams.get('sectorIds').split(',') : [];
+        const villageId = urlParams.get('villageIds') ? urlParams.get('villageIds').split(',') : [];
+        const boothNo = urlParams.get('boothIds') ? urlParams.get('boothIds').split(',').map(String) : []; // ✅ FIXED
+
+        $('#casteFilter').val(casteId).trigger('change');
+        $('#mandalFilter').val(mandalId).trigger('change');
+        $('#sectorFilter').val(sectorId).trigger('change');
+        $('#villageFilter').val(villageId).trigger('change');
+        $('#boothFilter').val(boothNo).trigger('change'); // ✅ now works
+
+        $('#casteFilter').select2({ placeholder: "Select Caste" });
+        $('#mandalFilter').select2({ placeholder: "Select Mandal" });
+        $('#sectorFilter').select2({ placeholder: "Select Sector" });
+        $('#villageFilter').select2({ placeholder: "Select Village" });
+        $('#boothFilter').select2({ placeholder: "Select Booth No." });
+
+        $('#filterButton').on('click', function () {
+            var selectedCaste = $('#casteFilter').val();
+            var selectedMandal = $('#mandalFilter').val();
+            var selectedSector = $('#sectorFilter').val();
+            var selectedVill = $('#villageFilter').val();
+            var selectedBooth = $('#boothFilter').val();
+
+            if ((!selectedCaste || selectedCaste.length === 0) &&
+                (!selectedVill || selectedVill.length === 0) &&
+                (!selectedMandal || selectedMandal.length === 0) &&
+                (!selectedSector || selectedSector.length === 0) &&
+                (!selectedBooth || selectedBooth.length === 0)) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No filter selected',
+                    text: 'Please select at least one mandal or sector or caste or village to filter data.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            } else {
+                const url = `${window.location.pathname}?mandalIds=${selectedMandal}&casteIds=${selectedCaste}&villageIds=${selectedVill}&sectorIds=${selectedSector}&boothIds=${selectedBooth}`;
+                window.location.href = url;
+            }
+        });
+
+        $('#resetFilters').click(function () {
+            $('#mandalFilter, #casteFilter, #villageFilter, #sectorFilter, #boothFilter').val('').trigger('change');
+            window.location.href = window.location.pathname;
+        });
+    });
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 310
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/CombinedSectorReports?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>
+
+
+<script>
+    $(document).on("click", ".profileModal", function () {
+        var sectorId = $(this).data("sectorid");
+
+        $.ajax({
+            url: '/Admin/GetInchargeDetailBySecId',
+            type: 'GET',
+            data: { sectorId: sectorId },
+            success: function (data) {
+                if (data && data.length > 0) {
+                    var d = data[0]; // Expecting single Inchargeper sector
+
+                    var profileImage = d.ProfileImage ? d.ProfileImage : '/Content/Images/user.jpg';
+                    var html = `
+                    <div class="row g-3">
+                        <!-- Profile Image (Left) -->
+                        <div class="col-md-4 text-center border-end">
+                            <div class="position-relative d-inline-block">
+                                <img src="${profileImage}" class="rounded-circle border border-3 shadow-sm mb-3"
+                                     alt="Profile" width="120" height="120" style="border-color:#fd7e14;">
+                                <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-white"
+                                      style="width:12px; height:12px;"></span>
+                            </div>
+                            <h5 class="fw-bold mt-2" style="font-size: 16px;">${d.InchargeName || ''}</h5>
+                            <small class="text-muted" style="font-size: 13px;">Sector Sanyojak</small>
+                        </div>
+
+                        <!-- Profile Details (Right) -->
+                        <div class="col-md-8">
+                            <div class="row row-cols-2 g-4" style="font-size: 14px;">
+                                <div class="col"><strong>Mandal Name:</strong> ${d.MandalName || ''}</div>
+                                <div class="col"><strong>Sector Name:</strong> ${d.SectorName || ''}</div>
+
+                                <div class="col"><strong>InchargeName:</strong> ${d.InchargeName || ''}</div>
+                                <div class="col"><strong>Father's Name:</strong> ${d.FatherName || ''}</div>
+                                <div class="col"><strong>Phone:</strong> ${d.PhoneNumber || ''}</div>
+                                <div class="col"><strong>Age:</strong> ${d.Age || ''}</div>
+                                <div class="col"><strong> Category:</strong> ${d.CasteCategoryName || ''}</div> <!-- Caste -->
+                                <div class="col"><strong>Caste:</strong> ${d.SubCasteName || ''}</div> <!-- Subcaste -->
+                                <div class="col"><strong>Address:</strong> ${d.Address || ''}</div>
+                                <div class="col"><strong>Education:</strong> ${d.Education || ''}</div>
+                                <div class="col"><strong>Userid:</strong> ${d.Contact || ''}</div>
+                                <div class="col"><strong>Password:</strong> ${d.Password || ''}</div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                    $("#profileModal .modal-body").html(html);
+                    $("#profileModal").modal('show');
+                } else {
+                    $("#profileModal .modal-body").html("<p class='text-muted text-center'>No details found.</p>");
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Some error occurred!',
+                    didClose: () => location.reload(true)
+                });
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        // Excel Download
+        $('#sectorDownloadExcel').on('click', function (e) {
+            e.preventDefault();
+
+            var selectedCaste = $('#casteFilter').val() ? $('#casteFilter').val().join(',') : "";
+            var selectedMandal = $('#mandalFilter').val() ? $('#mandalFilter').val().join(',') : "";
+            var selectedSector = $('#sectorFilter').val() ? $('#sectorFilter').val().join(',') : "";
+            var selectedBooth = $('#boothFilter').val() ? $('#boothFilter').val().join(',') : "";
+            var selectedVill = $('#villageFilter').val() ? $('#villageFilter').val().join(',') : "";
+
+            var url = `/Export/CombinedSectorExportReport?format=excel`
+                + `&mandalIds=${selectedMandal}`
+                + `&sectorIds=${selectedSector}`
+                + `&boothIds=${selectedBooth}`
+                + `&casteIds=${selectedCaste}`
+                + `&villageIds=${selectedVill}`;
+
+            console.log("Redirecting to:", url);
+            window.location.href = url;
+        });
+
+        // PDF Download
+        $('#sectorDownloadPdf').on('click', function (e) {
+            e.preventDefault();
+
+            var selectedCaste = $('#casteFilter').val() ? $('#casteFilter').val().join(',') : "";
+            var selectedMandal = $('#mandalFilter').val() ? $('#mandalFilter').val().join(',') : "";
+            var selectedSector = $('#sectorFilter').val() ? $('#sectorFilter').val().join(',') : "";
+            var selectedBooth = $('#boothFilter').val() ? $('#boothFilter').val().join(',') : "";
+            var selectedVill = $('#villageFilter').val() ? $('#villageFilter').val().join(',') : "";
+
+            var url = `/Export/CombinedSectorExportReport?format=pdf`
+                + `&mandalIds=${selectedMandal}`
+                + `&sectorIds=${selectedSector}`
+                + `&boothIds=${selectedBooth}`
+                + `&casteIds=${selectedCaste}`
+                + `&villageIds=${selectedVill}`;
+
+            console.log("Redirecting to:", url);
+            window.location.href = url;
+        });
+
+    });
+</script>

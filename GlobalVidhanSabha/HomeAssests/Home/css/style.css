@@ -1,0 +1,308 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-primary: #ff6501;
+    --text-color: #333;
+    --text-p-color: #555;
+    --bg-light-primary: rgba(211, 166, 69, 0.11);
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+    color: #1a1a1a;
+}
+
+.section-p {
+    padding: 80px 0;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+a {
+    display: inline-block;
+    color: initial;
+    text-decoration: none;
+}
+
+    a:hover {
+        color: initial;
+    }
+
+.fs-sm {
+    font-size: 12px;
+}
+
+.subheading {
+    font-size: 1.8rem;
+}
+
+.p-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-p-color);
+}
+/* Navbar */
+.navbar {
+    background-color: transparent;
+    padding-block: 15px;
+}
+
+    .navbar .container ul {
+        display: flex;
+        align-items: center;
+    }
+
+.navbar-brand {
+    max-width: 250px;
+}
+
+.navbar-brand, .nav-link {
+    color: var(--text-color);
+}
+
+    .nav-link.text-primary {
+        color: var(--color-primary);
+    }
+
+.hero {
+    color: var(--text-color);
+    height: 100%;
+    background: rgba(211, 166, 69, 0.11);
+}
+
+
+    .hero h1 {
+        font-size: 2.8rem;
+        line-height: 1.1;
+        font-weight: 700;
+    }
+
+        .hero h1 span {
+            color: var(--color-prmary);
+        }
+
+    .hero p {
+        margin-top: 20px;
+        font-size: 1.2rem;
+    }
+
+    .hero .btn-primary {
+        margin-top: 30px;
+        padding: 12px 30px;
+        border-radius: 30px;
+        position: relative;
+    }
+
+.hero-content-right {
+    width: 30%;
+    color: var(--text-color);
+    /* position: relative; */
+}
+
+    .hero-content-right p {
+        color: #666;
+    }
+
+.social-icon {
+    display: flex;
+}
+
+    .social-icon a {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #ff670152;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 5px;
+    }
+/* info card */
+.info-section {
+    margin-top: -120px;
+    z-index: 10;
+    position: relative;
+}
+
+.info-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    width: 100%;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+    .info-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .info-card i {
+        font-size: 2rem;
+        color: var(--color-prmary);
+        margin-bottom: 10px;
+    }
+
+/* about */
+
+.about-section {
+    padding: 80px 0;
+}
+
+.about-img-cont {
+    width: 100%;
+    max-width: 400px;
+}
+
+.about-img {
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1/1.1;
+    background: var(--bg-light-primary);
+}
+
+    .about-img img {
+        border-radius: 10px;
+    }
+
+.quote-box {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin-top: -100px;
+    max-width: 350px;
+    margin-inline: auto;
+    position: relative;
+    z-index: 1;
+}
+
+
+.about-div {
+    width: 100%;
+}
+
+    .about-div p {
+        padding-right: 80px;
+    }
+
+/* our responsibility */
+.our-responsibility {
+    background-color: rgb(255, 145, 0);
+}
+
+.government-building-img {
+    position: relative;
+    height: 100%;
+}
+
+.gv-content {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: rgba(211, 166, 69, 0.199);
+    padding-left: 100px;
+}
+
+    .gv-content h6 {
+        text-shadow: 1px 1px #27272794;
+    }
+
+    .gv-content h3 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+        text-shadow: 1px 1px #27272794;
+    }
+
+.gv-content-right h5 {
+    color: #2c2c2c;
+}
+
+.gv-content-right p {
+    /* color: #ffffff; */
+}
+
+.gv-content-right {
+    width: 75%;
+    padding: 20px;
+}
+
+/* gallery */
+.gallery-div {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+    .gallery-div img {
+        aspect-ratio: 16/9;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        transition: all .3s;
+        overflow: hidden;
+    }
+
+        .gallery-div img:hover {
+            transform: scale(1.02);
+        }
+
+/* Yojana */
+.yojana-title h5 {
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+/* events */
+.ev-img {
+    /* aspect-ratio: 16/9; */
+    height: 250px;
+    overflow: hidden;
+}
+
+    .ev-img img {
+        transition: all .3s;
+    }
+
+        .ev-img img:hover {
+            transform: scale(1.03);
+        }
+
+/* contact */
+
+.contact-info i {
+    margin-right: 10px;
+    color: var(--color-primary);
+}
+
+.contact-info h6 {
+    margin-bottom: 5px;
+}
+
+
+footer {
+    background-color: var(--color-primary);
+    color: #fff;
+    padding: 15px 0;
+    text-align: center;
+}

@@ -1,0 +1,820 @@
+﻿@model IEnumerable<VishanSabha.Models.Pradhan>
+@{
+    ViewBag.Title = "Pradhan";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var designations = ViewData["DesignationList"] as List<VishanSabha.Models.EffectiveDesignation>;
+    var VillageList = ViewData["VillageList"] as List<VishanSabha.Models.VillageList>;
+}
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 530px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+<div class="container-fluid  m-3">
+    <div class="d-flex justify-content-between mb-2">
+        <h2 class="text-orange" style="color: #FF8C42">Pradhan List</h2>
+        <button class="btn btn-primary" id="createNewBtn" data-bs-toggle="modal" data-bs-target="#pradhanModal">
+           Create
+        </button>
+    </div>
+
+    <div class="table-wrapper shadow rounded p-2">
+
+        <div class="table-controls ">
+            <div id="entriesAndExport"></div>
+            <div id="searchBox"></div>
+        </div>
+
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head">
+                    <tr class="myhead">
+                        <th style="text-align:center!important;">S.N</th>
+                        @*<th>Mandal</th>*@
+                        <th>Name</th>
+                        <th>Village Name</th>
+                        <th>Designation</th>
+                        <th>Gender</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        int index = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="sn-col"  style="text-align:center!important;">@index</td>
+                                @*<td>@item.MandalName</td>*@
+                                <td>@item.Name</td>
+                                <td>@item.Village_Name</td>
+                                <td>@item.Designationdata</td>
+                                <td>@(item.Gender == 1 ? "Male" : item.Gender == 2 ? "Female" : "-")</td>
+                                <td>@item.Contact</td>
+                                <td>
+                                    <button class="btn btn-sm edit-btn me-1"
+                                            data-id="@item.Id"
+                                            title="Edit">
+                                        <i class="fas fa-edit edit-icon"></i>
+                                    </button>
+                                    <button class="btn btn-sm delete-btn"
+                                            data-id="@item.Id"
+                                            title="Delete">
+                                        <i class="fas fa-trash-alt delete-icon"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- === Pradhan Modal === -->
+<div class="modal fade" id="pradhanModal" tabindex="-1" aria-labelledby="pradhanLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="pradhanForm" method="post" data-mode="create">
+                <input type="hidden" name="Id" id="Id" />
+
+                <div class="modal-header table-head">
+                    <h5 class="modal-title text-white fw-bold" id="pradhanLabel">Create / Update Pradhan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <!--<div class="col-md-6">
+                            <label>Mandal</label>
+                            <select class="form-select" id="mandalDropdown" name="Mandal_Id">
+
+                                <option disabled selected>Select Mandal</option>-->
+                                <!-- Add mandal options dynamically or statically here -->
+                            <!--</select>
+                        </div>-->
+
+                        <!-- Village -->
+                        <div class="col-md-6">
+
+                            <label class="form-label small">Village</label>
+                            <select class="form-select  js-example-basic-multiple" id="villageId" name="villageId" multiple>
+                                <option value="" id="Village_Id">-- Select Village --</option>
+                                @if (VillageList != null)
+                                {
+                                    foreach (var Village in VillageList)
+                                    {
+                                        <option value="@Village.villageId">@Village.Villagename</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <!-- Name -->
+                        <div class="col-md-6">
+                            <label for="Name" class="form-label">Name</label>
+                            <input type="text" name="Name" id="Name" class="form-control form-control-sm" placeholder="Enter Name" required />
+                        </div>
+
+
+
+
+
+                        <!-- Designation -->
+                        <div class="col-md-6">
+                            <label for="Designation" class="form-label">Designation</label>
+                            <select name="Designation" class="form-select form-select-sm" required id="Designation">
+                                <option value="">-- Select Designation data --</option>
+                                @if (designations != null)
+                                {
+                                    foreach (var item in designations)
+                                    {
+                                        <option value="@item.Id">@item.EffectiveDesignationdata</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+
+
+
+                        <div class="col-md-6">
+                            <label for="Contact" class="form-label">Contact</label>
+                            <input type="text" name="Contact" id="Contact" class="form-control form-control-sm" placeholder="Enter Contact" />
+                        </div>
+                        <!-- Gender -->
+                        <div class="col-md-6">
+                            <label class="form-label d-block">Gender</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="1">
+                                <label class="form-check-label" for="genderMale">Male</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="2">
+                                <label class="form-check-label" for="genderFemale" >Female</label>
+                            </div>
+                        </div>
+
+                        <!-- Contact -->
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-orange">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- === Scripts === -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('/Admin/GetMandals') // Adjust path if needed
+            .then(response => response.json())
+            .then(data => {
+                debugger;
+                const dropdown = document.getElementById("mandalDropdown");
+                let elements = '<option disabled selected>Select Mandal</option>';
+
+                data.forEach(mandal => {
+                    elements += `<option value="${mandal.Id}">${mandal.Name}</option>`
+                });
+
+                dropdown.innerHTML = elements;
+            })
+            .catch(error => {
+                console.error("Failed to load mandals:", error);
+                const dropdown = document.getElementById("mandalDropdown");
+                dropdown.innerHTML = '<option disabled selected>Error loading mandals</option>';
+            });
+    });
+
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+
+<script>
+    //$('.js-example-basic-multiple').each(function () {
+    //    if (!$(this).hasClass('select2-hidden-accessible')) {
+    //        $(this).select2();
+    //    }
+    //});
+
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        // === Create New Button Click ===
+        $('#createNewBtn').click(function () {
+            $('#pradhanForm')[0].reset();
+            $('#Id').val(0);
+            $('#pradhanLabel').text('Create Pradhan');
+            $('#pradhanForm').attr('data-mode', 'create');
+            $('input[name="Gender"]').prop('checked', false);
+        });
+
+
+        // ✅ Load Designations dynamically
+        $.ajax({
+            url: '/Admin/GetEffectiveDesignations',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let dropdown = $('#Designation');
+                dropdown.empty();
+                dropdown.append('<option value="">-- Select Designation --</option>');
+
+                if (data && data.length > 0) {
+                    $.each(data, function (i, item) {
+                        dropdown.append('<option value="' + item.Id + '">' + item.EffectiveDesignationdata + '</option>');
+                    });
+                }
+            },
+            error: function () {
+                console.error('Failed to load designation list.');
+            }
+        });
+
+
+
+
+        // === Save (Insert / Update) ===
+        $('#pradhanForm').on('submit', function (e) {
+            e.preventDefault();
+
+            //var formData = {
+            //    Id: $('#Id').val() || 0,
+            //    Name: $('#Name').val(),
+            //    Village_Id: villageIds,
+            //  /*  Village_Name: villageNames,*/
+            //    Designation: $('#Designation').val(),
+            //    Gender: $('input[name="Gender"]:checked').val(),
+            //    Contact: $('#Contact').val(),
+            //    MandalId: $('#mandalDropdown').val()
+
+            //};
+
+            //const selectedVillages = $('#villageId').val(); // returns array of selected values
+
+            //if (selectedVillages && selectedVillages.length > 0) {
+            //    // Convert array to comma-separated string
+            //    const villageIds = selectedVillages.join(',');
+            //    formData.set('villageId', villageIds); // override with comma-separated value
+            //} else {
+            //    formData.set('villageId', ''); // no selection
+            //}
+
+            //console.log("Village IDs:", formData.get('villageId'));
+
+            //$.ajax({
+            //    url: '/Admin/SavePradhan',
+            //    type: 'POST',
+            //    data: formData,
+            //    success: function (response) {
+            //        if (response.success) {
+            //            Swal.fire('Success', response.message, 'success');
+            //            $('#pradhanModal').modal('hide');
+            //            setTimeout(() => location.reload(), 1000);
+            //        } else {
+            //            Swal.fire('Error', response.message, 'error');
+            //        }
+            //    },
+            //    error: function () {
+            //        Swal.fire('Error', 'Something went wrong.', 'error');
+            //    }
+            //});
+
+
+            const selectedVillages = $('#villageId').val() || []; // array of selected village IDs
+            const villageIds = selectedVillages.join(','); // e.g. "1001,1002"
+
+            // ✅ Get village names (optional, if you want)
+            const villageNames = $('#villageId option:selected').map(function () {
+                return $(this).text();
+            }).get().join(', ');
+
+            // ✅ Build Form Data properly
+            var formData = {
+                Id: $('#Id').val() || 0,
+                Name: $('#Name').val(),
+                villageId: villageIds,
+                Village_Name: villageNames,
+                Designation: $('#Designation').val(),
+                Gender: $('input[name="Gender"]:checked').val(),
+                Contact: $('#Contact').val(),
+                Mandal_Id: $('#mandalDropdown').val()
+            };
+
+            console.log("FormData to send:", formData); // check before sending
+
+            $.ajax({
+                url: '/Admin/SavePradhan',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire('Success', response.message, 'success');
+                        $('#pradhanModal').modal('hide');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Something went wrong.', 'error');
+                }
+            });
+        });
+
+        //$('#mandalDropdown').on('change', function () {
+        //    var mandalId = $(this).val();
+
+        //    if (mandalId) {
+        //        $.ajax({
+        //            url: '/Admin/GetVillagesByMandal',   // Controller Action
+        //            type: 'GET',
+        //            data: { mandalId: mandalId },
+        //            success: function (villages) {
+        //                let villageDropdown = $('#villageId');
+        //                villageDropdown.empty(); // clear existing
+        //                villageDropdown.append('<option value="">-- Select Village --</option>');
+
+        //                if (villages && villages.length > 0) {
+        //                    $.each(villages, function (i, village) {
+        //                        villageDropdown.append('<option value="' + village.villageId + '">' + village.Villagename + '</option>');
+        //                    });
+        //                } else {
+        //                    villageDropdown.append('<option value="">No villages found</option>');
+        //                }
+
+        //                // Reinitialize Select2 for better UI
+        //                villageDropdown.trigger('change.select2');
+        //            },
+        //            error: function () {
+        //                console.error('Failed to load villages.');
+        //            }
+        //        });
+        //    } else {
+        //        $('#villageId').empty().append('<option value="">-- Select Village --</option>');
+        //    }
+        //});
+
+
+
+        // === Edit Button Click ===
+        $(document).on('click', '.edit-btn', function () {
+            var id = $(this).data('id');
+
+            $.ajax({
+                url: '/Admin/GetPradhanById',
+                type: 'GET',
+                data: { id: id },
+                success: function (data) {
+                    console.log(data); // Inspect what comes back
+                    if (data && data.length > 0) {
+                        var record = data[0]; // pick the first (and only) object from the array
+
+                        // Bind all data to modal fields
+                        $('#Id').val(record.Id);
+                        $('#Name').val(record.Name);
+                        //$('#Village_Name').val(record.Village_Name);
+                        $('#villageId').val(record.villageId.toString()).trigger('change');
+
+                        if (record.Gender == 1) {
+                            $('#genderMale').prop('checked', true);
+                        } else {
+                            $('#genderFemale').prop('checked', true);
+                        }
+                        $('#Contact').val(record.Contact);
+
+                        // Optional: display human-readable data if needed
+                        $('#Designation').val(record.Designation);
+                        //$('#GenderText').text(record.GenderName);
+
+                        // Update modal title and mode
+                        $('#pradhanLabel').text('Update Pradhan');
+                        $('#pradhanModal').modal('show');
+                        $('#pradhanForm').attr('data-mode', 'update');
+                    } else {
+                        Swal.fire('Error', 'Unable to fetch record.', 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Failed to load record.', 'error');
+                }
+            });
+        });
+
+
+
+
+        // === Delete Button Click ===
+        $(document).on('click', '.delete-btn', function () {
+            var id = $(this).data('id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This record will be permanently deleted!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Admin/DeletePradhan',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire('Deleted!', response.message, 'success');
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                Swal.fire('Error', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'Something went wrong.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 355
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/Pradhan?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>
+
+

@@ -1,0 +1,484 @@
+﻿
+@{
+    ViewBag.Title = "SectorList";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var SectorList = ViewData["SectorList"] as List<VishanSabha.Models.Sector>;
+}
+
+
+<style>
+    body {
+        font-family: "Poppins", sans-serif !important;
+    }
+
+    .table thead th {
+        background-color: #FF8C42;
+        color: white;
+        height: 40px !important;
+    }
+
+    .table {
+        background-color: white;
+    }
+
+
+
+    .dataTables_length {
+        margin-bottom: 0px !important;
+    }
+
+    .custom-modal-width {
+        max-width: 60% !important;
+    }
+
+
+    #boothTable tbody tr {
+        height: 20px;
+        text-align: center !important;
+    }
+
+    #boothTable thead tr {
+        text-align: center !important;
+        font-size: 15px;
+        font-weight: normal;
+    }
+
+    #boothTable td {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    #boothTable th,
+    #boothTable td {
+        padding: 4px 6px;
+        font-size: 13px;
+        line-height: 1.2;
+    }
+
+    #myTable th,
+    #myTable td {
+        padding: 1px 4px;
+        font-size: 11px;
+        vertical-align: middle !important;
+    }
+
+    .profileModals {
+        max-width: 65% !important;
+    }
+
+    #myTable .caste-col {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_length {
+        margin: 0;
+        padding: 0;
+    }
+
+    #myTable th.col-col,
+    #myTable td.col-col {
+        width: 140px;
+        white-space: nowrap;
+        text-align: left; /* left align */
+    }
+</style>
+
+<div class="container-fluid my-5 mt-5 m-3">
+    <div class="row g-2">
+        <div class="table-responsive shadow rounded p-3">
+            <table class="table table-hover table-bordered align-middle" id="myTable">
+                <thead class="text-center">
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Sector Name</th>
+                        <th>Sector Sanyojak</th>
+                        <th>Total Booth</th>
+                        <th>Contact</th>
+                        <th>Caste</th>
+                        <th style="min-width:150px;">Address</th>
+                        <th style="min-width:5px;">Profile</th>
+                        <th style="min-width:2px;">View</th>
+                    </tr>
+                </thead>
+
+                <tbody class="text-center">
+                    @if (SectorList != null && SectorList.Any())
+                    {
+                        int i = 1;
+                        foreach (var data in SectorList)
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td style="text-align:left!important;">@data.SectorName</td>
+                                <td style="text-align:left!important;">@data.InchargeName</td>
+                                <td style="text-align:center!important;">
+                                    <a href="#" data-sectorid="@data.Id" class="openBoothModal">@data.TotalBooth</a>
+                                </td>
+                                <td style="text-align:left;">@data.PhoneNumber</td>
+                                <td style="text-align:left;">@(data.SubCasteName!=null?data.SubCasteName.Trim():"")</td>
+                                <td style="text-align:left;">@data.Address</td>
+                                <td>
+                                    <img src="@data.ProfileImage" height="40" width="40" />
+                                </td>
+                                <td>
+                                    <a href="#" data-sectorid="@data.Id" class="profileModal">
+                                        <i class="fa fa-info-circle fa-sm text-primary"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<!-- Modal -->
+<div class="modal fade" id="boothModal" tabindex="-1" aria-labelledby="boothModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg custom-modal-width">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#FF8C42; color:white;">
+                <h5 class="modal-title" id="boothModalLabel">Booth Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered myTable" id="boothTable">
+                    <thead>
+                        <tr class="text-left">
+                            <th style="width:10px!important">S.N.</th>
+                            <th style="text-align:left">Polling Station</th>
+                            <th style="text-align:center">Booth No</th>
+                            <th style="text-align:left">Booth Adhyaksh</th>
+                            <th style="text-align:left">Address</th>
+                            <th style="text-align:left">Contact</th>
+                            <th>Profile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data rows go here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--profile modal-->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered profileModals">
+        <div class="modal-content shadow-lg rounded-4 border-0">
+
+            <!-- Header -->
+            <div class="modal-header text-white" style="background-color: #fd7e14;">
+                <h5 class="modal-title fw-bold" id="profileModalLabel">Sector Sanyojak Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body p-4">
+                <div class="row g-3">
+
+                    <!-- Profile Image -->
+                    <div class="col-md-4 text-center border-end">
+                        <div class="position-relative d-inline-block">
+                            <img src="~/Content/Images/Mausam.jpeg"
+                                 class="rounded-circle border border-3 shadow-sm mb-3"
+                                 alt="Profile picture of Ravi Kumar"
+                                 width="120" height="120" style="border-color:#fd7e14;">
+                            <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-white" style="width:12px; height:12px;"></span>
+                        </div>
+                        <h5 class="fw-bold mt-2" style="font-size: 16px;">Ravi Kumar</h5>
+                        <small class="text-muted" style="font-size: 13px;">Sector Sanyojak</small>
+                    </div>
+
+                    <!-- Profile Details -->
+                    <div class="col-md-8">
+                        <div class="row row-cols-2 g-3" style="font-size: 14px;">
+                            <div class="col"><strong>Mandal Name:</strong> Mandal 1</div>
+                            <div class="col"><strong>Sector Name:</strong> Sector 1</div>
+                            <div class="col"><strong>Sector No:</strong> 1</div>
+                            <div class="col"><strong>InchargeName:</strong> Ravi Kumar</div>
+                            <div class="col"><strong>Father's Name:</strong> Suresh Kumar</div>
+                            <div class="col"><strong>Phone:</strong> +91 9876543210</div>
+                            <div class="col"><strong>Age:</strong> 32</div>
+                            <div class="col"><strong>Caste:</strong> General</div>
+                            <div class="col"><strong>Subcaste:</strong> Kayastha</div>
+                            <div class="col"><strong>Address:</strong> Lucknow, Uttar Pradesh, India</div>
+                            <div class="col"><strong>Education:</strong> B.Tech in Computer Science</div>
+                            <div class="col"><strong>Userid:</strong> User1</div>
+                            <div class="col"><strong>Password:</strong> 12345</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered profileModals">
+        <div class="modal-content shadow-lg rounded-4 border-0">
+
+            <!-- Header -->
+<!--<div class="modal-header text-white" style="background-color: #fd7e14;">
+    <h5 class="modal-title">Sector Sanyojak Details</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>-->
+<!-- Body -->
+<!--<div class="modal-body p-4">
+    <div class="row">-->
+<!-- Profile Image (Left Side) -->
+<!--<div class="col-md-4 text-center border-end">
+    <img src="~/Content/Images/Mausam.jpeg"
+         class="rounded-circle border border-3 border-primary shadow-sm mb-3"
+         alt="Profile" width="150" height="150">
+    <h6 class="fw-bold mt-2">Ravi Kumar</h6>
+    <small class="text-muted">Sector Sanyojak</small>
+</div>-->
+<!-- Profile Details (Right Side) -->
+<!--<div class="col-md-8">
+            <div class="table-responsive">
+                <table class="table table-borderless align-middle mb-0">
+                    <tbody>
+                        <tr>
+                            <th class="text-secondary small w-25">Mandal Name</th>
+                            <td>Mandal 1</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small w-25">Sector Name</th>
+                            <td>Sector 1</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small w-25">Sector No</th>
+                            <td> 1</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small w-25">InchargeName</th>
+                            <td>Ravi Kumar</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small">Father's Name</th>
+                            <td>Suresh Kumar</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small">Phone</th>
+                            <td>+91 9876543210</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small">Age</th>
+                            <td>32</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small">Caste</th>
+                            <td>General</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small">Subcaste</th>
+                            <td>Kayastha</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small">Address</th>
+                            <td>Lucknow, Uttar Pradesh, India</td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary small">Education</th>
+                            <td>B.Tech in Computer Science</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>-->
+<!-- Footer -->-->
+<!--@*<div class="modal-footer">
+                    <button class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+                </div>*@
+
+        </div>
+    </div>
+</div>-->
+
+
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        const table = new DataTable('#myTable', {
+            dom: 'Blfrtip',
+            pageLength: 100,
+            lengthMenu: [100, 200, 300, 400, 500],
+            buttons: [
+                //'colvis',
+                //'excel',
+                //'print',
+                //'pdf',
+            ]
+        });
+
+        //const boothTable = new DataTable('#boothTable', {
+        //    dom: 'Blfrtip',
+        //    pageLength: 100,
+        //    lengthMenu: [100, 200, 300, 400, 500],
+
+        //    buttons: [
+        //        'excel',
+        //        'print',
+        //        'pdf',
+        //    ]
+        //});
+
+        setTimeout(function () {
+            $('.dataTables_length').css({ 'margin-bottom': '0px', 'padding-bottom': '0px' });
+            $('.dataTables_filter').css({ 'margin-bottom': '0px', 'padding-bottom': '0px', 'margin-top': '0px', 'padding-top': '0px' });
+            $('#myTable_wrapper').css({ 'margin-bottom': '0px' });
+        }, 100);
+    });
+</script>
+
+
+
+
+<!--for profile-->
+<script>
+    $(document).on("click", ".profileModal", function () {
+        var sectorId = $(this).data("sectorid");
+
+        $.ajax({
+            url: '/Admin/GetInchargeDetailBySecId',
+            type: 'GET',
+            data: { sectorId: sectorId },
+            success: function (data) {
+                if (data && data.length > 0) {
+                    var d = data[0]; // Expecting single Inchargeper sector
+
+                    var profileImage = d.ProfileImage ? d.ProfileImage : '/Content/Images/user.jpg';
+                    var html = `
+                    <div class="row g-3">
+                        <!-- Profile Image (Left) -->
+                        <div class="col-md-4 text-center border-end">
+                            <div class="position-relative d-inline-block">
+                                <img src="${profileImage}" class="rounded-circle border border-3 shadow-sm mb-3"
+                                     alt="Profile" width="120" height="120" style="border-color:#fd7e14;">
+                                <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-white"
+                                      style="width:12px; height:12px;"></span>
+                            </div>
+                            <h5 class="fw-bold mt-2" style="font-size: 16px;">${d.InchargeName || ''}</h5>
+                            <small class="text-muted" style="font-size: 13px;">Sector Sanyojak</small>
+                        </div>
+
+                        <!-- Profile Details (Right) -->
+                        <div class="col-md-8">
+                            <div class="row row-cols-2 g-4" style="font-size: 14px;">
+                                <div class="col"><strong>Mandal Name:</strong> ${d.MandalName || ''}</div>
+                                <div class="col"><strong>Sector Name:</strong> ${d.SectorName || ''}</div>
+
+                                <div class="col"><strong>InchargeName:</strong> ${d.InchargeName || ''}</div>
+                                <div class="col"><strong>Father's Name:</strong> ${d.FatherName || ''}</div>
+                                <div class="col"><strong>Phone:</strong> ${d.PhoneNumber || ''}</div>
+                                <div class="col"><strong>Age:</strong> ${d.Age || ''}</div>
+                                <div class="col"><strong> Category:</strong> ${d.CasteCategoryName || ''}</div> <!-- Caste -->
+                                <div class="col"><strong>Caste:</strong> ${d.SubCasteName || ''}</div> <!-- Subcaste -->
+                                <div class="col"><strong>Address:</strong> ${d.Address || ''}</div>
+                                <div class="col"><strong>Education:</strong> ${d.Education || ''}</div>
+                                <div class="col"><strong>Userid:</strong> ${d.Contact || ''}</div>
+                                <div class="col"><strong>Password:</strong> ${d.Password || ''}</div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                    $("#profileModal .modal-body").html(html);
+                    $("#profileModal").modal('show');
+                } else {
+                    $("#profileModal .modal-body").html("<p class='text-muted text-center'>No details found.</p>");
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Some error occurred!',
+                    didClose: () => location.reload(true)
+                });
+            }
+        });
+    });
+</script>
+
+
+
+
+<script>
+    $(document).on("click", ".openBoothModal", function () {
+        var sectorId = $(this).data("sectorid");
+
+        debugger
+        $("#boothTable tbody").empty();
+
+        $.ajax({
+            url: '/Admin/GetBoothsBySector',
+            type: 'GET',
+            data: { sectorId: sectorId },
+            success: function (data) {
+                debugger
+                $("#boothTable tbody").empty();
+
+                if (data && data.length > 0) {
+
+                    $.each(data, function (i, booth) {
+                        $("#boothTable tbody").append(`
+                <tr>
+                    <td style="width:10px!important">${i + 1}</td>
+                    <td style="text-align:left">${booth.BoothName}</td>
+                    <td >${booth.BoothNumber}</td>
+                    <td style="text-align:left">${booth.InchargeName}</td>
+                    <td style="text-align:left">${booth.Address}</td>
+                    <td style="text-align:left">${booth.PhoneNumber}</td>
+                    <td><img src="${booth.ProfiileImage}" height="50px" width="50px"/></td>
+                </tr>
+            `);
+                    });
+                } else {
+
+                    $("#boothTable tbody").append(`
+            <tr>
+                <td colspan="7" class="text-center">No Data Available</td>
+            </tr>
+        `);
+                }
+
+                $("#boothModal").modal('show')
+            },
+
+            error: function (status, xhr) {
+                console.log(status, xhr);
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: 'Some Error Occured!!',
+                    didClose: () => {
+                        location.reload(true);
+                    }
+                });
+                //alert("Failed to load booth data.");
+            }
+        });
+    });
+
+</script>

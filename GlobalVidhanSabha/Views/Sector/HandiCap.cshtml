@@ -1,0 +1,277 @@
+﻿
+@{
+    ViewBag.Title = "HandiCap";
+    Layout = "~/Views/Shared/_LayoutSector.cshtml";
+    var handicap = ViewData["HandicapList"] as List<VishanSabha.Models.SeniorCitizenList>;
+}
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #pannaTable td {
+        text-align: left;
+        vertical-align: middle;
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+    #pannaTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #pannaTable td,
+    #pannaTable th {
+        white-space: nowrap;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #pannaTable_paginate .paginate_button {
+        font-size: 12px;
+        margin-top: 10px;
+        padding: 5px 10px;
+        min-width: 40px;
+        height: 30px;
+        border-radius: 5px;
+        margin: 0 2px;
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+    .table-head th {
+        color: white; /* white text */
+    }
+    .dataTables_wrapper table.dataTable th {
+        padding: 6px 8px;
+        font-size: 12px;
+        color: white;
+    }
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 5px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        padding: 8px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 500px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        .table-scroll thead th {
+            position: sticky !important;
+            top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 60px !important;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+</style>
+
+<div class="container-fluid mt-5 m-3">
+    <h4 style="color: #FF8C42;" class="mb-3">Viklang List</h4>
+
+    <div class="table-wrapper shadow rounded p-2">
+        <div class="table-scroll">
+            <table class="table table-hover table-bordered align-middle" id="pannaTable">
+                <thead class="table-head">
+                    <tr class="myhead text-center">
+                        <th>S.N.</th>
+                        <th>Mandal</th>
+                        <th>Sector Name</th>
+                        <th>Booth No</th>
+                        <th>Polling station</th>
+                        <th>Village</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Caste</th>
+                        <th>Address</th>
+                        <th>Contact</th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (handicap != null && handicap.Any())
+                    {
+                        int i = 1;
+                        foreach (var data in handicap)
+                        {
+                            <tr>
+                                <td class="text-center">@i</td>
+                                <td>@data.MandalName</td>
+                                <td>@data.SectorName</td>
+                                <td class="text-center">@data.Boothno</td>
+                                <td>@data.BoothName</td>
+                                <td>abcd</td>
+                                @*<td>@data.Village</td>*@
+                                <td>@data.Name</td>
+                                <td>@data.Category</td>
+                                <td>@data.Caste</td>
+                                <td>@data.Address</td>
+                                <td>@data.Mobile</td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- JS Libraries -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables Buttons JS -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        const table = new DataTable('#pannaTable', {
+            dom: 'Blfrtip',
+            pageLength: 100,
+            lengthMenu: [100, 200, 300, 400, 500],
+            buttons: [
+                'colvis',
+                'excel',
+                'pdf',
+                'print'
+            ]
+        });
+
+        setTimeout(function () {
+            $('.dataTables_length').css({ 'margin-bottom': '0px' });
+            $('.dataTables_filter').css({ 'margin-bottom': '0px', 'margin-top': '0px' });
+            $('#pannaTable_wrapper').css({ 'margin-bottom': '0px' });
+        }, 100);
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+

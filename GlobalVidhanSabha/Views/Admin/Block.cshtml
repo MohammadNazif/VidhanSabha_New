@@ -1,0 +1,683 @@
+﻿@model IEnumerable<VishanSabha.Models.Block>
+
+@{
+    ViewBag.Title = "Block Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var CategoryList = ViewData["CategoryList"] as List<VishanSabha.Models.Caste>;
+    var party = ViewData["Party"] as List<VishanSabha.Models.Party>;
+
+   
+}
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 530px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+<div class="container-fluid  m-3">
+    <div class="d-flex justify-content-between  mb-2">
+        <h4 style="color: #FF8C42;">Block Management</h4>
+        <button class="btn btn-primary" id="openCreateModal" data-bs-toggle="modal" data-bs-target="#createBlockModal">  Create</button>
+    </div>
+
+    <div class="table-wrapper shadow rounded p-2">
+        <div class="table-controls">
+            <div id="entriesAndExport"></div>
+            <div id="searchBox"></div>
+        </div>
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head">
+                    <tr class="myhead">
+                        <th style="width:10px">S.N.</th>
+                        <th class="col-1">Block Name</th>
+                        <th>Block Pramukh</th>
+                        <th>Contact</th>
+                        <th>Caste</th>
+                        <th>Address</th>
+                        <th>Occupation</th>
+                        <th>Party</th>
+                        <th>ProfileImage</th>
+                        @*<th>Category</th>*@
+
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        int sn = 1;
+                        foreach (var block in Model)
+                        {
+                            <tr>
+                                <td style="text-align:center!important;">@sn</td>
+                                <td class="text-start">@block.BlockName</td>
+                                <td class="text-start">@block.InchargeName</td>
+                                <td>@block.Contact</td>
+                                <td class="text-start">@block.CasteName</td>
+                                <td class="data-left">@block.Address</td>
+                                @*<td>@block.CategoryName</td>*@
+                                <td class="text-start">@block.Occupation</td>
+                                <td>@block.partyName</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(block.ProfileImage))
+                                    {
+                                        <img src="@Url.Content(block.ProfileImage)" alt="ProfileImage" style="height:35px;width:35px" />
+                                    }
+                                </td>
+
+                                <td>
+                                    <button data-id="@block.Block_Id" class="btn btn-xs  edit-btn"><i class="fas fa-edit edit-icon"></i></button>
+                                    <button data-id="@block.Block_Id" class="btn btn-sm  delete-btn"><i class="fas fa-trash delete-icon"></i></button>
+                                </td>
+                            </tr>
+                            sn++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Create Block Modal -->
+<div class="modal fade" id="createBlockModal" tabindex="-1" aria-labelledby="createBlockLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="blockForm" enctype="multipart/form-data" method="post">
+                <input type="hidden" id="Block_Id" name="Block_Id" value="" />
+                <div class="modal-header table-head">
+                    <h5 class="modal-title text-white fw-bold" id="createBlockLabel">Create New Block</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label small">Block Name</label>
+                        <input type="text" class="form-control form-control-sm" name="BlockName" placeholder="Enter block name" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Block Pramukh</label>
+                        <input type="text" class="form-control form-control-sm" name="InchargeName" placeholder="Enter Block Pramukh" required />
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <!-- Dropdown for Part Name -->
+                            <div class="col-md-6">
+                                <label class="form-label small">Part Name</label>
+                                
+                                <select name="party">
+                                    <option value="">--Select--</option>
+                                    @foreach (var data in party)
+                                    {
+                                        <option value="@data.id">@data.party</option>
+                                    }
+                                </select>
+
+                            </div>
+
+                            <!-- Contact Field -->
+                            <div class="col-md-6">
+                                <label class="form-label small">Contact</label>
+                                <input type="tel" class="form-control form-control-sm" name="Contact" placeholder="Enter Contact number" required maxlength="10"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <label class="form-label small">Address</label>
+                        <textarea class="form-control form-control-sm" name="Address" placeholder="Enter address" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Category</label>
+                        <select class="form-select form-select-sm" name="Category" id="Category">
+                            <option value="">-- Select Category --</option>
+                            @if (CategoryList != null && CategoryList.Any())
+                            {
+                                foreach (var cat in CategoryList)
+                                {
+                                    <option value="@cat.Caste_Id">@cat.CasteName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Caste</label>
+                        <select class="form-select form-select-sm" name="Caste" id="Caste" required>
+                            <option value="">-- Select Caste --</option>
+                            @* You can fill this dynamically via JS when Category is selected *@
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Occupation</label>
+                        <input type="text" class="form-control form-control-sm" name="Occupation" placeholder="Enter Occupation" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small">Profile Image</label>
+                        <input type="file" class="form-control form-control-sm" name="ProfileImage" accept="image/*" />
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="submit" class="btn btn-outline-orange">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- === Scripts === -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 150
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/Block?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#Category").change(function () {
+            var selectedId = $(this).val();
+
+            if (selectedId) {
+                $.ajax({
+                    url: '/Admin/GetSubcasteByCategory',
+                    type: 'GET',
+                    data: { id: selectedId },
+                    success: function (response) {
+
+                        $("#Caste").empty();
+                        $("#Caste").append('<option value="">-- Select Caste --</option>');
+
+
+                        $.each(response, function (i, item) {
+                            $("#Caste").append('<option value="' + item.SubCaste_Id + '">' + item.SubCasteName + '</option>');
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Some error occured!!'
+                        });
+                    }
+                });
+            } else {
+                $("#Caste").empty();
+                $("#Caste").append('<option value="">-- Select Caste --</option>');
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Handle block form submit
+        $('#blockForm').submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/Admin/AddBlock', // Adjust the controller if needed
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message
+                        }).then(() => {
+                            location.reload(); // Refresh the page to reflect changes
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'AJAX Error',
+                        text: error
+                    });
+                }
+            });
+        });
+    });
+    $(document).on('click', '.edit-btn', function () {
+
+        var blockId = $(this).data('id');
+
+        $.ajax({
+            url: '/Admin/GetBlockById',
+            type: 'GET',
+            data: { id: blockId },
+            success: function (response) {
+                if (response.success) {
+                    var data = response.data;
+
+                    // Populate form fields
+                    $('#Block_Id').val(data.Block_Id);
+                    $('[name="BlockName"]').val(data.BlockName);
+                    $('[name="InchargeName"]').val(data.InchargeName);
+                    $('[name="Contact"]').val(data.Contact);
+                    $('[name="Address"]').val(data.Address);
+                    $('[name="Occupation"]').val(data.Occupation);
+                    $('[name="Category"]').val(data.Category).trigger('change'); // If Category change loads Caste options
+                    $('[name="party"]').val(data.party);
+                    // Wait for Caste dropdown to load (optional delay or hook into success callback)
+                    setTimeout(function () {
+                        $('[name="Caste"]').val(data.Caste);
+                    }, 300);
+
+                    // Open modal
+                    $('#createBlockModal').modal('show');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while fetching block data.'
+                });
+            }
+        });
+    });
+    $(document).on('click', '.delete-btn', function () {
+        var blockId = $(this).data('id');
+        var row = $(this).closest('tr');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/DeleteBlock',
+                    type: 'POST',
+                    data: { id: blockId },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Deleted!', response.message, 'success');
+                            // Remove the row from table
+                            row.fadeOut(500, function () { $(this).remove(); });
+                        } else {
+                            Swal.fire('Error!', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error!', 'Something went wrong on the server.', 'error');
+                    }
+                });
+            }
+        });
+    });
+
+</script>

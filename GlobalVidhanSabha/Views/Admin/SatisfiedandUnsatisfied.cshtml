@@ -1,0 +1,960 @@
+﻿@model VishanSabha.Models.SatisfiedUnSatisfied
+@{
+    ViewBag.Title = "SatisfiedandUnsatisfied";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var boothNumber = ViewData["BoothNumber"] as List<VishanSabha.Models.Booth>;
+    var AllDataList = ViewData["SatisfiedUnsatisfiedAlldata"] as List<VishanSabha.Models.SatisfiedUnSatisfied>;
+    var Occupation = ViewData["Occupation"] as List<VishanSabha.Models.Occupation>;
+    var SahmatAsahmatType = ViewData["SahmatAsahmatType"] as List<VishanSabha.Models.SahmatAsahmatType>;
+    var party = ViewData["Party"] as List<VishanSabha.Models.Party>;
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 540px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+@*<style>
+        .table-head th {
+            color: white;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        /* Compact table header */
+        .table-head th, #myTable td {
+            text-align: left;
+            vertical-align: middle;
+            padding: 5px 8px;
+            font-size: 11px;
+        }
+
+        .table-head th {
+            font-weight: 200;
+        }
+
+
+        #myTable {
+            width: 100% !important;
+            table-layout: auto;
+        }
+
+
+            #myTable img {
+                width: 40px !important;
+                height: auto;
+            }
+
+        .dataTables_length select {
+            font-size: 12px !important;
+            padding: 2px 5px !important;
+            width: 54px !important;
+            height: 28px !important;
+        }
+
+        .dataTables_filter input {
+            font-size: 12px !important;
+            padding: 3px 6px !important;
+            width: 150px !important;
+            height: 28px !important;
+            border-radius: 4px;
+        }
+
+        div.dataTables_filter input[type="search"] {
+            border: 1px solid #FF8C42 !important;
+        }
+
+        #myTable_paginate .paginate_button {
+            font-size: 12px;
+            margin-top: 10px;
+            padding: 5px 10px;
+            min-width: 40px;
+            height: 30px;
+            border-radius: 5px;
+            margin: 0 2px;
+            cursor: pointer;
+            background-color: #FF8C42;
+            color: black;
+            border: none;
+        }
+
+        .table-head {
+            background-color: #FF8C42;
+        }
+
+
+        .table-scroll {
+            max-height: 500px; /* adjust height */
+            overflow-y: auto;
+            overflow-x: auto;
+            position: relative;
+            overflow: auto;
+            z-index: 1;
+        }
+
+            .table-scroll table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            /* Sticky header */
+            .table-scroll thead th {
+                position: sticky !important;
+                top: 0;
+                background-color: #FF8C42;
+                color: white;
+                z-index: 10;
+                box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+            }
+
+            .table-scroll::-webkit-scrollbar {
+                height: 8px;
+                width: 8px;
+            }
+
+            .table-scroll::-webkit-scrollbar-thumb {
+                background-color: #a4a4a4;
+                border-radius: 4px;
+            }
+
+
+        .table-wrapper {
+            margin-top: 10px; /* 👈 filter section ke neeche gap */
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .table-controls {
+            position: sticky;
+            top: 0;
+            z-index: 15;
+            background: #fff;
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        .container-fluid {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+            position: relative;
+            z-index: 1;
+        }
+
+        .dataTables_length label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-right: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        div.dataTables_filter input[type="search"] {
+            border: 1px solid #FF8C42 !important; /* Default border */
+            outline: none !important; /* Default blue outline hatayega */
+            box-shadow: none !important; /* Shadow remove karega */
+        }
+
+        .sn-col {
+            width: 20px !important;
+            text-align: center !important;
+            white-space: nowrap;
+        }
+
+        .sticky-controls {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 20; /* Above table head */
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>*@
+
+<div class="container-fluid m-3">
+    <div class="d-flex justify-content-between mb-2">
+        <h3 style="color: #FF8C42;">Sahmat / Asahamat</h3>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sahmatAsahmatNameModal">
+            Create
+        </button>
+    </div>
+
+    <div class="table-wrapper shadow rounded P-2">
+        <div class="table-controls ">
+            <div id="entriesAndExport"></div>
+            <div id="searchBox"></div>
+        </div>
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head">
+                    <tr class="myhead">
+
+
+                        <th class="text-white text-center"  style="text-align:center!important;">S.N.</th>
+                        <th class="text-white text-center"  style="text-align:center!important;">Booth No.</th>
+                        @*<th class="text-white">Booth Name</th>*@
+                        <th class="text-white">Village</th>
+                        <th class="text-white">Type</th>
+                        <th class="text-white">Name</th>
+                        <th class="text-white text-center"  style="text-align:center!important;">Age</th>
+                        <th class="text-white">Mobile</th>
+                        <th class="text-white">Party</th>
+                        <th class="text-white">Reason</th>
+                        <th class="text-white">Occupation</th>
+                        <th class="text-white">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (AllDataList != null && AllDataList.Any())
+                    {
+                        int i = 1;
+                        foreach (var data in AllDataList)
+                        {
+                            <tr>
+                                <td class="text-center"  style="text-align:center!important;">@i</td>
+                                <td class="text-center"  style="text-align:center!important;">@data.boothNo</td>
+                                @*<td>@data.PollingStationBoothName</td>*@
+                                <td>@data.village</td>
+                                <td>@data.sahmatAsahmatName</td>
+                                <td>@data.name</td>
+                                <td class="text-center"  style="text-align:center!important;">@data.age</td>
+                                <td>@data.mobile</td>
+                                <td>@data.party</td>
+                                <td>@data.reason</td>
+                                <td>@data.Occupation</td>
+                                <td>
+                                    @*<button class="edit-btn btn " data-id="@data.id">
+                                        <i class="fas fa-edit text-success"></i>
+                                    </button>*@
+                                    <a href="/admin/SatisfiedandUnsatisfied?id=@data.id" class="edit-btn btn ">
+                                        <i class="fas fa-edit text-success"></i>
+                                    </a>
+
+
+                                    <!-- Delete button -->
+                                    <button type="button" class="btn btn-sm  me-1 delete-btn " data-id="@data.id">
+                                        <i class="fas fa-trash-alt delete-icon text-danger"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="sahmatAsahmatNameModal" tabindex="-1" aria-labelledby="sahmatAsahmatNameModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header" style="background-color: #FF8C42!important;color:white!important;">
+                <h5 class="modal-title" id="sahmatAsahmatNameModalLabel">Sahmat/Asahmat Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="boothForm" class="row g-3">
+
+                    <!-- Booth Number + Village -->
+                    <div class="col-md-6">
+                        <label for="boothNo" class="form-label">Booth Number</label>
+                        <select class="form-select" id="boothNo" name="boothNo">
+                            <option value="">Select Booth</option>
+                            @*<option value="501">501</option>
+                                <option value="502">502</option>
+                                <option value="503">503</option>*@
+                            @if (boothNumber != null && boothNumber.Any())
+                            {
+                                foreach (var booth in boothNumber)
+                                {
+                                    <option value="@booth.Booth_Id" @(Model.boothNo == booth.Booth_Id ? "selected" : "")>@booth.BoothNumber</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="village" class="form-label ">Village</label>
+                        @{
+                            var villageIds = (Model.village_Id ?? "").Split(',');
+                            var villageNames = (Model.villageName ?? "").Split(',');
+                        }
+                        <select class="form-select js-example-basic-multiple" id="village" name="village" multiple="multiple">
+                            @for (int i = 0; i < villageIds.Length; i++)
+                            {
+                                <option value="@villageIds[i]" selected>@villageNames[i]</option>
+                            }
+                        </select>
+
+
+
+                    </div>
+
+                    <!-- Sahmat/Asahmat + Name -->
+                    <div class="col-md-6">
+                        <label for="sahmatAsahmatName" class="form-label">Sahmat / Asahmat</label>
+                        <select class="form-select" id="sahmatAsahmatName" name="sahmatAsahmat">
+                            <option value="">Select</option>
+                            @foreach (var data in SahmatAsahmatType)
+                            {
+                                <option value="@data.Id" @(Model.sahmatAsahmat == data.Id ? "selected" : "")>@data.type</option>
+                            }
+                        </select>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="personName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="personName" name="name" value="@Model.name" />
+                    </div>
+
+                    <!-- Age + Mobile -->
+                    <div class="col-md-6">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="age" name="age" value="@Model.age" />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mobile" class="form-label">Mobile</label>
+                        <input type="text" class="form-control" id="mobile" name="mobile" maxlength="10" value="@Model.mobile" />
+                    </div>
+
+                    <!-- Party -->
+                    <div class="col-md-6">
+                        <label for="party" class="form-label">Party</label>
+
+                        <select class="form-select" id="party" name="party" required>
+                            <option value="">Select</option>
+                            @foreach (var data in party)
+                            {
+                                <option value="@data.id" @(Model.partyId == data.id ? "selected" : "")>@data.party</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 @(Model.sahmatAsahmatName == "Asahamat" ? "" : "d-none")" id="reasonDiv">
+                        <label for="reason" class="form-label">Reason</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="1">@Model.reason</textarea>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="Occupation" class="form-label">Occupation</label>
+                        <select class="form-control" id="Occupation" name="Occupations">
+                            <option value="">-- Select Occupation --</option>
+                            @if (Occupation != null)
+                            {
+                                foreach (var data in Occupation)
+                                {
+                                    <option value="@data.id" @(Model.Occupations == data.id ? "selected" : "")>@data.occupation</option>
+                                }
+                            }
+                            else
+                            {
+                                <option disabled>No occupations available</option>
+                            }
+
+                        </select>
+                    </div>
+
+
+
+                </form>
+            </div>
+            @if (Model.id > 0)
+            {
+                <input type="hidden" name="id" value="@Model.id" id="id" />
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>*@
+                    <button type="submit" form="boothForm" class="btn btn-primary">Update</button>
+                </div>
+            }
+            else
+            {
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>*@
+                    <button type="submit" form="boothForm" class="btn btn-primary">Submit</button>
+                </div>
+            }
+
+
+
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- Scripts -->*
+<script>
+    document.getElementById('sahmatAsahmatNameModal').addEventListener('hidden.bs.modal', function () {
+        const form = document.getElementById('boothForm');
+        form.reset();
+
+
+        const hiddenId = document.getElementById('id');
+        if (hiddenId) hiddenId.value = '';
+
+
+        const villageField = $('#village');
+        if (villageField.length) {
+            villageField.val(null).trigger('change');
+        }
+
+
+        //$('#boothno, #Category, #Caste, #Occupation').val('').trigger('change');
+
+
+        $('#boothNo, #sahmatAsahmatName, #personName,#age,#mobile,#party,#reason').val('');
+
+
+        const url = new URL(window.location);
+        if (url.search) {
+            url.search = '';
+            window.history.replaceState({}, document.title, url.toString());
+        }
+
+        // Optional: reset button text
+        // $('#submitPravasiVoter').text('Submit');
+    });
+</script>
+
+
+<script>
+
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+<script>
+
+    document.getElementById("sahmatAsahmatName").addEventListener("change", function () {
+        if (this.value == 2) {
+            document.getElementById("reasonDiv").classList.remove("d-none");
+        } else {
+            document.getElementById("reasonDiv").classList.add("d-none");
+        }
+    });
+</script>
+<script>
+    function populateVillages(boothId, selectedVillageArray = []) {
+        let villageDropdown = $("#village");
+        villageDropdown.html('<option disabled >Loading villages...</option>');
+
+        $.ajax({
+            url: '/admin/GetVillageListByBoothId',
+            type: 'GET',
+            data: { boothId: boothId },
+            success: function (response) {
+                villageDropdown.empty();
+
+                if (response && response.length > 0) {
+                    villageDropdown.append('<option disabled >-- Select Village --</option>');
+                    $.each(response, function (index, village) {
+                        villageDropdown.append('<option value="' + village.villageId + '">' + village.Villagename + '</option>');
+                    });
+
+
+                    if (selectedVillageArray.length > 0) {
+                        $('#village').val(selectedVillageArray).trigger('change');
+                    }
+                } else {
+                    villageDropdown.append('<option disabled >No villages found</option>');
+                }
+            },
+            error: function (xhr, status) {
+                villageDropdown.html('<option disabled >Error loading villages</option>');
+                console.error("Error fetching villages:", xhr, status);
+            }
+        });
+    }
+
+    // Mandal dropdown change – normal case
+    $(document).on('change', '#boothNo', function () {
+        populateVillages($(this).val());
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('#boothForm').on('submit', function (e) {
+            e.preventDefault();
+            let id = $("#id").val();
+            const formData = new FormData(this);
+            formData.append('id', id);
+            let selectedVillages = $('#village').val();
+            if (selectedVillages && selectedVillages.length > 0) {
+                formData.set('village', selectedVillages.join(','));  // "1,2,3"
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/Admin/addSatisfiedUnSatisfied',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    Swal.fire({
+                        icon: response.status ? 'success' : 'error',
+                        title: response.status ? 'Success' : 'Error',
+                        text: response.message,
+                        didClose: () => {
+                            if (response.status) {
+
+                                location.href = '/admin/SatisfiedandUnsatisfied';
+                            }
+                        }
+                    });
+                },
+                error: function () {
+                    Swal.fire("Error!", "Saving failed.", "error");
+                }
+            });
+        });
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '.delete-btn', function () {
+            var id = $(this).data('id');
+            var row = $(this).closest('tr');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to delete this booth?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#999',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Admin/DeleteSatisfiedUnsatisfied',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message || 'Booth has been deleted.',
+                                    'success'
+                                );
+                                row.fadeOut(500, function () {
+                                    $(this).remove();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message || 'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        },
+
+                        error: function () {
+                            Swal.fire(
+                                'Error!',
+                                'Unable to delete booth. Try again later.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+</script>
+<!--remove id from url on reload-->
+<script>
+    $('#sahmatAsahmatNameModal').on('hidden.bs.modal', function () {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("id");
+        window.history.replaceState({}, document.title, url.toString());
+    });
+</script>
+<script>
+   $(document).ready(function () {
+    @if (Request.QueryString["id"] != null && Model != null && Model.id > 0)
+    {
+        <text>
+        var myModal = new bootstrap.Modal(document.getElementById('sahmatAsahmatNameModal'));
+        myModal.show();
+        </text>
+    }
+});
+
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 355
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/SatisfiedandUnsatisfied?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>

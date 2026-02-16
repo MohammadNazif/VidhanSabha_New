@@ -1,0 +1,355 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutBooth.cshtml";
+}
+
+    
+    <style>
+        body {
+            font-family: "Poppins", sans-serif !important;
+        }
+
+        .dashboard-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+            .dashboard-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            }
+            .dashboard-card::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 3px; 
+            }
+
+        .card-text-wrapper {
+            text-align: right; 
+            flex: 1;
+        }
+        .card-green::after {
+            background-color: #43a047;
+        }
+
+        .card-yellow::after {
+            background-color: #fbc02d;
+        }
+
+        .card-blue::after {
+            background-color: #1a73e8;
+        }
+
+        .card-red::after {
+            background-color: #e53935;
+        }
+
+        .card-purple::after {
+            background-color: #8e24aa;
+        }
+
+        .card-teal::after {
+            background-color: #00897b;
+        }
+
+        .card-gray::after {
+            background-color: #6c757d;
+        }
+
+        .card-orange-bottom {
+            border-bottom: 3px solid #e65100;
+        }    
+
+        .card-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            gap: 14px;
+        }
+
+        .card-icon {
+            font-size: 28px !important;
+            flex-shrink: 0;
+            text-align: left;
+        }
+
+        .card-text-wrapper {
+            text-align: left;
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .card-number {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.2;
+            display: block;
+        }
+
+        .card-text-wrapper {
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; 
+        }
+</style>
+
+    <div class="container ms-3 my-5">
+
+        <!--First Row 4 Cards* -->
+        <div class="row mt-4">
+            <!-- Sector -->
+            <div class="col-md-3">
+                <div class="card dashboard-card card-green p-0 text-center">
+                    <a href="/Booth/BoothVoter" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-success">
+                                <i class="fa-solid fa-users"></i>
+
+
+                            </div>
+                            <div class="card-text-wrapper ">
+                                <span class="card-title text-muted">Booth Voter</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.TotalBoothVoter</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- PannaPramukh -->
+            <div class="col-md-3">
+                <div class="card dashboard-card card-yellow p-0 text-center">
+                    <a href="/Booth/PannaPramukhList" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-warning">
+                                <i class="fa-solid fa-id-badge"></i>
+                            </div>
+                            <div class="card-text-wrapper">
+                                <span class="card-title text-muted ">PannaPramukh</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.TotalPanna</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Activities -->
+            <div class="col-md-3">
+                <div class="card dashboard-card card-teal p-0 text-center">
+                    <a href="/Booth/AdminActivities" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+
+                            <div class="card-icon" style="color: #00897b;">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+                            <div class="card-text-wrapper">
+                                <span class="card-title text-muted">Activities</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.TotalActivities</span>
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card dashboard-card card-yellow p-0 text-center">
+                    <a href="/Booth/AllDoubleVotes" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-warning">
+                                <i class="fa-solid fa-clone"></i>
+
+                            </div>
+                            <div class="card-text-wrapper ">
+                                <span class="card-title text-muted">Double Voters</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.DoubleVoter</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!--Second Row 4 Cards* -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card dashboard-card card-red p-0 text-center">
+                    <a href="/Booth/TotalPravasi" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-danger">
+                                <i class="fa-solid fa-plane-departure"></i>
+                            </div>
+                            <div class="card-text-wrapper">
+                                <span class="card-title text-muted">Pravasi</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.TotalPravasi</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!--  SatisfiedCount UnSatisfiedCount-->
+            <div class="col-md-3">
+                <div class="card dashboard-card card-green p-0 text-center">
+                    <a href="/Booth/AllSahamat" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-success">
+                                <i class="fa-solid fa-face-smile"></i>
+
+                            </div>
+                            <div class="card-text-wrapper ">
+                                <span class="card-title text-muted">Sahmat</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.TotalSahmat </span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="card dashboard-card card-yellow p-0 text-center">
+                    <a href="/Booth/AllAsahamat" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-warning">
+
+                                <i class="fa-solid fa-face-frown"></i>
+
+                            </div>
+                            <div class="card-text-wrapper ">
+                                <span class="card-title text-muted">Asahmat</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.TotalAaSahmat</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card dashboard-card card-teal p-0 text-center">
+                    <a href="/Booth/AllNewVoters" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+
+                            <div class="card-icon" style="color: #00897b;">
+                                <i class="fa-solid fa-person-booth"></i>
+                            </div>
+                            <div class="card-text-wrapper">
+                                <span class="card-title text-muted">New Voters</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.NewVotersCount</span>
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!--Third Row 4 Cards* -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card dashboard-card card-green p-0 text-center">
+                    <a href="/Booth/AllBoothSamithi" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-secondary">
+                                <i class="fa-solid fa-face-smile"></i>
+                            </div>
+                            <div class="card-text-wrapper">
+                                <span class="card-title text-muted">Booth Samiti</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.BoothSamithi</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-3">
+                <div class="card dashboard-card card-gray p-0 text-center">
+                    <a href="/Booth/AllPrabhavsaliVyakti" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-secondary">
+                                <i class="fa-solid fa-user-check"></i>
+                            </div>
+                            <div class="card-text-wrapper">
+                                <span style="font-size: 13px;" class="card-title text-muted">Prabhavsali Vyakti</span>
+
+                                <span class="card-number text-dark fw-bold">@ViewBag.PrabhavsaliCount</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card dashboard-card card-green p-0 text-center">
+                    <a href="/Booth/AllSeniorCitizen" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-secondary">
+                                <i class="fa-solid fa-person-booth"></i>
+                            </div>
+                            <div class="card-text-wrapper">
+                                <span style="font-size: 14px;" class="card-title text-muted">Senior Citizen</span>
+
+                                <span class="card-number text-dark fw-bold">@ViewBag.GetTotalSeniorCitizen</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card dashboard-card card-blue p-0 text-center">
+                    <a href="/Booth/AllHandiCap" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-secondary">
+                                <i class="fa-solid fa-clone"></i>
+                            </div>
+                            <div class="card-text-wrapper">
+                                <span style="font-size: 14px;" class="card-title text-muted">Vikalaang</span>
+
+                                <span class="card-number text-dark fw-bold">@ViewBag.CountDisabled</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!--fourth Row 1 Cards* -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card dashboard-card card-red p-0 text-center">
+                    <a href="/Booth/AllSocialMedia" style="text-decoration:none; color:inherit;">
+                        <div class="card-body">
+
+                            <div class="card-icon" style="color: #00897b;">
+                                <i class="fa-solid fa-person-booth"></i>
+                            </div>
+                            <div class="card-text-wrapper">
+                                <span class="card-title text-muted">Post</span>
+                                <span class="card-number text-dark fw-bold">@ViewBag.CountActivity</span>
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>

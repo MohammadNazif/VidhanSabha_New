@@ -1,0 +1,715 @@
+﻿@model IEnumerable<VishanSabha.Models.Activities>
+
+@{
+    ViewBag.Title = "Activity";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+
+}
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 520px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+<div class="container-fluid mt-5 m-3">
+    <div class="d-flex justify-content-between mb-2">
+        <h4 style="color:#FF8C42;">Activity Management</h4>
+        <button class="btn btn-primary" id="openCreateModal" data-bs-toggle="modal" data-bs-target="#activityModal">+ Create</button>
+    </div>
+
+    <div class="table-wrapper shadow rounded p-2">
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head">
+                    <tr class="myhead">
+                        <th class="col-1" style="width:5px!important">S.N.</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th style="width:70px!Important">Date</th>
+                        <th class="col-1">Images</th>
+                        <th class="col-1">Video</th>
+                        <th class="col-2" style="text-align:center!important">Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="activityModal" tabindex="-1" aria-labelledby="activityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <form id="activityForm" enctype="multipart/form-data" method="post">
+
+                <div class="modal-header table-head">
+                    <h5 class="modal-title text-white fw-bold" id="activityModalLabel">Create New Activity</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body px-4 py-3">
+                    <div class="row g-3">
+                        <input type="hidden" id="ActivityId" name="ActivityId" />
+                        <div class="col-md-6">
+                            <label class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" name="Title" class="form-control form-control-sm" placeholder="Enter activity title" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date <span class="text-danger">*</span></label>
+                            <input type="date" name="ActivityDate" class="form-control form-control-sm" required />
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea name="Description" class="form-control form-control-sm" rows="3" placeholder="Write a short description..." required></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">YouTube Link or Upload Video</label>
+
+                            <input type="url" name="VideoUrl" id="VideoUrl" class="form-control form-control-sm mb-2" placeholder="https://youtube.com/..." />
+
+                            <div class="text-center text-muted mb-1">OR</div>
+
+                            <input type="file" name="VideoFile" id="VideoFile" class="form-control form-control-sm" accept="video/*" />
+                        </div>
+                        <div id="uploadImagesWrapper" class="col-md-6">
+                            <label class="form-label">Upload Images (Max 4)</label>
+                            <input type="file" name="Images" id="Images" class="form-control form-control-sm" accept="image/*" multiple />
+                            <small class="text-muted d-block mt-1">You can upload up to 4 images</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer px-4 py-2">
+                    <button type="submit" class="btn btn-outline-orange">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="imageViewerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">View Images</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="imageGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-center my-3" id="uploadMoreWrapper" style="display: none;">
+    <input type="file" id="additionalImages" class="form-control d-inline-block w-auto" accept="image/*" multiple />
+    <button class="btn btn-outline-primary mt-2" id="uploadImagesBtn">Upload</button>
+    <small class="d-block text-muted mt-1">You can upload up to 4 images in total.</small>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+
+
+
+
+<script>
+    function formatDate(dotNetDateStr) {
+        if (!dotNetDateStr) return '-';
+        const match = /\/Date\((\d+)\)\//.exec(dotNetDateStr);
+        if (!match) return '-';
+        const date = new Date(parseInt(match[1]));
+        return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+    }
+
+    function parseDotNetDate(dotNetDateStr) {
+        if (!dotNetDateStr) return '';
+        const match = /\/Date\((\d+)\)\//.exec(dotNetDateStr);
+        if (!match) return '';
+        const date = new Date(parseInt(match[1]));
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    $(document).ready(function () {
+
+        function loadActivities() {
+            $.get('@Url.Action("GetAllActivities", "Admin")', function (data) {
+                const tbody = $('#myTable tbody').empty();
+                let i = 1;
+                data.forEach(item => {
+                    const images = item.ImagePaths?.length
+                        ? `<i class="fa fa-eye text-primary view-images-btn" role="button" title="View Images" data-images='${JSON.stringify(item.ImagePaths)}' data-id="${item.ActivityId}"></i>`
+                        : '-';
+
+                    const video = item.VideoUrl
+                        ? `<a href="${item.VideoUrl}" target="_blank"><i class="fa fa-video text-danger"></i></a>`
+                        : '-';
+
+                    tbody.append(`
+                        <tr>
+                            <td>${i++}</td>
+                            <td class="text-start">${item.Title}</td>
+                            <td class="text-start">${item.Description}</td>
+                            <td class="text-start">${formatDate(item.ActivityDate)}</td>
+                            <td class="text-center"style="width:70px!Important">${images}</td>
+                            <td class="text-center">${video}</td>
+                            <td class="text-center">
+                                <button class="btn btn-xs co edit-btn" data-id="${item.ActivityId}" data-bs-toggle="modal" data-bs-target="#activityModal"><i class="text-success fa fa-edit"></i></button>
+                                <button class="btn btn-xs  delete-btn" data-id="${item.ActivityId}"><i class="text-danger fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        loadActivities();
+
+        $('#openCreateModal').click(() => {
+            $('#activityForm')[0].reset();
+            $('#ActivityId').val('');
+            $('#uploadImagesWrapper').show();
+            $('#Images').prop('required', true);
+            $('#existingImages').empty();
+            $('#activityModalLabel').text('Create New Activity');
+        });
+
+ $(document).on('click', '.edit-btn', function () {
+    const id = $(this).data('id');
+    $.get('@Url.Action("GetActivityById", "Admin")', { id }, function (item) {
+        $('#ActivityId').val(item.ActivityId);
+        $('[name="Title"]').val(item.Title);
+        $('[name="ActivityDate"]').val(parseDotNetDate(item.ActivityDate));
+        $('[name="Description"]').val(item.Description);
+        $('[name="VideoUrl"]').val(item.VideoUrl);
+        $('#activityModalLabel').text('Update Activity');
+
+        const existingImagesCount = item.ImagePaths ? item.ImagePaths.length : 0;
+
+        if (existingImagesCount >= 4) {
+            $('#Images').prop('disabled', true).val(''); // Disable upload and clear input
+        } else {
+            $('#Images').prop('disabled', false).val('');
+            $('#Images').attr('data-max-files', 4 - existingImagesCount); // Store max allowed files
+        }
+
+        $('#uploadImagesWrapper').show();
+    });
+ });
+        $('#Images').on('change', function () {
+            const maxAllowed = parseInt($(this).attr('data-max-files')) || 4;
+            if (this.files.length > maxAllowed) {
+                Swal.fire('Limit Exceeded', `You can only upload up to ${maxAllowed} images.`, 'warning');
+                this.value = ''; // reset input
+            }
+        });
+
+        $('#activityForm').submit(function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            $.ajax({
+                url: '@Url.Action("SaveActivity", "Admin")',
+                method: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire('Success', res.message, 'success').then(() => {
+                            location.reload();  // reload entire page
+                        });
+                        $('#activityModal').modal('hide');
+                        loadActivities();
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                },
+                error: () => Swal.fire('Error', 'Unexpected error.', 'error')
+            });
+        });
+
+        $(document).on('click', '.delete-btn', function () {
+            const id = $(this).data('id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will soft delete the activity.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    $.post('@Url.Action("DeleteActivities", "Admin")', { id }, function (res) {
+                        if (res.success) {
+                            Swal.fire('Deleted!', res.message, 'success');
+                            loadActivities();
+                        } else {
+                            Swal.fire('Error', res.message, 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#Images').on('change', function () {
+            if (this.files.length > 4) {
+                Swal.fire('Limit Exceeded', 'You can only upload up to 4 images.', 'warning');
+                this.value = '';
+            }
+        });
+    });
+
+    // View Images with Delete Option
+    $(document).on('click', '.view-images-btn', function () {
+        const imageList = JSON.parse($(this).attr('data-images'));
+        const activityId = $(this).data('id');
+        const container = $('#imageGrid').empty();
+        const modalDialog = $('#imageViewerModal .modal-dialog');
+
+        modalDialog.css({ 'max-width': '', 'width': '', 'height': '', 'max-height': '' });
+
+        if (imageList.length === 1) {
+            modalDialog.css({ 'max-width': '400px', 'width': '90%' });
+            container.append(`
+                <div class="col-12 text-center image-box position-relative">
+                    <img src="${imageList[0]}" class="img-fluid rounded shadow-sm border"
+                        style="object-fit: contain; max-height: 400px; width: auto; max-width: 100%;"
+                        onerror="this.style.display='none'" />
+                    <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 delete-image-btn"
+                        data-url="${imageList[0]}" data-id="${activityId}" title="Delete Image">&times;</button>
+                </div>
+            `);
+            $('#imageViewerModal .modal-body').css({ 'max-height': 'none', 'overflow-y': 'visible' });
+        } else {
+            modalDialog.css({ 'max-width': '700px', 'width': '90%' });
+
+            imageList.forEach(url => {
+                container.append(`
+                    <div class="col-md-4 col-sm-6 mb-3 image-box position-relative">
+                        <img src="${url}" class="img-fluid rounded shadow-sm border"
+                            style="object-fit: cover; width: 100%; height: 150px;"
+                            onerror="this.style.display='none'" />
+                        <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 delete-image-btn"
+                            data-url="${url}" data-id="${activityId}" title="Delete Image">&times;</button>
+                    </div>
+                `);
+            });
+
+            $('#imageViewerModal .modal-body').css({ 'max-height': '75vh', 'overflow-y': 'auto' });
+        }
+
+        $('#imageViewerModal').modal('show');
+    });
+
+    // Delete Image from Modal
+    $(document).on('click', '.delete-image-btn', function () {
+        const imageUrl = $(this).data('url');
+        const activityId = $(this).data('id');
+        const imageBox = $(this).closest('.image-box');
+
+        Swal.fire({
+            title: 'Delete this image?',
+            text: 'This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(result => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("DeleteImage", "Admin")',
+                    type: 'POST',
+                    data: { imageUrl: imageUrl, activityId: activityId },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire('Deleted!', res.message, 'success');
+                            imageBox.remove();
+                        } else {
+                            Swal.fire('Error', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Something went wrong on delete.', 'error');
+                    }
+                });
+            }
+        });
+    });
+    $('#VideoUrl').on('input', function () {
+        if ($(this).val().trim()) {
+            $('#VideoFile').prop('disabled', true);
+        } else {
+            $('#VideoFile').prop('disabled', false);
+        }
+    });
+
+    $('#VideoFile').on('change', function () {
+        if (this.files.length > 0) {
+            $('#VideoUrl').prop('disabled', true);
+        } else {
+            $('#VideoUrl').prop('disabled', false);
+        }
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 150
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/GetAllActivities?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>

@@ -1,0 +1,137 @@
+﻿@{ 
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riho - Premium Admin Template</title>
+    <link rel="stylesheet" href="~/Assets/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/Assets/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #FF9933, #A4C639);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-control {
+            width: 100%;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .form-input {
+            position: relative;
+        }
+
+        .i-eye {
+            position: absolute;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        /* Optional: Add a lotus flower background image */
+        .lotus-background {
+            background-image: url('lotus_image_url_here'); /* Replace with lotus image URL */
+            background-position: center center;
+            background-size: cover;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container vh-100 d-flex justify-content-center align-items-center">
+        <div class="login-main card p-4 shadow-sm rounded">
+            <form class="theme-form" method="post" action="/Auth/Login">
+                <h4 class="card-title text-center mb-3">Sign in</h4>
+
+                <!-- Contact (Email/Phone) input -->
+                <div class="form-group mb-3">
+                    <label class="col-form-label">Contact</label>
+                    <input name="Contact" class="form-control w-100" type="text" required placeholder="Enter contact" />
+                </div>
+
+                <!-- Password input with eye icon -->
+                <div class="form-group mb-3">
+                    <label class="col-form-label">Password</label>
+                    <div class="form-input">
+                        <input name="Password" class="form-control" type="password" id="password" placeholder="*********" required>
+                        <i class="bi bi-eye toggle-password i-eye" id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <!-- Forgot password -->
+                <div class="form-group forgot-password">
+                    <a class="link" href="forget-password.html">Forgot password?</a>
+                </div>
+
+                <!-- Submit button -->
+                <div class="text-end mt-3">
+                    <button class="btn btn-primary btn-block w-100" type="submit">Sign in</button>
+                </div>
+
+                <p class="mt-4 mb-0 text-center">
+                    Don't have account?<a class="ms-2" href="sign-up.html">Create Account</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/Assets/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility
+        $('#togglePassword').on('click', function () {
+            const input = $('#password');
+            const icon = $(this);
+            const type = input.attr('type') === 'password' ? 'text' : 'password';
+            input.attr('type', type);
+            icon.toggleClass('bi-eye bi-eye-slash');
+        });
+    </script>
+    @section Scripts {
+        <script>
+    $(document).ready(function () {
+        @* Show error alert *@
+        @if (TempData["LoginError"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '@TempData["LoginError"]',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Try Again'
+            });
+            </text>
+        }
+    });
+        </script>
+    }
+</body>
+
+</html>

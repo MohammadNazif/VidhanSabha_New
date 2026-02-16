@@ -1,0 +1,169 @@
+﻿
+@{
+    ViewBag.Title = "SocialMediaPost";
+    Layout = "~/Views/Shared/_LayoutSector.cshtml";
+    var socialPost = ViewData["SocialMediaPost"] as List<VishanSabha.Models.SocialMediaPostList>;
+}
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #pannaTable td {
+        text-align: left;
+        vertical-align: middle;
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+    #pannaTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #pannaTable td,
+    #pannaTable th {
+        white-space: nowrap;
+        text-align:left;
+        
+    }
+
+    
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #pannaTable_paginate .paginate_button {
+        font-size: 12px;
+        margin-top: 10px;
+        padding: 5px 10px;
+        min-width: 40px;
+        height: 30px;
+        border-radius: 5px;
+        margin: 0 2px;
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+    .table-head th {
+       
+        color: white; /* white text */
+       
+    }
+    .dataTables_wrapper table.dataTable th {
+        padding: 6px 8px;
+        font-size: 12px;
+        color: white;
+    }
+    
+</style>
+
+<div class="container-fluid mt-5 m-3">
+    <h4 style="color: #FF8C42;" class="mb-3">Asahmat Vyakti List</h4>
+
+    <div class="table-responsive shadow rounded p-2">
+        <table class="table table-hover table-bordered align-middle" id="pannaTable">
+            <thead class="table-head">
+                <tr class="myhead text-center">
+                    <th style="width:5px;">S.N.</th>
+                    <th>Mandal</th>
+                    <th>Sector Name</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Platform</th>
+                    <th>Image</th>
+                </tr>
+            </thead>
+            <tbody>
+              @if (socialPost!=null && socialPost.Any())
+              {
+                  int i = 1;
+                  foreach(var data in socialPost)
+                {
+                    <tr>
+                        <td style="text-align:center ;width:5px">@i</td>
+                        <td>@data.MandalName</td>
+                        <td>@data.SectorName</td>
+                        <td>@data.Title</td>
+                        <td>@data.Description</td>
+                        <td>@string.Join(",",data.Platform)</td>
+                        <td><img src="@data.image" height="20" width="30"/></td>
+                    </tr>
+                      i++;
+                  }
+              }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JS Libraries -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables Buttons JS -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        const table = new DataTable('#pannaTable', {
+            dom: 'Blfrtip',
+            pageLength: 100,
+            lengthMenu: [100, 200, 300, 400, 500],
+            buttons: [
+                'colvis',
+                'excel',
+                'pdf',
+                'print'
+            ]
+        });
+
+        setTimeout(function () {
+            $('.dataTables_length').css({ 'margin-bottom': '0px' });
+            $('.dataTables_filter').css({ 'margin-bottom': '0px', 'margin-top': '0px' });
+            $('#pannaTable_wrapper').css({ 'margin-bottom': '0px' });
+        }, 100);
+    });
+</script>
+

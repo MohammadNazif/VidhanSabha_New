@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewBag.Title = "BoothSamiti";
+    Layout = "~/Views/Shared/_LayoutBooth.cshtml";
+    var BoothSamiti = ViewData["BoothSamitiList"] as List<VishanSabha.Models.BoothSamiti>;
+}
+
+
+<div class="container-fluid mt-5 m-3">
+    <div class="d-flex justify-content-between mb-2">
+        <h4 style="color: #FF8C42;">Booth Samiti List</h4>
+    </div>
+
+    <div class="  " style="white-space:nowrap!important;">
+
+        <table id="boothTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+            <thead class="table-head" style="color:white!important;">
+                <tr class="text-light myhead">
+                    <th>S.N</th>
+                    <th>Designation</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Caste</th>
+                    <th>Age</th>
+                    <th>Mobile</th>
+                    <th>Occupation</th>
+                    @*<th>BoothIncharge</th>*@
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (BoothSamiti != null && BoothSamiti.Any())
+                {
+                    int i = 1;
+                    foreach (var data in BoothSamiti)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@data.Designation</td>
+                            <td>@data.Name</td>
+                            <td>@data.CategoryName</td>
+                            <td>@data.Cast</td>
+                            <td>@data.Age</td>
+                            <td>@data.Mobile</td>
+                            <td>@data.Occupation</td>
+                            @*<td>@data.BoothIncharge</td>*@
+                        </tr>
+                        i++;
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,1127 @@
+﻿@model IEnumerable<VishanSabha.Models.SeniorOrDisabled>
+@{
+    ViewBag.Title = "Senior Citizens & Disabled";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var CategoryList = ViewData["CategoryList"] as List<VishanSabha.Models.Caste>;
+    var BoothList = ViewData["BoothList"] as List<VishanSabha.Models.Booth>;
+
+
+    var seniorDisabledtype = ViewData["GetSeniorDisabledtype"] as List<VishanSabha.Models.SeniorDisabled>;
+
+}
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 550px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+<div class="container-fluid m-3 ">
+    <div class="d-flex justify-content-between mb-2">
+        <h2 class="text-orange" style="color: #FF8C42">Varishth Naagarik & Vikalaang</h2>
+        <button class="btn btn-primary" id="createNewBtn" data-bs-toggle="modal" data-bs-target="#dataModal">
+            Create
+        </button>
+    </div>
+    @*<div class="row mb-3">
+            <div class="col-sm-3">
+                <label for="boothFilter" class="form-label fw-bold">Filter by Booth</label>
+                <select id="boothFilter" class="form-select form-select-sm w-auto">
+                    <option value="0">All Booths</option>
+                    @foreach (var booth in (IEnumerable<VishanSabha.Models.Booth>)ViewData["BoothList"])
+                    {
+                        <option value="@booth.Booth_Id" @(ViewBag.SelectedBooth == booth.Booth_Id ? "selected" : "")>
+                            @booth.BoothNumber
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>*@
+<div class="table-wrapper shadow rounded p-3">
+
+    <div class="table-controls d-flex justify-content-between align-items-center mb-2 flex-wrap">
+        <div id="entriesAndExport"></div>
+        <div id="searchBox"></div>
+    </div>
+    <div class="  " style="white-space:nowrap!important;">
+
+        <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+            <thead class="table-head">
+                <tr class="myhead">
+                    <th  style="text-align:center!important;">S.N.</th>
+                    <th class="booth-col text-center" style="width:30px"  style="text-align:center!important;">BoothNo</th>
+                    <th>Village</th>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Category</th>
+                    <th>Caste</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-start">
+                <!-- 👈 Data rows default left -->
+                @if (Model != null)
+                {
+                    int index = 1;
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td  style="text-align:center!important;">@index</td>
+                            <td class="booth-col text-center"  style="text-align:center!important;">@item.BoothNumber</td> <!-- 👈 BoothNo center -->
+                            <td>@item.village</td>
+                            <td>@item.SeniorOrDisabledStatus</td>
+                            <td>@item.Name</td>
+                            <td>@item.Mobile</td>
+                            <td>@item.CategoryName</td>
+                            <td>@item.SubCasteName</td>
+                            <td>@item.Address</td>
+                            <td>
+                                <button class="btn btn-sm  me-1 edit-btn" data-id="@item.Id">
+                                    <i class="fas fa-edit edit-icon"></i>
+                                </button>
+                                <button class="btn btn-sm  me-1 delete-btn" data-id="@item.Id">
+                                    <i class="fas fa-trash-alt delete-icon"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        index++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+<!-- Modal for Insertion -->
+<div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <form id="dataForm" method="post">
+
+                <input type="hidden" name="Entries[0].Id" value="${data.Id}" id="Id"/>
+
+
+
+                <div class="modal-header table-head py-2">
+                    <h6 class="modal-title text-white fw-bold">Add Senior/Disabled Records</h6>
+                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-2 px-3">
+                    <div class="row">
+                        <div class="mb-2 col-4">
+                            <label for="SeniorOrDisabled" class="form-label mb-1">Select Type</label>
+
+
+                            <select id="SeniorOrDisabled" name="SeniorOrDisableddata" class="form-select form-select-sm">
+                                <option value="">-- Select type --</option>
+                                @if (seniorDisabledtype != null)
+                                {
+                                    foreach (var item in seniorDisabledtype)
+                                    {
+                                        <option value="@item.Id">@item.Type</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+
+                        <div class="mb-2 col-4">
+                            <label for="boothNo" class="form-label mb-1">Booth No</label>
+                            <select class="form-select" id="boothId" name="boothId">
+                                <option value="">-- Select Booth No --</option>
+                                @if (BoothList != null && BoothList.Any())
+                                {
+                                    foreach (var data in BoothList)
+                                    {
+                                        <option value="@data.Booth_Id">
+                                            @data.BoothNumber
+                                        </option>
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small mb-1">Village </label>
+                            <select class="form-select js-example-basic-multiple" name="VillageListId" required id="VillageList" multiple="multiple">
+                                <option value="">-- Select Village --</option>
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="entriesContainer" class="mb-2"></div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-success btn-sm px-2 py-1 add-entry" style="font-size: 0.75rem;">
+                            <i class="bi bi-plus-lg" style="font-size: 0.85rem;"></i> Add Entry
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="submit" class="btn btn-outline-orange btn-sm px-3">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<script>
+    document.getElementById('dataModal').addEventListener('hidden.bs.modal', function () {
+        const form = document.getElementById('dataForm');
+        if (form) form.reset();
+
+        // Clear hidden ID field
+        const hiddenId = document.getElementById('Id');
+        if (hiddenId) hiddenId.value = '';
+
+        // Reset dropdowns
+        $('#boothId').val('').trigger('change');
+        const villageField = document.getElementById('VillageList');
+        if (villageField) $(villageField).val([]).trigger('change');
+
+        // Clear dynamic inputs but keep placeholders
+        $('#entriesContainer .entry-group').each(function () {
+            $(this).find('input:not([type=hidden]), select, textarea').each(function () {
+                const $field = $(this);
+                $field.val('');
+                if ($field.is('select')) {
+                    $field.prop('selectedIndex', 0).trigger('change');
+                }
+            });
+        });
+
+        $('#SeniorOrDisabled').val('').trigger('change');
+    });
+
+</script>
+<script>
+    document.getElementById("boothFilter").addEventListener("change", function () {
+        var booth = this.value;
+        if (booth === "0") {
+
+            window.location.href = '@Url.Action("VarishthNaagarikViklaang", "Admin")';
+        } else {
+
+            window.location.href = '@Url.Action("VarishthNaagarikViklaang", "Admin")' + '?boothNumber=' + booth;
+        }
+    });
+</script>
+
+<script>
+$(document).ready(function () {
+    // Serialize Category List for JS
+    const categoryOptionsHtml = `
+         <option value="">-- Select Category --</option>
+ @if (CategoryList != null && CategoryList.Any())
+ {
+     foreach (var data in CategoryList)
+     {
+         <option value="@data.Caste_Id">@data.CasteName</option>
+     }
+ }
+    `;
+
+    const casteDefaultOption = `<option value="">-- Select Caste --</option>`;
+    function addEntryRow() {
+        const index = $('.entry-group').length;
+
+        const rowHtml = `
+        <div class="row dynamic-entry entry-group g-1 mb-2 align-items-center">
+            
+            <div class="col-md-2">
+                <input type="text" 
+                       name="Entries[${index}].Name" 
+                       class="form-control form-control-sm Name-field" 
+                       placeholder="Name" />
+            </div>
+
+            <div class="col-md-3">
+                <input type="text" 
+                       name="Entries[${index}].Address" 
+                       class="form-control form-control-sm Address-field" 
+                       placeholder="Address" />
+            </div>
+
+            <div class="col-md-2">
+                <select name="Entries[${index}].CategoryId" 
+                        class="form-select form-select-sm category-select">
+                    ${categoryOptionsHtml}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="Entries[${index}].CasteId" 
+                        class="form-select form-select-sm caste-select">
+                    ${casteDefaultOption}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <input type="tel" 
+                       name="Entries[${index}].Mobile" 
+                       class="form-control form-control-sm Mobile-field" 
+                       placeholder="Mobile" 
+                       maxlength="10" />
+            </div>
+
+            <div class="col-md-1 d-flex align-items-center justify-content-center">
+                <span class="remove-entry text-danger fs-5 remove-entry-btn" style="cursor:pointer;">
+                    <i class="bi bi-dash-circle-fill"></i>
+                </span>
+            </div>
+
+        </div>
+    `;
+
+        $('#entriesContainer').append(rowHtml);
+    }
+
+    //function addEntryRow() {
+    //    const index = $('.entry-group').length;
+    //    const rowHtml = `
+    //        <div class="row dynamic-entry entry-group g-1 mb-2 align-items-center">
+    //            <div class="col-md-2">
+    //                <input type="text" name="Entries[${index}].Name" class="form-control form-control-sm" placeholder="Name" id="Name" />
+    //            </div>
+    //            <div class="col-md-3">
+    //                <input type="text" name="Entries[${index}].Address" class="form-control form-control-sm" placeholder="Address"  id="address"/>
+    //            </div>
+    //            <div class="col-md-2">
+    //                <select name="Entries[${index}].CategoryId" class="form-select form-select-sm category-select" id="Category">
+    //                    ${categoryOptionsHtml}
+    //                </select>
+    //            </div>
+    //            <div class="col-md-2">
+    //                <select name="Entries[${index}].CasteId" class="form-select form-select-sm caste-select" id="caste" >
+    //                    ${casteDefaultOption}
+    //                </select>
+    //            </div>
+    //            <div class="col-md-2">
+    //                <input type="tel" name="Entries[${index}].Mobile" class="form-control form-control-sm" placeholder="Mobile"  maxlength="10"/id="contact">
+    //            </div>
+    //            <div class="col-md-1 d-flex align-items-center justify-content-center">
+    //                <span class="remove-entry text-danger fs-5" style="cursor:pointer;">
+    //                    <i class="bi bi-dash-circle-fill"></i>
+    //                </span>
+    //            </div>
+    //        </div>`;
+    //    $('#entriesContainer').append(rowHtml);
+    //}
+
+    function reindexEntries() {
+        $('.entry-group').each(function (i) {
+            $(this).find('input, select').each(function () {
+                const nameAttr = $(this).attr('name');
+                if (nameAttr) {
+                    const updatedName = nameAttr.replace(/\[\d+\]/, `[${i}]`);
+                    $(this).attr('name', updatedName);
+                }
+            });
+        });
+    }
+
+    // Initial row
+    addEntryRow();
+
+    // Add entry button
+    $('.add-entry').on('click', function () {
+        addEntryRow();
+    });
+
+    // Remove entry row
+    $('#entriesContainer').on('click', '.remove-entry', function () {
+        $(this).closest('.entry-group').remove();
+        reindexEntries();
+    });
+
+        // On category change → fetch castes
+        $('#entriesContainer').on('change', '.category-select', function () {
+            const catId = $(this).val();
+
+            const casteSelect = $(this).closest('.entry-group').find('.caste-select');
+            casteSelect.html(`<option>Loading...</option>`);
+            if (catId) {
+                $.getJSON('/Admin/GetSubcastesByCategory', { categoryId: catId }, function (data) {
+
+                    const options = `<option value="">-- Select Caste --</option>` +
+                        data.map(c => `<option value="${c.SubCaste_Id}">${c.SubCasteName}</option>`).join('');
+
+                    casteSelect.html(options);
+                }).fail(function () {
+                    casteSelect.html(`<option>Error</option>`);
+                });
+            } else {
+                casteSelect.html(casteDefaultOption);
+            }
+        });
+
+    // 🔹 Edit button click event (delegated in case of dynamic rows)
+    $('#myTable').on('click', '.edit-btn', function () {
+        const id = $(this).data('id');
+        console.log("Edit clicked, ID =", id); // 🧠 Debug
+
+        if (!id) {
+            Swal.fire('Error', 'Invalid record ID.', 'error');
+            return;
+        }
+
+        // 🔹 Call controller via AJAX GET
+        $.ajax({
+            url: `/Admin/GetSeniorOrDisabledById/${id}`, // ⚠️ Adjust controller name if needed
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                console.log("Controller Response:", response); // 🧠 Debug response
+
+                if (response.success && response.data) {
+                    const data = response.data;
+
+                    // 🔹 Fill form fields
+                    $('#SeniorOrDisabled').val(data.SeniorOrDisableddata);
+                    //$('#boothId').val(data.BoothNumber || '');
+
+                    // 🔹 Clear old entries
+                    $('#entriesContainer').empty();
+
+                    // 🔹 Create new dynamic row
+                    const rowHtml = `
+    <div class="row dynamic-entry entry-group g-1 mb-2 align-items-center">
+        <input type="hidden" class="form-control form-control-sm id-field" value="${data.Id}" />
+
+        <div class="col-md-2">
+            <input type="text" 
+                   class="form-control form-control-sm Name-field" 
+                   value="${data.Name || ''}" required />
+        </div>
+
+        <div class="col-md-3">
+            <input type="text" 
+                   class="form-control form-control-sm Address-field" 
+                   value="${data.Address || ''}" required />
+        </div>
+
+        <div class="col-md-2">
+            <select class="form-select form-select-sm category-select" required>
+                ${categoryOptionsHtml}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select class="form-select form-select-sm caste-select" required>
+                ${casteDefaultOption}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <input type="text" 
+                   class="form-control form-control-sm Mobile-field" 
+                   value="${data.Mobile || ''}" required />
+        </div>
+    </div>`;
+
+
+                    $('#entriesContainer').append(rowHtml);
+
+                
+                    $('.category-select').val(data.Category).trigger('change');
+
+                 
+                    $('#boothId').val(data.BoothNumber).trigger('change');
+
+                    if (data.VillageListId) {
+                   
+                        window.selectedVillages = data.VillageListId.toString().split(',');
+                    } else {
+                        window.selectedVillages = [];
+                    }
+
+
+                  
+                    setTimeout(() => {
+                        $('.caste-select').val(data.Caste);
+                    }, 500);
+
+                 
+                    $('#dataModal').modal('show');
+                }
+                else {
+                    Swal.fire('Error', response.message || 'Record not found.', 'error');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                Swal.fire('Error', 'Failed to reach controller: ' + (xhr.responseText || error), 'error');
+            }
+        });
+    });
+
+    //$('#myTable').on('click', '.edit-btn', function () {
+    //    const id = $(this).data('id');
+
+    //    $.getJSON(`/Admin/GetSeniorOrDisabledById/${id}`, function (response) {
+    //        if (response.success && response.data) {
+    //            const data = response.data;
+
+    //            $('#SeniorOrDisabled').val(data.SeniorOrDisableddata);
+    //            $('#boothId').val(data.BoothNumber); // Optional
+
+    //            $('#entriesContainer').empty();
+
+    //            const rowHtml = `
+    //       <div class="row dynamic-entry entry-group g-1 mb-2 align-items-center">
+    //           <input type="hidden" class="form-control form-control-sm id-field" value="${data.Id}" />
+
+    //           <div class="col-md-2">
+    //               <input type="text" class="form-control form-control-sm name-field" value="${data.Name}" required />
+    //           </div>
+    //           <div class="col-md-3">
+    //               <input type="text" class="form-control form-control-sm address-field" value="${data.Address}" required />
+    //           </div>
+    //           <div class="col-md-2">
+    //               <select class="form-select form-select-sm category-select" required>
+    //                   ${categoryOptionsHtml}
+    //               </select>
+    //           </div>
+    //           <div class="col-md-2">
+    //               <select class="form-select form-select-sm caste-select" required>
+    //                   ${casteDefaultOption}
+    //               </select>
+    //           </div>
+    //           <div class="col-md-2">
+    //               <input type="text" class="form-control form-control-sm mobile-field" value="${data.Mobile}" required />
+    //           </div>
+    //       </div>`;
+    //            $('#entriesContainer').append(rowHtml);
+
+    //            $('.category-select').val(data.Category).trigger('change');
+
+    //            // Delay caste fill until after category triggers its AJAX
+    //            setTimeout(() => {
+    //                $('.caste-select').val(data.Caste);
+    //            }, 500);
+
+    //            $('#dataModal').modal('show');
+    //        } else {
+    //            Swal.fire('Error', response.message || 'Record not found.', 'error');
+    //        }
+    //    });
+
+    //});
+    // Form submit handler
+
+    $('#dataForm').on('submit', function (e) {
+        e.preventDefault();
+
+        const status = $('#SeniorOrDisabled').val();
+        const boothId = $('#boothId').val();
+
+        if (!status || !boothId) {
+            Swal.fire('Error', 'Please select Type and Booth number', 'error');
+            return;
+        }
+
+        const selectedVillages = $('#VillageList').val();
+        const villageIds = selectedVillages && selectedVillages.length > 0
+            ? selectedVillages.join(',') // convert multiple villages to comma-separated string
+            : '';
+
+        const entries = [];
+        let valid = true;
+
+        $('.entry-group').each(function () {
+            const $row = $(this);
+
+            const id = parseInt($row.find('.id-field').val()) || 0;
+            const name = $row.find('.Name-field').val()?.trim();
+            const address = $row.find('.Address-field').val()?.trim();
+            const mobile = $row.find('.Mobile-field').val()?.trim();
+            const caste = parseInt($row.find('.caste-select').val());
+            const category = parseInt($row.find('.category-select').val());
+
+            console.log("ROW DATA = ", name, address, mobile);
+
+            if (!name || !address || !mobile) {
+                valid = false;
+                return false;
+            }
+
+            entries.push({
+                Id: id,
+                SeniorOrDisableddata: parseInt(status),
+                BoothId: parseInt(boothId),
+                VillageListId: villageIds,
+                Name: name,
+                Address: address,
+                Caste: caste,
+                Category: category,
+                Mobile: mobile
+            });
+
+        });
+
+        if (!valid) {
+            alert("Please fill all required fields.");
+            return;
+        }
+
+        console.log("FINAL ENTRIES:", entries);
+
+
+        //if (!valid) {
+        //    Swal.fire('Error', 'Please complete all required fields.', 'error');
+        //    return;
+        //}
+
+        // ✅ Send only the array of entries to match controller signature
+        $.ajax({
+            url: '/Admin/SeniorOrDisabled',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(entries), // send array only
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: res.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#dataModal').modal('hide');
+                            location.reload(); // reload only after OK click
+                        }
+                    });
+                } else {
+                    Swal.fire('Error', res.message, 'error');
+                }
+            },
+            error: function (xhr) {
+                Swal.fire('Error', 'Unexpected error: ' + xhr.responseText, 'error');
+            }
+        });
+    });
+
+    //$('#dataForm').on('submit', function (e) {
+    //    e.preventDefault();
+
+    //    const status = $('#SeniorOrDisabled').val();
+    //    const boothId = $('#boothId').val();
+
+    //    if (!status || !boothId) {
+    //        Swal.fire('Error', 'Please select Type and Booth number', 'error');
+    //        return;
+    //    }
+
+    //    const entries = [];
+    //    let valid = true;
+
+    //    // ✅ Get all selected village IDs first (only once, outside loop)
+    //    const selectedVillages = $('#VillageList').val(); // returns array of selected values
+    //    let villageIds = '';
+    //    if (selectedVillages && selectedVillages.length > 0) {
+    //        villageIds = selectedVillages.join(','); // convert to comma-separated string
+    //    } else {
+    //        villageIds = ''; // no selection
+    //    }
+
+
+    //    $('.entry-group').each(function () {
+    //        const $row = $(this);
+    //        const id = parseInt($row.find('input[name$=".Id"]').val()) || 0; // ✅ Ensure Id is captured for updates
+    //        const name = $row.find('input[name$=".Name"]').val()?.trim();
+    //        const address = $row.find('input[name$=".Address"]').val()?.trim();
+    //        const mobile = $row.find('input[name$=".Mobile"]').val()?.trim();
+    //        const caste = parseInt($row.find('select[name$=".CasteId"]').val());
+    //        const category = parseInt($row.find('select[name$=".CategoryId"]').val());
+
+    //        if (!name || !address || !mobile || !caste || !category) {
+    //            valid = false;
+    //            return false;
+    //        }
+
+    //        entries.push({
+    //            Id: id,  // ✅ Ensure ID is passed for update
+    //            SeniorOrDisableddata: parseInt(status),  // ✅ Correct property name
+    //            boothId: parseInt(boothId),
+    //            Name: name,
+    //            Address: address,
+    //            Caste: caste,
+    //            Category: category,
+    //            Mobile: mobile
+    //        });
+    //    });
+
+    //    if (!valid) {
+    //        Swal.fire('Error', 'Please complete all required fields.', 'error');
+    //        return;
+    //    }
+
+
+    //    // ✅ Add village IDs also to formData for backend
+    //    formData.set('VillageListId', villageIds);
+    //    console.log("Village IDs:", formData.get('VillageListId'));
+
+    //    // ✅ Add entries array to formData (if applicable)
+    //    formData.set('EntriesJson', JSON.stringify(entries));
+    //    $.ajax({
+    //        url: '/Admin/SeniorOrDisabled',
+    //        method: 'POST',
+    //        contentType: 'application/json',
+    //        data: JSON.stringify(entries),
+    //        success: function (res) {
+    //            if (res.success) {
+    //                Swal.fire('Success', res.message, 'success');
+    //                $('#dataModal').modal('hide');
+    //                location.reload();
+    //            } else {
+    //                Swal.fire('Error', res.message, 'error');
+    //            }
+    //        },
+    //        error: function (xhr) {
+    //            Swal.fire('Error', 'Unexpected error: ' + xhr.responseText, 'error');
+    //        }
+    //    });
+    //});
+
+});
+    // Edit button click handle
+
+</script>
+
+<script>
+    $(document).on('click', '.delete-btn', function () {
+        const id = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You want to delete this entry?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/DeleteSeniorOrDisabled',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire('Deleted!', res.message, 'success');
+
+                            // Optionally remove the row from DOM without reload
+                            $(`button[data-id='${id}']`).closest('tr').remove();
+
+                        } else {
+                            Swal.fire('Error!', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error!', 'Something went wrong.', 'error');
+                    }
+                });
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+    $('#boothId').on('change', function () {
+    const boothId = $(this).val();
+    if (!boothId) return;
+
+    $.ajax({
+        url: '@Url.Action("GetVillagesByBoothId", "Admin")',
+        type: 'GET',
+        data: { boothId },
+        success: function (villages) {
+            const $villageList = $('#VillageList');
+            $villageList.empty();
+
+            villages.forEach(v => {
+                $villageList.append(`<option value="${v.villageId}">${v.Villagename}</option>`);
+            });
+
+            // ✅ If editing, re-select the saved villages after options load
+            if (window.selectedVillages && window.selectedVillages.length > 0) {
+                setTimeout(() => {
+                    $villageList.val(window.selectedVillages).trigger('change');
+                }, 400); // short delay ensures select2/UI refresh
+            }
+
+            // 🔹 Trigger custom event for other scripts (optional)
+            $(document).trigger('villagesLoaded');
+        }
+    });
+});
+
+
+
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 340
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/SeniorOrDisabled?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>

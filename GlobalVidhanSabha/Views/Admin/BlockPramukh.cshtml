@@ -1,0 +1,780 @@
+﻿
+@model IEnumerable<VishanSabha.Models.Block>
+
+@{
+    ViewBag.Title = "Block Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var CategoryList = ViewData["CategoryList"] as List<VishanSabha.Models.Caste>;
+    var casteList = ViewData["CasteList"] as List<VishanSabha.Models.SubCaste>;
+    //var occupationList = ViewData["Occupation"] as List<VishanSabha.Models.Occupation>;
+}
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 500px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+@*<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th {
+        color: white;
+    }
+
+    .table-head th, #myTable td {
+        text-align: center;
+        vertical-align: middle;
+        /*        padding: 4px 6px;*/
+        font-size: 11px;
+    }
+
+    #myTable {
+        width: 100% !important;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #myTable td, #myTable th {
+        white-space: nowrap;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    #myTable td.data-left {
+        text-align: left !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 30px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #myTable td {
+        padding: 2px 6px !important; /* kam padding = chhoti row */
+        line-height: 1.2; /* text gap kam */
+        font-size: 11px; /* optional: chhota font */
+    }
+
+        #myTable th.coll-col,
+        #myTable td.coll-col {
+            width: 50px; /* jitna chhota chahiye utna set karo */
+            white-space: nowrap; /* text wrap na ho */
+            text-align: center; /* text center/right/left jaisa chahiye */
+        }
+
+        #myTable th.caste-col,
+        #myTable td.caste-col {
+            width: 110px;
+            white-space: nowrap;
+            text-align: left; /* left align */
+        }
+
+    .dataTables_wrapper table.dataTable th {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 2px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        padding: 8px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 500px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        .table-scroll thead th {
+            position: sticky !important;
+            top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+</style>*@
+
+<div class="container-fluid mt-5 m-3">
+    <div class="d-flex justify-content-between mt-2 mb-2">
+        <h4 style="color: #FF8C42;">BlockPramukh</h4>
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-2">
+            <select class="form-select form-select-sm shadow-sm rounded-pill border-primary" multiple id="casteFilter">
+
+                @if (casteList != null && casteList.Any())
+                {
+                    foreach (var data in casteList)
+                    {
+                        <option value="@data.SubCaste_Id">@data.SubCasteName</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <button type="button" class="btn btn-outline-secondary w-100 shadow-sm round-0" id="filterButton" title="Filters">
+                <i class="bi bi-arrow-clockwise"></i> Filter
+            </button>
+        </div>
+        <div class="col-sm-2">
+            <button type="button" class="btn btn-outline-secondary w-100 shadow-sm round-0" id="resetFilters" title="Reset Filters">
+                <i class="bi bi-arrow-clockwise"></i> Reset Filter
+            </button>
+        </div>
+    </div>
+
+
+    <div class="table-wrapper shadow rounded p-2">
+
+        <div class="table-controls ">
+            <div id="entriesAndExport" class="d-flex align-items-center gap-2">
+                <div id="exportIcons" class="d-flex align-items-center gap-1">
+
+                    <a href="@Url.Action("BlockPramukhExportList", "Export", new { format = "excel" })"
+                      <i class="bi bi-file-earmark-excel-fill"  style="font-size: 1.3rem; color: #1D6F42; cursor:pointer;"></i>
+                     </a>
+
+                    <a href="@Url.Action("BlockPramukhExportList", "Export", new { format = "pdf" })"
+                      <i class="bi bi-file-earmark-pdf-fill"  style="font-size: 1.3rem; color: #D32F2F; cursor: pointer;"></i>
+                    </a>
+                </div>
+
+            </div>
+            <div id="searchBox"></div>
+        </div>
+
+
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head">
+                    <tr class="myhead">
+                        <th style="width:10px">S.N.</th>
+                        <th class="col-1">Block Name</th>
+                        <th>Block Pramukh</th>
+                        <th>Contact</th>
+                        <th>Caste</th>
+                        <th>Address</th>
+                        <th>Occupation</th>
+                        <th>ProfileImage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        int sn = 1;
+                        foreach (var block in Model)
+                        {
+                            <tr>
+                                <td>@sn</td>
+                                <td class="text-start">@block.BlockName</td>
+                                <td class="text-start">@block.InchargeName</td>
+                                <td>@block.Contact</td>
+                                <td class="text-start">@block.CasteName</td>
+                                <td class="data-left">@block.Address</td>
+                                <td class="text-start">@block.Occupation</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(block.ProfileImage))
+                                    {
+                                        <img src="@Url.Content(block.ProfileImage)" alt="ProfileImage" style="height:35px;width:35px" />
+                                    }
+                                </td>
+
+                            </tr>
+                            sn++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+<!--Filter Script-->
+<script>
+    $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Split comma-separated values into arrays for multiple select
+        const casteId = urlParams.get('casteIds') ? urlParams.get('casteIds').split(',') : [];
+        //const occuId = urlParams.get('occuIds') ? urlParams.get('occuIds').split(',') : [];
+
+        // Set values
+        $('#casteFilter').val(casteId).trigger('change');
+        //$('#occupationFilter').val(occuId).trigger('change');
+
+        $('#casteFilter').select2({
+            placeholder: "Select Caste"
+        });
+        //$('#occupationFilter').select2({
+        //    placeholder: "Select Occupation"
+        //});
+
+        $('#filterButton').on('click', function () {
+            var selectedCaste = $('#casteFilter').val();
+            //var selectedOccu = $('#occupationFilter').val();
+            // Check if both are empty
+            if (
+                (!selectedCaste || selectedCaste.length === 0)
+            ) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No filter selected',
+                    text: 'Please select at least one caste to filter data.',
+                    confirmButtonText: 'OK'
+                });
+
+                return; // Stop further execution
+            } else {
+
+                const url = `${window.location.pathname}?casteIds=${selectedCaste}`;
+                window.location.href = url;
+            }
+        });
+
+        $('#resetFilters').click(function () {
+            $('#casteFilter').val('');
+
+            // Reload page with empty query string
+            window.location.href = window.location.pathname;
+        });
+    })
+</script>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 100,
+                columnDefs: [
+                    { targets: 0, width: "80px" },   // S.N.
+                    //{ targets: 1, width: "120px" },  // Sector
+                    //{ targets: 2, width: "140px" },  // Sector Sanyojak
+                    { targets: 1, width: "80px" },    // Booth No
+                    { targets: 2, width: "80px" },    // Booth No
+                    { targets: 3, width: "80px" },    // Booth No
+                    { targets: 4, width: "80px" },    // Booth No
+                    // Booth No
+                ]
+
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/BlockPramukh?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>
+
+

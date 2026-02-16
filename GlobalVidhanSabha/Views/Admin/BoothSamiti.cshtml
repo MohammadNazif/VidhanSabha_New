@@ -1,0 +1,953 @@
+﻿
+@model IEnumerable<VishanSabha.Models.BoothSamiti>
+
+
+@{
+    ViewBag.Title = "Booth Samiti";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var CategoryList = ViewData["CategoryList"] as List<VishanSabha.Models.Caste>;
+}
+
+<!-- ===================== Styles & Head Scripts ===================== -->
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 530px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+<!-- ===================== Main Content ===================== -->
+<div class="container-fluid m-3 ">
+    <div class="d-flex justify-content-between mb-2">
+        <h2 class="text-orange" style="color: #FF8C42">Booth Samiti</h2>
+        <button class="btn btn-primary" id="mainCreateBtn">
+            Create
+        </button>
+
+    </div>
+
+
+
+    <div class="table-wrapper shadow rounded p-3">
+        <div class="table-controls d-flex justify-content-between align-items-center mb-2 flex-wrap">
+            <div id="entriesAndExport"></div>
+            <div id="searchBox"></div>
+        </div>
+
+        @*<div class="col-md-3 filter-ab">
+            <select id="boothNumberFilter" class="selectpicker form-control" multiple data-live-search="true" data-actions-box="true" title="Filter" required>
+                @foreach (var booth in (IEnumerable<VishanSabha.Models.Booth>)ViewBag.BoothList)
+                {
+                    <option value="@booth.Booth_Id">@booth.BoothNumber</option>
+                }
+            </select>
+        </div>*@
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head">
+                    <tr class="myhead">
+                        <th class="text-white py-2" style="text-align:center!important;">S.N.</th>
+                        <th class="text-white py-2">Booth No</th>
+                        @*<th class="text-white py-2">Booth Name</th>*@
+                        <th class="text-white py-2">Village</th>
+                        <th class="text-white py-2">Polling Station</th>
+                        <th class="text-white py-2">Booth Adhyaksh</th>
+                        <th class="text-white py-2">Total Members</th>
+                        <th class="text-white py-2" style="text-align:left; width:60px;">Contact</th>
+                        <th style="text-align: left; width: 100px; ">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int index = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr data-boothid="@item.BoothId">
+                                <td  style="text-align:center!important;">@index</td>
+                                <td  style="text-align:center!important;"> @item.BoothNumber</td>
+                                @*<td>@item.PollingStationBoothName</td>*@
+                                <td class="caste-col">@item.village</td>
+                                <td class="text-start">@item.BoothName</td>
+                                <td class="text-start">@item.BoothIncharge</td>
+                                <td style="text-align:center!important;">@item.TotalMembers</td>
+                                <td style="text-align: left; width: 100px; ">@item.Mobile</td>
+                                <td>
+                                    <!-- Create button -->
+                                    <button class="btn btn-primary btn-xs createBoothSamitiBtn" data-bs-toggle="modal" data-bs-target="#createBoothSamitiModal"
+                                            data-boothname="@item.BoothName" data-boothid="@item.BoothId" style=" height: 25px; width: 25px;">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                    <!-- View button -->
+                                    <button class="btn btn-xs  btn-info viewBoothSamitiBtn" data-bs-toggle="modal" data-bs-target="#viewBoothSamitiModal"
+                                            data-boothname="@item.BoothName" data-boothid="@item.BoothId" style=" height: 25px; width: 25px;">
+                                        <i class="bi bi-eye text-light"></i>
+                                    </button>
+
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- ===================== Create Booth Samiti Modal ===================== -->
+<div class="modal fade" id="createBoothSamitiModal" tabindex="-1" aria-labelledby="createBoothSamitiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form id="boothSamitiForm" method="post" data-mode="create">
+                <input type="hidden" name="BoothSamiti_Id" id="BoothSamiti_Id" />
+                <input type="hidden" name="BoothId" id="boothIdHidden" />
+
+                <div class="modal-header table-head">
+                    <h5 class="modal-title text-white fw-bold" id="createBoothSamitiLabel">Create Booth Samiti</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-1">
+                        <div class="col-md-6">
+                            <label>Designation</label>
+                            <select name="DesignationId" id="designationDropdown" class="form-select form-select-sm" required>
+                                <option value="">-- Select Designation --</option>
+                            </select>
+
+                        </div>
+
+                        <div id="nameFieldContainer" style="display: none; width: 100%;">
+                            <div class="row g-1">
+                                <div class="col-md-6">
+                                    <label>Name</label>
+                                    <input type="text" name="Name" class="form-control form-control-sm" placeholder="Enter Name" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Category</label>
+                                    <select class="form-select form-select-sm" id="Category" name="Category">
+                                        <option value="">-- Select Category --</option>
+                                        @if (CategoryList?.Any() == true)
+                                        {
+                                            foreach (var data in CategoryList)
+                                            {
+                                                <option value="@data.Caste_Id">@data.CasteName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-1 mt-2">
+                                <div class="col-md-6">
+                                    <label>Caste</label>
+                                    <select class="form-select form-select-sm" id="Cast" name="Cast">
+                                        <option value="">-- Select Caste --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Age</label>
+                                    <input type="number" name="Age" class="form-control form-control-sm" placeholder="Enter Age" />
+                                </div>
+                            </div>
+
+                            <div class="row g-1 mt-2">
+                                <div class="col-md-6">
+                                    <label>Contact</label>
+                                    <input type="tel" name="Mobile" class="form-control form-control-sm" placeholder="Enter Contact Number" maxlength="10" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Occupation</label>
+                                    <input type="text" name="Occupation" class="form-control form-control-sm" placeholder="Enter Occupation" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer justify-content-end">
+                    <button type="submit" class="btn btn-outline-orange">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== View Booth Samiti Entries Modal ===================== -->
+<!-- View Modal -->
+<div class="modal fade" id="viewBoothSamitiModal" tabindex="-1" aria-labelledby="viewBoothSamitiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header table-head">
+                <h5 class="modal-title text-white fw-bold" id="viewBoothSamitiLabel">View Booth Samiti Members</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="viewBoothSamitiContent">
+                    <p class="text-center">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== Booth InchargeModal ===================== -->
+<div class="modal fade" id="createBoothIncharge" tabindex="-1" aria-labelledby="createBoothInchargeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form id="BoothInchargeform" method="post" data-mode="create">
+                <input type="hidden" name="BoothIdHidden" id="BoothIdHidden" />
+
+                <div class="modal-header table-head">
+                    <h5 class="modal-title text-white fw-bold" id="createBoothInchargeLabel">Create Booth Incharge</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-1">
+                        <div class="col-md-6">
+                            <label>Booth</label>
+                            <select name="BoothId" id="BoothIdDropdown" class="form-select form-select-sm" required>
+                                <option value="">-- Select Booth --</option>
+                                @foreach (var booth in (IEnumerable<VishanSabha.Models.Booth>)ViewBag.BoothList)
+                                {
+                                    <option value="@booth.Booth_Id">@booth.BoothNumber</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Booth Incharge</label>
+                            <input type="text" id="boothIncharge" name="boothIncharge" class="form-control form-control-sm" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-end">
+                    <button type="submit" class="btn btn-outline-orange">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== Scripts ===================== -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+
+<script>
+
+    $(document).ready(function () {
+
+
+
+    // Initialize modals once
+    const createModal = new bootstrap.Modal(document.getElementById('createBoothSamitiModal'));
+    const inchargeModal = new bootstrap.Modal(document.getElementById('createBoothIncharge'));
+    const viewModal = new bootstrap.Modal(document.getElementById('viewBoothSamitiModal'));
+
+    // Create Booth Inchargebutton click
+    $('#mainCreateBtn').click(function () {
+        $('#BoothInchargeform').attr('data-mode', 'create')[0].reset();
+        $('#BoothIdDropdown, #boothIncharge').val('');
+        $('#createBoothInchargeLabel').text('Create Booth Incharge');
+        inchargeModal.show();
+    });
+
+    // Create Booth Samiti button click
+    $(document).on('click', '.createBoothSamitiBtn', function () {
+        $('#boothSamitiForm').attr('data-mode', 'create')[0].reset();
+        $('#BoothSamiti_Id, #designationDropdown, #Category').val('');
+        $('#Cast').html('<option value="">-- Select Caste --</option>');
+        $('#nameFieldContainer').hide();
+        $('#extraFields').hide();
+        $('#boothIdHidden').val($(this).data('boothid'));
+        $('#createBoothSamitiLabel').text('Create Booth Samiti for ' + $(this).data('boothname'));
+        createModal.show();
+    });
+
+    // View Booth Samiti button click - load and show modal
+    $(document).on('click', '.viewBoothSamitiBtn', function () {
+        const boothId = $(this).data('boothid');
+        $('#viewBoothSamitiLabel').text('Members of ' + $(this).data('boothname'));
+        $('#viewBoothSamitiContent').html('<p class="text-center">Loading...</p>');
+
+        $.ajax({
+            url: '@Url.Action("GetAllBoothSamiti", "Admin")',
+            type: 'GET',
+            data: { boothId: boothId },
+            success: function (response) {
+                if (response.success && response.data.length > 0) {
+                    let tableHtml = `
+                        <div class="table-responsive shadow rounded p-3">
+                            <table class="table table-bordered table-view table-hover">
+                                <thead class="table-head">
+                                    <tr>
+                                        <th>S.N.</th>
+                                        <th style="text-align:left">Name</th>
+                                        <th style="text-align:left" >Designation</th>
+                                        <th style="text-align:left">Contact</th>
+                                        <th style="text-align:left">Age</th>
+                                        <th style="text-align:left">Occupation</th>
+                                        <th style="text-align:left">Category</th>
+                                        <th style="text-align:left">Caste</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    response.data.forEach((item, index) => {
+                        tableHtml += `
+                            <tr>
+                                <td class="text-center">${index + 1}</td>
+                                <td class="text-left">${item.Name}</td>
+                                <td class="text-left">${item.Designation}</td>
+                                <td class="text-left">${item.Mobile}</td>
+                                <td class="text-center">${item.Age}</td>
+                                <td class="text-left">${item.Occupation}</td>
+                                <td class="text-left">${item.CategoryName ?? ''}</td>
+                                <td class="text-left">${item.SubCasteName ?? ''}</td>
+                                <td>
+                                    <button type="button" class="btn btn-xs  me-1 edit-btn" data-id="${item.BoothSamiti_Id}" title="Edit">
+                                        <i class="fas fa-edit edit-icon"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-xs   me-1 delete-btn" data-id="${item.BoothSamiti_Id}" title="Delete">
+                                        <i class="fas fa-trash-alt delete-icon"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    tableHtml += `</tbody></table></div>`;
+                    $('#viewBoothSamitiContent').html(tableHtml);
+                } else {
+                    $('#viewBoothSamitiContent').html('<p class="text-muted text-center">No members found for this booth.</p>');
+                }
+            },
+            error: function () {
+                $('#viewBoothSamitiContent').html('<p class="text-danger text-center">Error loading data.</p>');
+            }
+        });
+
+        viewModal.show();
+    });
+
+    // Submit Booth Samiti form (create/edit)
+    $('#boothSamitiForm').submit(function (e) {
+        e.preventDefault();
+        $.post('@Url.Action("SaveBoothSamiti", "Admin")', $(this).serialize(), function (resp) {
+            Swal.fire({
+                icon: resp.success ? 'success' : 'error',
+                title: resp.success ? 'Success' : 'Error',
+                text: resp.message,
+                timer: resp.success ? 1500 : undefined,
+                showConfirmButton: true
+            }).then(() => {
+                if (resp.success) location.reload();
+            });
+        }).fail(() => {
+            Swal.fire('Error', 'An error occurred while saving the Booth Samiti.', 'error');
+        });
+    });
+
+    // Designation dropdown toggle
+    $('#designationDropdown').change(function () {
+        $(this).val() ? $('#nameFieldContainer').slideDown() : $('#nameFieldContainer').slideUp();
+    });
+
+    // Category change loads caste dropdown
+    $('#Category').change(function () {
+        const id = $(this).val();
+        const castDropdown = $('#Cast');
+        if (id) {
+            $.get('/Admin/GetSubcasteByCategory', { id }, data => {
+                castDropdown.empty().append('<option value="">-- Select Caste --</option>');
+                data.forEach(item => {
+                    castDropdown.append(`<option value="${item.SubCaste_Id}">${item.SubCasteName}</option>`);
+                });
+            }).fail(() => {
+                Swal.fire('Error', 'Failed to load castes.', 'error');
+            });
+        } else {
+            castDropdown.html('<option value="">-- Select Caste --</option>');
+        }
+    });
+
+    // Booth dropdown change fetches incharge
+    $('#BoothIdDropdown').change(function () {
+        const id = $(this).val();
+        if (id) {
+            $.get('@Url.Action("GetBoothIncharge", "Admin")', { boothId: id }, resp => {
+                resp.success ? $('#boothIncharge').val(resp.incharge) : Swal.fire('Warning', resp.message, 'warning');
+            }).fail(() => {
+                Swal.fire('Error', 'Failed to fetch Booth Incharge.', 'error');
+            });
+        } else {
+            $('#boothIncharge').val('');
+        }
+    });
+
+    // Submit Booth Inchargeform
+    $('#BoothInchargeform').submit(function (e) {
+        e.preventDefault();
+        $.post('@Url.Action("SaveBoothIncharge", "Admin")', $(this).serialize(), resp => {
+            Swal.fire({
+                icon: resp.success ? 'success' : 'error',
+                title: resp.success ? 'Success' : 'Error',
+                text: resp.message,
+                timer: resp.success ? 1500 : undefined,
+                showConfirmButton: true
+            }).then(() => {
+                if (resp.success) location.reload();
+            });
+        }).fail(_ => {
+            Swal.fire('Error', 'Could not connect to server.', 'error');
+        });
+    });
+
+        // Edit button click - fetch data, hide view modal, show create/edit modal
+    $(document).on('click', '.edit-btn', function () {
+    var id = $(this).data('id');
+    $.ajax({
+        url: '@Url.Action("GetBoothSamitiByid", "Admin")',
+        type: 'GET',
+        data: { id: id },
+        success: function (response) {
+            if (response.success) {
+                var data = response.data;
+                console.log(data);
+
+                $('#boothSamitiForm').attr('data-mode', 'edit')[0].reset();
+                $('#createBoothSamitiLabel').text('Edit Booth Samiti');
+                $('#BoothSamiti_Id').val(data.BoothSamiti_Id);
+                $('#boothIdHidden').val(data.BoothId);
+
+                // 🔹 Fetch designations for the booth before setting value
+                $.ajax({
+                    url: '/Admin/GetAvailableDesignations',
+                    type: 'GET',
+                    data: { boothId: data.BoothId },
+                    success: function (designations) {
+                        const $dropdown = $('#designationDropdown');
+                        $dropdown.empty().append('<option value="">-- Select Designation --</option>');
+
+                        designations.forEach(item => {
+                            if (item.disabled) {
+                                $dropdown.append(`<option value="${item.id}" disabled>${item.name} (Assigned)</option>`);
+                            } else {
+                                $dropdown.append(`<option value="${item.id}">${item.name}</option>`);
+                            }
+                        });
+
+                        // ✅ Now safely set the selected value
+                        $dropdown.val(data.DesignationId);
+                    }
+                });
+
+                $('input[name="Name"]').val(data.Name);
+                $('input[name="Age"]').val(data.Age);
+                $('input[name="Mobile"]').val(data.Mobile);
+                $('input[name="Occupation"]').val(data.Occupation);
+                $('#Category').val(data.Category).trigger('change');
+
+                setTimeout(() => {
+                    $('#Cast').val(data.SubCasteName);
+                }, 500);
+
+                $('#nameFieldContainer').show();
+                $('#extraFields').show();
+
+                // Hide view modal (if open) and show edit modal
+                viewModal.hide();
+                createModal.show();
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function () {
+            Swal.fire('Error', 'Could not fetch the record.', 'error');
+        }
+    });
+});
+
+    @*$(document).on('click', '.edit-btn', function () {
+        var id = $(this).data('id');
+        debugger
+        $.ajax({
+            url: '@Url.Action("GetBoothSamitiByid", "Admin")',
+            type: 'GET',
+            data: { id: id },
+            success: function (response) {
+                if (response.success) {
+                    var data = response.data;
+                    console.log(data)
+
+                    $('#boothSamitiForm').attr('data-mode', 'edit')[0].reset();
+                    $('#createBoothSamitiLabel').text('Edit Booth Samiti');
+                    $('#BoothSamiti_Id').val(data.BoothSamiti_Id);
+                    $('#designationDropdown').val(data.DesignationId);
+
+
+
+
+                    $('input[name="Name"]').val(data.Name);
+                    $('input[name="Age"]').val(data.Age);
+                    $('input[name="Mobile"]').val(data.Mobile);
+                    $('input[name="Occupation"]').val(data.Occupation);
+                    $('#Category').val(data.Category).trigger('change');
+
+                    setTimeout(() => {
+                        $('#Cast').val(data.SubCasteName);
+                    }, 500);
+
+                    $('#nameFieldContainer').show();
+                    $('#extraFields').show();
+
+                    // Hide the view modal first
+                    viewModal.hide()
+                    // Show the create/edit modal
+                    createModal.show()
+
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function () {
+                Swal.fire('Error', 'Could not fetch the record.', 'error');
+            }
+        });
+    });*@
+        $('.edit-btn').on('hidden.bs.modal', function () {
+            location.reload();
+        });
+    // Delete button click
+    $(document).on('click', '.delete-btn', function () {
+        var id = $(this).data('id');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will mark the record as deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("DeleteBoothSamiti", "Admin")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Deleted!', response.message, 'success').then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Failed to delete record.', 'error');
+                    }
+                });
+            }
+        });
+    });
+
+    // Reset form and UI when create/edit modal closes
+    $('#createBoothSamitiModal').on('hidden.bs.modal', function () {
+        $('#boothSamitiForm').attr('data-mode', 'create')[0].reset();
+        $('#extraFields').hide();
+        $('#nameFieldContainer').hide();
+        $('#createBoothSamitiLabel').text('Create Booth Samiti');
+        // Reload the page or optionally refresh your data here if you want live updates without reload
+
+    });
+
+    });
+    $(document).on('click', '.createBoothSamitiBtn', function () {
+        const boothId = $(this).data('boothid');
+        $('#boothIdHidden').val(boothId); // Hidden input for form
+
+        const $dropdown = $('#designationDropdown');
+        $dropdown.empty().append('<option value="">-- Select Designation --</option>');
+
+        $.ajax({
+            url: '/Admin/GetAvailableDesignations',
+            type: 'GET',
+            data: { boothId: boothId },
+            success: function (data) {
+                data.forEach(item => {
+                    if (item.disabled) {
+                        $dropdown.append(`<option value="${item.id}" disabled>${item.name} (Assigned)</option>`);
+                    } else {
+                        $dropdown.append(`<option value="${item.id}">${item.name}</option>`);
+                    }
+                });
+            },
+            error: function () {
+                alert("Error loading designations.");
+            }
+        });
+
+        $('#createBoothSamitiModal').modal('show');
+    });
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 340
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/BoothSamiti?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>

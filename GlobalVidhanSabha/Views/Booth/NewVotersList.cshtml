@@ -1,0 +1,172 @@
+﻿
+@{
+    ViewBag.Title = "NewVoters";
+    Layout = "~/Views/Shared/_LayoutBooth.cshtml";
+    var NewVotersList = ViewData["NewVotersList"] as List<VishanSabha.Models.NewVoters>;
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+
+<style>
+    /* Unchanged styles */
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th {
+        color: white;
+    }
+
+    .table-head th, #myTable td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+    #myTable {
+        width: 100% !important;
+    }
+
+        #myTable img {
+            width: 50px !important;
+            height: auto;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #myTable td, #myTable th {
+        white-space: nowrap;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+</style>
+
+
+
+
+<div class="container-fluid mt-5 m-3">
+    <div class="table-responsive shadow rounded p-3">
+        <table id="myTable" class="table table-hover table-bordered align-middle">
+            <thead class="table-head">
+                <tr class="myhead ">
+                    <th class="text-white py-2">S.N.</th>
+                    <th class="text-white py-2">Booth Number</th>
+                    <th class="text-white py-2"> Name</th>
+                    <th class="text-white py-2">Father Name</th>
+                    <th class="text-white py-2">Category </th>
+                    <th class="text-white py-2">Cast </th>
+                    <th class="text-white py-2">Mobile</th>
+                    <th class="text-white py-2">DOB</th>
+                    <th class="text-white py-2">Education</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                }
+                @if (NewVotersList != null && NewVotersList.Any())
+                {
+
+                    foreach (var data in NewVotersList)
+                    {
+                        {
+                            <tr class="text-center align-middle" id="">
+                                <td class="py-2" style="text-align:center!important;">@i</td>
+                                <td class="py-2">@data.BoothNumber</td>
+                                <td class="py-2">@data.Name</td>
+                                <td class="py-2">@data.FatherName</td>
+                                <td class="py-2">@data.CategoryName</td>
+                                <td class="py-2">@data.SubCasteName</td>
+                                <td class="py-2">@data.MobileNumber</td>
+                                <td class="py-2">@data.DOB.ToString()</td>
+                                <td class="py-2">@data.Education</td>
+
+                            </tr>
+                            i++;
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // DataTables init and styling adjustments
+        new DataTable('#myTable');
+        setTimeout(() => {
+            $('.dataTables_length, .dataTables_filter, #myTable_wrapper').css({
+                'margin-bottom': '0', 'padding-bottom': '0', 'margin-top': '0', 'padding-top': '0'
+            });
+        }, 100);
+    })
+</script>

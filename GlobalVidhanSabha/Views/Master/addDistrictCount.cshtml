@@ -1,0 +1,391 @@
+﻿<style>
+    .table-compact-custom {
+        font-size: 0.85rem;
+    }
+
+/*        .table-compact-custom th {
+            background-color: #002147;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 8px 10px !important;
+            border-bottom: 2px solid #eef2f7 !important;
+        }*/
+
+        .table-compact-custom td {
+            padding: 6px 10px !important;
+            vertical-align: middle;
+        }
+
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        padding: 4px 10px;
+        font-size: 0.85rem;
+    }
+
+    .bg-navy {
+        background: #001a35 !important;
+    }
+
+    .form-label {
+        margin-bottom: 2px;
+    }
+
+    #districtModal .modal-dialog {
+        max-width: 500px; 
+    }
+
+    #districtModal .modal-content {
+        max-height: 80vh; 
+        overflow-y: auto; 
+    }
+    .sno-col {
+        width: 50px; /* adjust this value */
+        text-align: center;
+    }
+   
+</style>
+
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold text-navy">District-wise Count Management</h6>
+        <button class="btn btn-sm btn-navy py-1 px-3" onclick="openDistrictModal()">
+            <i class="bi bi-plus-lg me-1"></i> Add District Count
+        </button>
+    </div>
+    <div class="card-body p-2">
+        <div class="table-responsive">
+            <table id="districtTable" class="table table-hover table-bordered table-sm table-compact-custom w-100">
+                <thead>
+                    <tr>
+                        <th class="text-center sno-col">S.No</th>
+                        <th>State Name</th>
+                        <th>District Name</th>
+                        <th class="text-center">Count</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-xl" id="districtModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-navy text-white py-2 px-3">
+                <h6 class="modal-title fw-bold" id="modalTitle">Add District Count</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                <form id="districtForm">
+                    <input type="hidden" id="Id" value="0">
+
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold text-muted">1. Select State</label>
+                        <select class="form-select form-select-sm border-2 shadow-none" id="StateId" required>
+                            <option value="">-- Choose State --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold text-muted">2. Select District</label>
+                        <select class="form-select form-select-sm border-2 shadow-none" id="DistrictId" required disabled>
+                            <option value="">-- First Select State --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">3. Enter Count</label>
+                        <input type="number" class="form-control form-control-sm border-2 shadow-none" id="Count" placeholder="0" required min="1">
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-navy btn-sm flex-grow-1 fw-bold py-2">
+                            <i class="bi bi-check-circle me-1"></i> Save Data
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+
+<script>
+    let districtDataTable;
+
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    $(document).ready(function () {
+        // 1. Initial Load: Bind States & Table
+        bindStateDropdown();
+        initializeTable();
+
+        // 2. Cascading Logic: State change hone par District load karein
+        $('#StateId').on('change', function () {
+            const stateId = $(this).val();
+            if (stateId) {
+                bindDistrictDropdown(stateId);
+            } else {
+                $('#DistrictId').html('<option value="">-- First Select State --</option>').prop('disabled', true);
+            }
+        });
+
+        // 3. Form Submit Logic
+        $('#districtForm').on('submit', function (e) {
+            e.preventDefault();
+
+            let model = {
+                Id: parseInt($('#Id').val()),
+                StateId: parseInt($('#StateId').val()),
+                DistrictId: parseInt($('#DistrictId').val()),
+                Count: parseInt($('#Count').val())
+            };
+
+            Swal.fire({ title: 'Saving...', didOpen: () => Swal.showLoading() });
+
+            $.ajax({
+                url: '/api/Admin/SaveDistict',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire('Saved!', res.message, 'success').then(() => {
+                            $('#districtModal').modal('hide');
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error', res.message, 'error'); // <- SQL RAISERROR will appear here
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire('Error', 'Server error', 'error');
+                }
+
+            });
+        });
+    });
+
+    // --- Helper Functions ---
+
+    function initializeTable() {
+
+        const stateId = getQueryParam("stateId");
+
+        let apiUrl = '/api/Admin/getAllDistict';
+
+        // agar stateId URL me hai to filter wali API call hogi
+        if (stateId) {
+            apiUrl = `/api/Admin/getDistrictByStateCount?stateId=${stateId}`;
+        }
+
+        districtDataTable = initPaginatedTable({
+            apiUrl: apiUrl,
+            tableSelector: '#districtTable',
+
+            columns: [
+                { data: null, class: "text-center", render: (d, t, r, meta) => meta.row + 1 },
+                { data: "StateName" },
+                { data: "DistrictName" },
+                //{ data: "Count", className: "text-center" },
+                {
+                    data: "Count",
+                    className: "text-center",
+                    render: function (count, type, row) {
+                        // Make count clickable
+                        return `<a href="/Master/VidhanSabhaRagiter?StateId=${row.StateId}&DistrictId=${row.DistrictId}" 
+                  class="text-decoration-none text-navy fw-bold">
+                  ${count}
+                 
+                </a>`;
+                    }
+                },
+
+                //{
+                //    data: "Id",
+                //    className: "text-center",
+                //    render: function (id,count, type, row) {
+                //        return `
+                //        <button class="btn btn-sm btn-light border p-1 px-2 me-1"
+                //            onclick="editDistrictCount(${id})">
+                //            <i class="bi bi-pencil-square text-primary"></i>
+                //        </button>
+                //        <button class="btn btn-sm btn-light border p-1 px-2"
+                //            onclick="deleteDistrictCount(${row.DistrictId})">
+                //            <i class="bi bi-trash text-danger"></i>
+                //        </button>`;
+                //    }
+                //}
+
+                {
+                    data: "Id",
+                    className: "text-center",
+                    render: function (id, type, row) {
+                        return `
+        <button class="btn btn-sm btn-light border p-1 px-2 me-1"
+            onclick="editDistrictCount(${id})">
+            <i class="bi bi-pencil-square text-primary"></i>
+        </button>
+        <button class="btn btn-sm btn-light border p-1 px-2"
+            onclick="deleteDistrictCount(${row.DistrictId})">
+            <i class="bi bi-trash text-danger"></i>
+        </button>`;
+                    }
+                }
+
+            ]
+        });
+    }
+
+
+    // States ko dropdown mein load karne ke liye
+    function bindStateDropdown() {
+        $.get('/api/Admin/getAllState', function (res) {
+            console.log(res); // check what you get
+            let options = '<option value="">-- Choose State --</option>';
+
+            if (res && res.success && Array.isArray(res.data)) {
+                res.data.forEach(s => {
+                    options += `<option value="${s.StateId}">${s.StateName}</option>`;
+                });
+            }
+
+            const $state = $('#StateId');
+            if ($state.length) {
+                $state.html(options);
+            } else {
+                console.error("State dropdown not found!");
+            }
+        });
+    }
+
+    function bindDistrictDropdown(stateId, selectedDistrictId = null) {
+        $.get(`/api/Admin/getDistrictsByState?stateId=${stateId}`, function (res) {
+            let options = '<option value="">-- Select District --</option>';
+
+            // Correct path to the array
+            if (res.success && res.data && res.data.success && Array.isArray(res.data.data)) {
+                res.data.data.forEach(d => {
+                    options += `<option value="${d.DistrictId}">${d.DistrictName}</option>`;
+                });
+
+                $('#DistrictId').html(options).prop('disabled', false);
+
+                if (selectedDistrictId) {
+                    $('#DistrictId').val(selectedDistrictId);
+                }
+            } else {
+                console.error("District data not found or invalid format:", res);
+                $('#DistrictId').html(options).prop('disabled', true);
+            }
+        });
+    }
+
+
+    function editDistrictCount(id) {
+        $.get(`/api/Admin/getDistictById?id=${id}`, function (res) {
+            if (res.success) {
+                $('#Id').val(res.data.Id);
+                $('#StateId').val(res.data.StateId).trigger('change');
+                // District bind hone mein time lagta hai isliye hum timeout ya callback use karenge
+                setTimeout(() => {
+                    $('#DistrictId').val(res.data.DistrictId);
+                }, 500);
+                $('#Count').val(res.data.Count);
+                $('#modalTitle').text('Update District Count');
+                $('#districtModal').modal('show');
+            }
+        });
+    }
+
+    function deleteDistrictCount(DistrictId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You want to delete this district?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel'
+    }).then((firstResult) => {
+
+        if (firstResult.isConfirmed) {
+
+            // 🔴 Final confirmation
+            Swal.fire({
+                title: 'Confirm Delete',
+                text: 'This action cannot be undone!',
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel'
+            }).then((finalResult) => {
+
+                if (finalResult.isConfirmed) {
+                    $.ajax({
+                        url: `/api/Admin/deleteDistict?DistrictId=${DistrictId}`,
+                        type: 'DELETE',
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: res.message,
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            }
+                        }
+                    });
+                }
+
+            });
+        }
+    });
+}
+
+
+    //function deleteDistrictCount(DistrictId) {
+    //    Swal.fire({
+    //        title: 'Delete?',
+    //        icon: 'warning',
+    //        showCancelButton: true,
+    //        confirmButtonText: 'Yes, delete!'
+    //    }).then((result) => {
+    //        if (result.isConfirmed) {
+    //            $.ajax({
+    //                url: `/api/Admin/deleteDistict?DistrictId=${DistrictId}`,
+    //                type: 'DELETE',
+    //                success: function (res) {
+    //                    if (res.success) {
+    //                        Swal.fire('Deleted!', res.message, 'success');
+    //                        location.reload();
+    //                    }
+    //                }
+    //            });
+    //        }
+    //    });
+    //}
+
+    function openDistrictModal() {
+        $('#Id').val(0);
+        $('#districtForm')[0].reset();
+        $('#DistrictId').prop('disabled', true);
+        $('#modalTitle').text('Add District Count');
+
+        // Bind States here
+        bindStateDropdown();
+
+        // Show modal
+        $('#districtModal').modal('show');
+    }
+
+</script>

@@ -1,0 +1,141 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>UploadExcelForBooth</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fd7e1417, #ffb3478c);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .upload-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            padding: 25px 30px;
+            width: 380px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+            .upload-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .form-control {
+            height: 40px;
+        }
+
+        .btn-submit {
+            background: #fd7e14;
+            color: #fff;
+            font-weight: 500;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+            .btn-submit:hover {
+                background: #e36b0c;
+                transform: scale(1.03);
+            }
+
+        h3 {
+            font-weight: 600;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-card">
+        <h4 class="text-center mb-4">Upload Booth Excel</h4>
+        <form id="excelUploadForm">
+            <div class="mb-3">
+                <label for="boothExcel" class="form-label">Select Excel File</label>
+                <input class="form-control" id="boothExcel" type="file" accept=".xls,.xlsx" name="file">
+            </div>
+            <button type="submit" class="btn btn-submit w-100">Submit</button>
+        </form>
+    </div>
+    <script src="~/Scripts/jquery-3.7.0.min.js"></script>
+>
+    <script>
+        $(document).ready(function () {
+            $('#excelUploadForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var fileInput = $('#boothExcel')[0].files[0];
+
+                if (!fileInput) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        text: 'Select A File !!',
+                        didClose: () => {
+                            location.reload();
+                        }
+                    });
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append('file', fileInput);
+
+                $.ajax({
+                    url: '/Admin/UploadExcelForBooth',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message,
+                                didClose: () => {
+                                    location.reload();
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message,
+                                didClose: () => {
+                                    location.reload();
+                                }
+                            });
+                        }
+
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: "Some Error Occured!!",
+                            didClose: () => {
+                                location.reload();
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

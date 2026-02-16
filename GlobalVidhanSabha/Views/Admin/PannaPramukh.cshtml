@@ -1,0 +1,890 @@
+﻿@model IEnumerable<VishanSabha.Models.PannaPramukh>
+
+@{
+    ViewBag.Title = "Panna Pramukh";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var CategoryList = ViewData["CategoryList"] as List<VishanSabha.Models.Caste>;
+}
+
+
+<style>
+    /* Unchanged styles */
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th {
+        color: white;
+    }
+
+    .table-head th, #myTable td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+
+    #myTable {
+        width: 100% !important;
+    }
+
+        #myTable img {
+            width: 30px !important;
+            height: auto;
+        }
+
+
+    .table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }
+
+    #myTable td, #myTable th {
+        white-space: nowrap;
+    }
+
+    #myTable td {
+        padding: 2px 6px !important; /* kam padding = chhoti row */
+        line-height: 0 !important; /* text gap kam */
+        font-size: 11px !important; /* optional: chhota font */
+        text-align: left !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .filter-rl {
+        position: relative;
+    }
+
+    .filter-ab {
+        position: absolute;
+        left: 20%;
+        z-index: 100;
+        max-height: 150px !important;
+    }
+
+    #myTable td.data-left {
+        text-align: left !important;
+    }
+
+
+
+
+    .table-scroll {
+        max-height: 500px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        .table-scroll thead th {
+            position: sticky !important;
+            top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        padding: 8px 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+
+
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .sn-col {
+        width: 20px !important;
+        text-align: center !important;
+        white-space: nowrap;
+    }
+
+    .sticky-controls {
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 20; /* Above table head */
+        padding: 8px 10px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<div class="container-fluid mt-5 m-3">
+    <div class="d-flex justify-content-between mb-2">
+        <h4 style="color: #FF8C42;">PannaPramukh Management</h4>
+        <!-- Create button remains the same -->
+        <button class="btn btn-primary" id="openCreateModal" data-bs-toggle="modal" data-bs-target="#createPannaPramukhModal"> Create</button>
+    </div>
+
+    <div class="table-wrapper shadow rounded p-2 filter-rl">
+        @*<div class="col-sm-3 filter-ab">
+                <select id="boothFilter"
+                        class="selectpicker form-control"
+                        multiple data-live-search="true"
+                        data-actions-box="true"
+                        data-width="150px">
+                    <option value="all">All Booths</option>
+                    @foreach (var booth in (IEnumerable<VishanSabha.Models.Booth>)ViewBag.BoothList)
+                    {
+                        <option value="@booth.Booth_Id">@booth.BoothNumber</option>
+                    }
+                </select>
+            </div>*@
+        <div class="table-controls d-flex justify-content-between align-items-center mb-2 flex-wrap">
+            <div id="entriesAndExport"></div>
+            <div id="searchBox"></div>
+        </div>
+        <div class="table-scroll">
+
+            <table id="myTable" class="table table-hover table-bordered align-middle ">
+                <thead class="table-head">
+                    <tr class="myhead">
+                        <th style="width:10px">S.N.</th>
+                        <th>Booth No</th>
+                        @*<th>Booth Name</th>*@
+                        <th>Village</th>
+                        @*<th>Location</th>*@
+                        <th>Panna Pramukh</th>
+                        <th>Panna No.</th>
+                        <th>Caste</th>
+                        <th>Voter Id</th>
+                        <th>Address</th>
+                        <th>Contact</th>
+                        <th>ProfileImage</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal (structure unchanged) -->
+<!-- Modal -->
+<div class="modal fade" id="createPannaPramukhModal" tabindex="-1" aria-labelledby="createPannaPramukhLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="pannaPramukhForm" enctype="multipart/form-data" method="post">
+                <input type="hidden" id="PannaPramukh_Id" name="PannaPramukh_Id" value="" />
+                <div class="modal-header table-head">
+                    <h5 class="modal-title text-white fw-bold" id="createPannaPramukhLabel">Create New Panna Pramukh</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label small">Booth </label>
+                        <select class="form-select form-select-sm" name="Booth_Id" required id="Booth_Id">
+                            <option value="">-- Select Booth --</option>
+                            @foreach (var booth in (IEnumerable<VishanSabha.Models.Booth>)ViewBag.BoothList)
+                            {
+                                <option value="@booth.Booth_Id">@booth.BoothNumber</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Village </label>
+                        <select class="form-select js-example-basic-multiple" name="VillageListId" required id="VillageList" multiple="multiple">
+                            <option value="">-- Select Village --</option>
+
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Panna Pramukh</label>
+                        <input type="text" class="form-control form-control-sm" name="Pannapramukh" placeholder="Enter panna pramukh name" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Panna Number From</label>
+                        <input type="text" class="form-control form-control-sm" name="PannaNumber" placeholder="Enter panna number" required />
+                    </div>
+                    @*<div class="col-md-6">
+                            <label class="form-label small">Panna Number To</label>
+                            <input type="text" class="form-control form-control-sm" name="PannaNumTo" placeholder="Enter panna number" required />
+                        </div>*@
+
+                    <div class="col-md-6 ">
+                        <label for="Category" class="form-label">Category</label>
+                        <select class="form-control" id="Category" name="Category">
+                            <option value="">-- Select Category --</option>
+                            @if (CategoryList != null && CategoryList.Any())
+                            {
+                                foreach (var data in CategoryList)
+                                {
+                                    <option value="@data.Caste_Id">
+                                        @data.CasteName
+                                    </option>
+
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Caste</label>
+                        <select class="form-select form-select-sm" name="Cast" required id="Caste">
+                            <option value="">-- Select Cast --</option>
+                            @*@foreach (var caste in (IEnumerable<VishanSabha.Models.SubCaste>)ViewBag.CastList)
+                                {
+                                    <option value="@caste.SubCaste_Id">@caste.SubCasteName</option>
+                                }*@
+                            <!-- Add more cast categories as needed -->
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Voter Id</label>
+                        <input type="text" class="form-control form-control-sm" name="VoterNumber" placeholder="Enter Voter id" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small">Address</label>
+                        <textarea class="form-control form-control-sm" name="Address" placeholder="Enter full address" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Mobile</label>
+                        <input type="tel" class="form-control form-control-sm" name="Mobile" placeholder="Enter mobile number" required maxlength="10" />
+                    </div>
+                    <div class="col-md-6">
+                        <label form="ProfileImage" class="form-label small">Profile Image</label>
+                        <input type="file" class="form-control form-control-sm" name="ProfileImage" accept="image/*" />
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="submit" class="btn btn-outline-orange">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JS libraries -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        let currentPage = 1;
+
+        // Initialize DataTable
+        const table = new DataTable('#myTable', {
+            scrollCollapse: true,
+            paging: true,
+            pageLength: 100,
+            lengthMenu: [100, 200, 300, 400, 500],
+
+        });
+
+
+
+        // Function to get current selected limit value
+        function getCurrentLimit() {
+            return parseInt($('#myTable_length select').val()) || 10;
+        }
+
+
+        // ✅ NEXT button
+        $('#myTable_next').click(function () {
+            //alert("urhlkjnkn");
+            currentPage++;
+            const limit = getCurrentLimit();
+            loadTableData(currentPage, limit);
+        });
+
+        // ✅ PREVIOUS button
+        $('#myTable_previous').click(function () {
+            if (currentPage > 1) {
+                currentPage--;
+                const limit = getCurrentLimit();
+                loadTableData(currentPage, limit);
+            }
+        });
+
+
+
+
+        // Function to load table data via AJAX
+        function loadTableData(page, limit) {
+            fetch(`/Admin/GetAllPannaPramukh?page=${page}&limit=${limit}`, {
+                method: 'GET'
+            })
+                .catch(error => console.error('Error calling Admin Controller:', error));
+        }
+
+        // ✅ Customize DataTables layout (after render)
+        setTimeout(function () {
+            const lengthDiv = $('.dataTables_length');
+            const filterDiv = $('.dataTables_filter');
+
+            // Capitalize 'entries' → 'Entries'
+            const label = lengthDiv.find('label');
+            label.html(function (i, oldHtml) {
+                return oldHtml.replace(/entries/i, 'Entries');
+            });
+
+            // Styling
+            label.css({
+                'font-weight': '500',
+                'font-size': '13px',
+                'color': '#333'
+            });
+
+            // Move dropdown & search box
+            $('#entriesAndExport').html(lengthDiv);
+            $('#searchBox').html(filterDiv);
+
+            // Layout
+            $('.table-controls').css({
+                'display': 'flex',
+                'justify-content': 'space-between',
+                'align-items': 'center',
+                'gap': '10px'
+            });
+
+        }, 200);
+
+    });
+</script>
+
+@*<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 350,
+                //autoWidth: false,
+                //columnDefs: [
+                //    { width: "60px", targets: 0 },
+                //    { width: "100px", targets: 1 },
+                //    { width: "120px", targets: 2 },
+                //    { width: "120px", targets: 3 },
+                //    { width: "120px", targets: 4 },
+                //    { width: "120px", targets: 5 },
+                //    { width: "120px", targets: 6 },
+                //    { width: "120px", targets: 7 },
+                //    { width: "120px", targets: 8 },
+                //    { width: "120px", targets: 9 },
+                //    { width: "120px", targets: 10 }
+                //]
+
+
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/GetAllPannaPramukh?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>*@
+
+
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+
+    // Load table data
+$(document).ready(function () {
+
+    $('#boothFilter').on('change', function () {
+        let selected = $(this).val(); // array return karega
+        if (selected && selected.includes("all")) {
+            loadPannaPramukh(["all"]);
+        } else if (selected && selected.length > 0) {
+            loadPannaPramukh(selected);
+        } else {
+            loadPannaPramukh(["all"]);
+        }
+    });
+
+    function loadPannaPramukh(selectedBooth) {
+        let ajaxOptions = {
+            url: '@Url.Action("GetAllPannaPramukh", "Admin")',
+            type: 'GET',
+            traditional: true,
+            success: function (response) {
+                const data = Array.isArray(response) ? response : response.data;
+                const tbody = $('#myTable tbody').empty();
+
+                let i = 0;
+                data.forEach(item => {
+                    const imgHtml = item.ProfileImageUrl
+                        ? `<img src="${item.ProfileImageUrl}" height="40" width="40" onerror="this.style.display='none'" />`
+                        : '';
+                    tbody.append(`
+                        <tr class="text-center align-middle" id="row_${item.PannaPramukh_Id}">
+                            <td style="width:10px;text-align:center!important;">${++i}</td>
+                            <td style="text-align:center!important;">${item.BoothNumber || '-'}</td>
+                            <td style="width:20px">${item.village || '-'}</td>
+                       @*<td style="width:20px">
+        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location || '-')}"
+           target="_blank" rel="noopener noreferrer" title="Open in Google Maps">
+            <i class="fa fa-map-marker-alt" style="font-size:18px;"></i>
+        </a>
+    </td>*@
+                            @*<td style="width:20px">${item.location || '-'}</td>*@
+                            <td class="data-left">${item.Pannapramukh || '-'}</td>
+                            <td>${item.PannaNumber || '-'}</td>
+                            <td class="data-left">${item.SubCasteName || '-'}</td>
+                            <td>${item.VoterNumber || '-'}</td>
+                            <td class="data-left">${item.Address || '-'}</td>
+                            <td class="data-left">${item.Mobile || '-'}</td>
+                            <td >${imgHtml}</td>
+                            <td>
+                                <button type="button" class="btn btn-xs me-1 edit-btn" data-id="${item.PannaPramukh_Id}" data-bs-toggle="modal" data-bs-target="#createPannaPramukhModal" title="Edit" style="font-size:8px!important;">
+                                    <i class="fas fa-edit edit-icon"></i>
+                                </button>
+                                <button type="button" class="btn btn-xs me-1 delete-btn" data-id="${item.PannaPramukh_Id}" title="Delete" style="font-size:8px!important;">
+                                    <i class="fas fa-trash-alt delete-icon"></i>
+                                </button>
+                            </td>
+                        </tr>`);
+                });
+            },
+            error: function () {
+                Swal.fire('Error', 'Failed to load Panna Pramukh data.', 'error');
+            }
+        };
+
+        // 🔹 Agar filter se call hai toh parameter bhejna, warna nahi
+        if (selectedBooth) {
+            ajaxOptions.data = { boothNumbers: selectedBooth };
+        }
+
+        $.ajax(ajaxOptions);
+    }
+
+    // 🔹 Page load par bina parameter ke saara data load hoga
+    loadPannaPramukh();
+});
+
+
+
+
+
+
+    // Reset form on Create
+    $('#openCreateModal').on('click', function () {
+        $('#pannaPramukhForm')[0].reset();
+        $('#PannaPramukh_Id').val('');
+        $('#createPannaPramukhLabel').text('Create New Panna Pramukh');
+    });
+
+        // Populate form for Edit
+
+ $(document).on('click', '.edit-btn', function () {
+    const id = $(this).data('id');
+
+    $.ajax({
+        url: '@Url.Action("GetAllPannaPramukh", "Admin")',
+        type: 'GET',
+        success: function (response) {
+            console.log(response,"Panna Data")
+            const data = Array.isArray(response) ? response : response.data;
+            const item = data.find(x => x.PannaPramukh_Id === id);
+            if (!item) return Swal.fire('Error', 'Record not found.', 'error');
+
+            // ✅ Basic info
+            $('#PannaPramukh_Id').val(item.PannaPramukh_Id);
+            $('[name="Pannapramukh"]').val(item.Pannapramukh);
+            $('[name="PannaNumber"]').val(item.PannaNumber);
+            $('[name="PannaNumTo"]').val(item.PannaNumTo);
+            $('[name="VoterNumber"]').val(item.VoterNumber);
+            $('[name="Address"]').val(item.Address);
+            $('[name="Mobile"]').val(item.Mobile);
+            $('#createPannaPramukhLabel').text('Update Panna Pramukh');
+
+            // ✅ Category and caste
+            $('#Category').val(item.Category).trigger('change');
+            setTimeout(() => {
+                $('#Caste').val(item.Cast).trigger('change');
+            }, 500);
+
+            // ✅ Profile Image (if applicable)
+            if (item.ProfileImageUrl) {
+                $('#previewImage').attr('src', item.ProfileImageUrl).show();
+            }
+
+            // ✅ Booth
+            $('#Booth_Id').val(item.Booth_Id).trigger('change');
+
+            // ✅ Store selected villages temporarily
+            window.selectedVillages = item.VillageListId
+                ? item.VillageListId.split(',').map(v => v.trim())
+                : [];
+
+            // ✅ Wait for Booth change AJAX to load villages, then set selected ones
+            const waitForVillageList = setInterval(() => {
+                const $villageList = $('#VillageList');
+                if ($villageList.find('option').length > 0) {
+                    $villageList.val(window.selectedVillages).trigger('change');
+                    clearInterval(waitForVillageList);
+                }
+            }, 300);
+
+            // ✅ Optional: Display readable village names somewhere
+            if (item.village) {
+                $('#SelectedVillageNames').text(item.village);
+                // (Make sure to have a span or div with this ID if you want to show names)
+            }
+        },
+        error: function () {
+            Swal.fire('Error', 'Failed to fetch record.', 'error');
+        }
+    });
+});
+
+
+
+
+
+    // Delete button click handler (soft delete)
+$(document).on('click', '.delete-btn', function () {
+    const id = $(this).data('id');
+    const row = $(this).closest('tr');
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This will soft delete the record.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '@Url.Action("DeletePannaPramukh", "Admin")',
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire('Deleted!', response.message, 'success');
+                        row.remove();
+                        loadPannaPramukh();  // refresh table after delete
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Failed to delete the record.', 'error');
+                }
+            });
+        }
+    });
+});
+
+
+        // Submit form for both create & update
+        $('#pannaPramukhForm').on('submit', function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    // ✅ Get all selected village IDs
+    const selectedVillages = $('#VillageList').val(); // returns array of selected values
+
+    if (selectedVillages && selectedVillages.length > 0) {
+        // Convert array to comma-separated string
+        const villageIds = selectedVillages.join(',');
+        formData.set('VillageListId', villageIds); // override with comma-separated value
+    } else {
+        formData.set('VillageListId', ''); // no selection
+    }
+
+    console.log("Village IDs:", formData.get('VillageListId'));
+
+    $.ajax({
+        url: '@Url.Action("Pannapramukh", "Admin")',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            console.log("Response from server:", response);
+
+            if (response.success) {
+                Swal.fire('Success', response.message || 'Saved successfully!', 'success').then(() => {
+                    location.reload();
+                });
+
+                const modalEl = document.getElementById('createPannaPramukhModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+                $('#pannaPramukhForm')[0].reset();
+                $('#PannaPramukh_Id').val('');
+                loadPannaPramukh();
+            } else {
+                Swal.fire('Error', response.message || 'Failed to save.', 'error');
+            }
+        },
+        error: function () {
+            Swal.fire('Error', 'An unexpected error occurred.', 'error');
+        }
+    });
+});
+
+
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        $("#Category").change(function () {
+            var selectedId = $(this).val();
+
+            if (selectedId) {
+                $.ajax({
+                    url: '/Admin/GetSubcasteByCategory',
+                    type: 'GET',
+                    data: { id: selectedId },
+                    success: function (response) {
+
+                        $("#Caste").empty();
+                        $("#Caste").append('<option value="">-- Select Caste --</option>');
+
+
+                        $.each(response, function (i, item) {
+                            $("#Caste").append('<option value="' + item.SubCaste_Id + '">' + item.SubCasteName + '</option>');
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Some error occured!!'
+                        });
+                    }
+                });
+            } else {
+                $("#Caste").empty();
+                $("#Caste").append('<option value="">-- Select Caste --</option>');
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+    $('#Booth_Id').on('change', function () {
+    const boothId = $(this).val();
+    if (!boothId) return;
+
+    $.ajax({
+        url: '@Url.Action("GetVillagesByBoothId", "Admin")',
+        type: 'GET',
+        data: { boothId },
+        success: function (villages) {
+            const $villageList = $('#VillageList');
+            $villageList.empty();
+            villages.forEach(v => {
+                $villageList.append(`<option value="${v.villageId}">${v.Villagename}</option>`);
+            });
+
+            // Re-apply previously selected villages if editing
+            if (window.selectedVillages && window.selectedVillages.length > 0) {
+                $villageList.val(window.selectedVillages).trigger('change');
+            }
+        }
+    });
+});
+
+
+
+    });
+</script>
+
+
+<script>
+    document.getElementById('createPannaPramukhModal').addEventListener('hidden.bs.modal', function () {
+        const form = document.getElementById('pannaPramukhForm');
+        form.reset();
+
+        // Clear hidden fields
+        document.getElementById('PannaPramukh_Id').value = '';
+
+
+        const villageField = document.getElementById('VillageList');
+        if (villageField) {
+            villageField.value = '';
+
+            $(villageField).val('').trigger('change');
+        }
+
+        // Reset submit button text
+        //$("#mysectorform button[type=submit]").text("Save");
+    });
+</script>
+

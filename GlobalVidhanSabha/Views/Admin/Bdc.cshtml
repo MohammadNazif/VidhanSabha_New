@@ -1,0 +1,955 @@
+﻿
+@model IEnumerable<VishanSabha.Models.BDC>
+
+@{
+    ViewBag.Title = "BDC Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var CategoryList = ViewData["CategoryList"] as List<VishanSabha.Models.Caste>;
+    var BlockList = ViewData["BlockList"] as List<VishanSabha.Models.Block>;
+    var VillageList = ViewData["VillageList"] as List<VishanSabha.Models.VillageList>;
+    var party = ViewData["Party"] as List<VishanSabha.Models.Party>;
+
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@*<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />*@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="~/Assets/css/select2.css" />
+
+
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 530px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+<div class="container-fluid  m-3">
+    <div class="d-flex justify-content-between mb-2">
+        <h4 style="color: #FF8C42;">BDC Management</h4>
+        <button class="btn btn-primary" id="openCreateModal" data-bs-toggle="modal" data-bs-target="#createBDCModal"> Create</button>
+    </div>
+
+    <div class="table-wrapper shadow rounded p-2">
+        <div class="table-controls d-flex justify-content-between align-items-center mb-2 flex-wrap">
+            <div id="entriesAndExport"></div>
+            <div id="searchBox"></div>
+        </div>
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head">
+                    <tr class="myhead">
+                        <th  style="text-align:center!important;">S.N.</th>
+                        @*<th class="col-1">Ward No.</th>*@
+                        <th>Name</th>
+                        <th>Village</th>
+                        <th>Contact</th>
+                        <th  style="text-align:center!important;">Age</th>
+                        @*<th>Category</th>*@
+                        <th>Caste</th>
+                        <th>Education</th>
+                        <th>Block</th>
+                        <th>Party</th>
+                        <th>ProfileImage</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        int sn = 1;
+                        foreach (var bdc in Model)
+                        {
+                            <tr>
+                                <td  style="text-align:center!important;">@sn</td>
+                                @*<td>@bdc.WardNumber</td>*@
+                                <td class="text-start">@bdc.Name</td>
+                                <td class="text-start">@bdc.Village</td>
+                                <td>@bdc.Contact</td>
+                                <td  style="text-align:center!important;">@bdc.Age</td>
+                                @*<td>@bdc.CategoryName</td>*@
+                                <td class="text-start">@bdc.CasteName</td>
+                                <td class="text-start">@bdc.Education</td>
+                                <td class="text-start">@bdc.BlockName</td>
+                                <td>@bdc.partyName</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(bdc.ProfileImage))
+                                    {
+                                        <img src="@Url.Content(bdc.ProfileImage)" alt="ProfileImage" style="height:40px;width:40px" />
+                                    }
+                                </td>
+                                <td>
+                                    <button data-id="@bdc.BDC_Id" class="btn btn-sm  edit-btn"><i class="fas fa-edit edit-icon"></i></button>
+                                    <button data-id="@bdc.BDC_Id" class="btn btn-sm  delete-btn"><i class="fas fa-trash delete-icon"></i></button>
+                                </td>
+                            </tr>
+                            sn++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Create BDC Modal -->
+<div class="modal fade" id="createBDCModal" tabindex="-1" aria-labelledby="createBDCLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="bdcForm" enctype="multipart/form-data" method="post">
+                <input type="hidden" id="BDC_Id" name="BDC_Id" />
+                <div class="modal-header table-head">
+                    <h5 class="modal-title text-white fw-bold" id="createBDCLabel">Create New BDC Member</h5>
+                    <button type="button" class="btn-close" onclick="CloseForm()" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label small">Block</label>
+                            <select class="form-select form-select-sm" id="Block_Id" name="Block_Id" required>
+                                <option value="">-- Select Block --</option>
+                                @if (BlockList != null)
+                                {
+                                    foreach (var block in BlockList)
+                                    {
+                                        <option value="@block.Block_Id">@block.BlockName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Name</label>
+                            <input type="text" class="form-control form-control-sm" id="Name" name="Name" placeholder="Enter full name" required />
+                        </div>
+                        <div class="col-md-2 ">
+                            <label class="form-label small">Ward Number</label>
+                            <input type="text" class="form-control form-control-sm" id="WardNumber" name="WardNumber" placeholder="Enter Ward" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Village</label>
+                            <select class="form-select form-select-sm js-example-basic-multiple" id="villageId" name="villageId" multiple>
+                                <option value="" id="Village_Id">-- Select Village --</option>
+                                @if (VillageList != null)
+                                {
+                                    foreach (var Village in VillageList)
+                                    {
+                                        <option value="@Village.villageId">@Village.Villagename</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small">Category</label>
+                            <select class="form-select form-select-sm" name="Category" id="Category">
+                                <option value="">-- Select Category --</option>
+                                @if (CategoryList != null)
+                                {
+                                    foreach (var cat in CategoryList)
+                                    {
+                                        <option value="@cat.Caste_Id">@cat.CasteName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small">Caste</label>
+                            <select class="form-select form-select-sm" name="Caste" id="Caste">
+                                <option value="">-- Select Caste --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label small">Age</label>
+                            <input type="number" class="form-control form-control-sm" id="Age" name="Age" placeholder="Enter Age" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small">Contact</label>
+                            <input type="tel" class="form-control form-control-sm" id="Contact" name="Contact" placeholder="Enter Mobile" required maxlength="10" />
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <!-- Dropdown for Part Name -->
+                                <div class="col-md-6">
+                                    <label class="form-label small">Part Name</label>
+
+                                    <select name="party">
+                                        <option value="">--Select--</option>
+                                        @foreach (var data in party)
+                                        {
+                                            <option value="@data.id">@data.party</option>
+                                        }
+                                    </select>
+
+                                </div>
+
+                                <!-- Contact Field -->
+                                <div class="col-md-6">
+                                    <label class="form-label small">Education</label>
+                                    <input type="text" class="form-control form-control-sm" id="Education" name="Education" placeholder="Enter Education" />
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <label class="form-label small">Profile Image</label>
+                            <input type="file" class="form-control form-control-sm" id="ProfileImage" name="ProfileImage" accept="image/*" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer py-2">
+                    <button type="submit" class="btn btn-outline-orange">Save</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+@*<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>*@
+
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="~/Assets/js/select2.full.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 355
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/Bdc?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>
+<script>
+    var villages = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(VillageList));
+    console.log(villages,'jhgjg')
+</script>
+
+
+<script>
+    $('.js-example-basic-multiple').each(function () {
+        if (!$(this).hasClass('select2-hidden-accessible')) {
+            $(this).select2();
+        }
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        // 🔄 Populate Subcaste Dropdown on Category Change
+        $("#Category").change(function () {
+            var selectedId = $(this).val();
+
+            if (selectedId) {
+                $.ajax({
+                    url: '/Admin/GetSubcasteByCategory',
+                    type: 'GET',
+                    data: { id: selectedId },
+                    success: function (response) {
+                        $("#Caste").empty().append('<option value="">-- Select Caste --</option>');
+                        $.each(response, function (i, item) {
+                            $("#Caste").append('<option value="' + item.SubCaste_Id + '">' + item.SubCasteName + '</option>');
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to load caste list.'
+                        });
+                    }
+                });
+            } else {
+                $("#Caste").empty().append('<option value="">-- Select Caste --</option>');
+            }
+        });
+
+        // ✅ Initialize Select2 on Village Dropdown
+
+        // ✅ Handle BDC Form Submit (AJAX)
+        $('#bdcForm').submit(function (e) {
+            e.preventDefault(); // Prevent default form submit
+
+            var formData = new FormData(this); // Collect form data including files
+
+            // ✅ Get all selected village IDs
+            const selectedVillages = $('#villageId').val(); // returns array of selected values
+
+            if (selectedVillages && selectedVillages.length > 0) {
+                // Convert array to comma-separated string
+                const villageIds = selectedVillages.join(',');
+                formData.set('villageId', villageIds); // override with comma-separated value
+            } else {
+                formData.set('villageId', ''); // no selection
+            }
+
+            console.log("Village IDs:", formData.get('villageId'));
+
+            $.ajax({
+                url: '/Admin/AddOrUpdateBDC', // ✅ Corrected the URL format
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message
+                        }).then(() => {
+                            $('#createBDCModal').modal('hide');
+                            location.reload();
+                            // Refresh the table or page
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'AJAX Error',
+                        text: error
+                    });
+                }
+            });
+        });
+    });
+
+
+    //$('#bdcForm').on('submit', function (e) {
+    //    e.preventDefault();
+
+    //    var formData = new FormData(this);
+
+
+    //    var villageIds = [];
+
+
+    //    $('#Village option:selected').each(function () {
+    //        villageIds.push($(this).val());
+    //    });
+
+
+    //    if (villageIds.length === 0) {
+    //        Swal.fire({
+    //            icon: 'warning',
+    //            title: 'Missing Data',
+    //            text: 'Please select at least one village before submitting.'
+    //        });
+    //        return;
+    //    }
+    //    formData.set('Village_Id', villageIds.join(','));  // e.g. "12,15,22"
+
+
+    //    $.ajax({
+    //        url: '/Admin/AddOrUpdateBDC',
+    //        type: 'POST',
+    //        data: formData,
+    //        contentType: false,
+    //        processData: false,
+    //        success: function (response) {
+    //            if (response.success) {
+    //                Swal.fire({
+    //                    icon: 'success',
+    //                    title: 'Success',
+    //                    text: response.message,
+    //                    showConfirmButton: false,
+    //                    timer: 1500
+    //                }).then(() => {
+    //                    $('#createBDCModal').modal('hide');
+    //                    location.reload();
+    //                });
+    //            } else {
+    //                Swal.fire({
+    //                    icon: 'error',
+    //                    title: 'Error',
+    //                    text: response.message || 'Failed to save BDC profile'
+    //                });
+    //            }
+    //        },
+    //        error: function (xhr, status, error) {
+    //            Swal.fire({
+    //                icon: 'error',
+    //                title: 'AJAX Error',
+    //                text: error
+    //            });
+    //        }
+    //    });
+    //});
+
+
+    $(document).ready(function () {
+
+        // Initialize Select2 for Village dropdown
+        //$('#villageId').select2({
+        //    placeholder: "Select Village",
+        //    allowClear: true
+        //});
+
+        // ✅ Edit button click handler
+        $(document).on('click', '.edit-btn', function () {
+            const id = $(this).data('id');
+            console.log("Edit button clicked. ID:", id);
+
+            if (!id) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Selection',
+                    text: 'No BDC ID found for this record.'
+                });
+                return;
+            }
+
+            $.ajax({
+                url: '/Admin/GetBDCById', // ✅ If controller is inside "Areas/Admin", use '/Admin/Admin/GetBDCById'
+                type: 'GET',
+                data: { id: id },
+                beforeSend: function () {
+                    // Optional loader/spinner
+                    $('#createBDCModal').modal('hide');
+                },
+                success: function (response) {
+                    console.log("BDC Response:", response);
+
+                    if (response.success && response.data) {
+                        const bdc = response.data;
+
+                        // ✅ Fill form fields
+                        $('#BDC_Id').val(bdc.BDC_Id);
+                        $('#Block_Id').val(bdc.Block_Id);
+                        $('#Name').val(bdc.Name);
+
+                        // ✅ Handle Village pre-selection for Select2
+                        const selectedVillageId = bdc.villageId;
+                        const selectedVillageText = bdc.Village;
+
+                        if (selectedVillageId && selectedVillageText) {
+                            // Clear previous options to avoid duplicates
+                            $('#villageId').empty();
+                            const newOption = new Option(selectedVillageText, selectedVillageId, true, true);
+                            $('#villageId').append(newOption).trigger('change');
+                        } else {
+                            $('#villageId').val(null).trigger('change');
+                        }
+
+                        // ✅ Party
+                        $('[name="party"]').val(bdc.party);
+
+                        // ✅ Category + dependent caste (wait 300ms in case list loads dynamically)
+                        $('#Category').val(bdc.Category).trigger('change');
+                        setTimeout(() => {
+                            $('#Caste').val(bdc.Caste);
+                        }, 300);
+
+                        // ✅ Other fields
+                        $('#Age').val(bdc.Age);
+                        $('#Contact').val(bdc.Contact);
+                        $('#Education').val(bdc.Education);
+                        $('#WardNumber').val(bdc.WardNumber);
+
+                        // ✅ Open modal after data is filled
+                        $('#createBDCModal').modal('show');
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Not Found',
+                            text: response.message || 'BDC data not found.'
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", status, error, xhr.responseText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch BDC details from server.'
+                    });
+                }
+            });
+        });
+    });
+
+
+
+    //$(document).on('click', '.edit-btn', function () {
+    //    const id = $(this).data('id');
+
+    //    $.ajax({
+    //        url: '/Admin/GetBDCById',
+    //        type: 'GET',
+    //        data: { id: id },
+    //        success: function (response) {
+    //            if (response.success && response.data) {
+    //                const bdc = response.data;
+    //                console.log(bdc)
+    //                // Fill form fields
+    //                $('#BDC_Id').val(bdc.BDC_Id);
+    //                $('#Block_Id').val(bdc.Block_Id);
+    //                $('#Name').val(bdc.Name);
+
+    //                var selectedVillageId = bdc.villageId;
+    //                var selectedVillageText = bdc.Village; // Get from response
+
+    //                if (selectedVillageId) {
+    //                    var newOption = new Option(selectedVillageText, selectedVillageId, true, true);
+    //                    $('#villageId').append(newOption).trigger('change');
+    //                }
+    //                $('[name="party"]').val(bdc.party);
+    //                $('#Category').val(bdc.Category).trigger('change');
+
+    //                setTimeout(() => {
+    //                    $('#Caste').val(bdc.Caste); // Wait if caste list loads after
+    //                }, 300); // slight delay to ensure caste list populates
+
+    //                $('#Age').val(bdc.Age);
+    //                $('#Contact').val(bdc.Contact);
+    //                $('#Education').val(bdc.Education);
+    //                $('#WardNumber').val(bdc.WardNumber);
+
+    //                // Open modal
+    //                $('#createBDCModal').modal('show');
+    //            } else {
+    //                Swal.fire({
+    //                    icon: 'error',
+    //                    title: 'Not Found',
+    //                    text: response.message || 'BDC data not found.'
+    //                });
+    //            }
+    //        },
+    //        error: function (xhr, status, error) {
+    //            Swal.fire({
+    //                icon: 'error',
+    //                title: 'Error',
+    //                text: 'Failed to fetch BDC details.'
+    //            });
+    //        }
+    //    });
+    //});
+
+
+
+    $(document).on('click', '.delete-btn', function () {
+        var blockId = $(this).data('id');
+        var row = $(this).closest('tr');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/DeleteBDC',
+                    type: 'POST',
+                    data: { id: blockId },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Deleted!', response.message, 'success');
+                            // Remove the row from table
+                            row.fadeOut(500, function () { $(this).remove(); });
+                        } else {
+                            Swal.fire('Error!', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error!', 'Something went wrong on the server.', 'error');
+                    }
+                });
+            }
+        });
+    });
+    function CloseForm() {
+        const form = $('#bdcForm')[0];
+        if (form) {
+            form.reset();
+        }
+
+        // Reset village dropdown to default placeholder option
+        $('#villageId').empty().append('<option value="">-- Select Village --</option>').val('');
+        villages.forEach(function (village) {
+            $('#villageId').append('<option value="' + village.villageId + '">' + village.Villagename + '</option>');
+        });
+
+        // If you're using select2, trigger change to refresh UI
+        $('#villageId').trigger('change');
+    }
+
+
+    $('#villageId').select2({
+        dropdownParent: $('#villageId').parent(),
+        minimumResultsForSearch: 0
+    });
+
+</script>

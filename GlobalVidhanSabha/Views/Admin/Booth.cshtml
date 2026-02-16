@@ -1,0 +1,1610 @@
+﻿@model IEnumerable<VishanSabha.Models.Booth>
+
+@{
+    ViewBag.Title = "Booth";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+}
+@{
+    var categoryList = ViewData["CategoryList"] as List<VishanSabha.Models.Caste>;
+}
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 520px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+    .modal-dialog-scrollable .modal-content {
+        overflow: auto !important;
+    }
+/*
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+<!-- Bootstrap + DataTables CSS -->
+<!-- ✅ Custom CSS goes here -->
+@*<style>
+        /* Custom table header color */
+        .table-head {
+            background-color: #FF8C42;
+        }
+
+        .btn-show-Incharge {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+
+            .btn-show-incharge:hover {
+                background-color: #e67628;
+                color: white;
+            }
+
+        .btn-outline-orange {
+            border-color: orange;
+            color: orange;
+        }
+
+            .btn-outline-orange:hover {
+                background-color: #FF8C42;
+                color: white;
+            }
+
+
+
+        label {
+            font-weight: normal;
+        }
+
+        .edit-icon {
+            color: green; /* Default color */
+        }
+
+        .edit-btn:hover .edit-icon {
+            color: white; /* Hover color */
+        }
+
+        .delete-icon {
+            color: red; /* Default color */
+        }
+
+        .delete-btn:hover .delete-icon {
+            color: white; /* Hover color */
+        }
+
+        .table-head th {
+            color: white;
+        }
+
+
+        .table-responsive {
+            overflow-x: auto;
+            white-space: nowrap;
+            max-height: 80vh !important;
+            white-space: nowrap;
+        }
+        /* Compact table header */
+        .table-head th, #myTable td {
+            text-align: left;
+            vertical-align: middle;
+            padding: 5px 8px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+
+        #myTable td {
+            padding: 2px 6px !important;
+            line-height: 1.2 !important;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+
+
+        #myTable {
+            width: 100% !important;
+            table-layout: auto;
+        }
+
+
+            #myTable img {
+                width: 40px !important;
+                height: auto;
+            }
+
+        .dataTables_length select {
+            font-size: 12px !important;
+            padding: 2px 5px !important;
+            width: 54px !important;
+            height: 28px !important;
+        }
+
+        .dataTables_filter input {
+            font-size: 12px !important;
+            padding: 3px 6px !important;
+            width: 150px !important;
+            height: 28px !important;
+            border-radius: 4px;
+        }
+
+        div.dataTables_filter input[type="search"] {
+            border: 1px solid #FF8C42 !important;
+        }
+
+        #myTable_paginate .paginate_button {
+            font-size: 12px;
+            margin-top: 10px;
+            padding: 5px 10px;
+            min-width: 40px;
+            height: 30px;
+            border-radius: 5px;
+            margin: 0 2px;
+            cursor: pointer;
+            background-color: #FF8C42;
+            color: black;
+            border: none;
+        }
+        /*.dataTables_scrollBody {
+            position: relative;
+            overflow-x: auto !important;
+        }
+
+        .dataTables_scroll {
+            padding-bottom: 15px;*/ /* thoda space niche chhod do scrollbar ke liye */
+        /*}*/
+
+        /*#tableScrollSync {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            overflow-x: auto;
+            background: #f8f9fa;
+            border-top: 1px solid #ccc;
+            height: 16px;*/ /* sirf scrollbar ke liye */
+        /*z-index: 9999;
+        }
+
+        #scrollDummy {
+            height: 1px;
+        }*/
+
+        #villageTableContainer table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .modal-dialog-scrollable .modal-body {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            overflow: visible !important;
+        }
+
+
+
+
+        .table-scroll {
+            max-height: 500px; /* adjust height */
+            overflow-y: auto;
+            overflow-x: auto;
+            position: relative;
+            overflow: auto;
+            z-index: 1;
+        }
+
+            .table-scroll table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            /* Sticky header */
+            .table-scroll thead th {
+                position: sticky !important;
+                top: 0;
+                background-color: #FF8C42;
+                color: white;
+                z-index: 10;
+                box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+            }
+
+            .table-scroll::-webkit-scrollbar {
+                height: 9px;
+                width: 8px;
+            }
+
+            .table-scroll::-webkit-scrollbar-thumb {
+                background-color: #a4a4a4;
+                border-radius: 4px;
+            }
+
+        .table-controls {
+            position: sticky;
+            top: 0;
+            z-index: 15;
+            background: #fff;
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        body {
+            background: rgba(242, 243, 247, 0.7);
+        }
+
+        .container-fluid {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+            position: relative;
+            z-index: 1;
+        }
+
+        .dataTables_length label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-right: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        div.dataTables_filter input[type="search"] {
+            border: 1px solid #FF8C42 !important; /* Default border */
+            outline: none !important; /* Default blue outline hatayega */
+            box-shadow: none !important; /* Shadow remove karega */
+        }
+
+            div.dataTables_filter input[type="search"]:focus {
+                border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+                outline: none !important;
+                box-shadow: none !important;
+            }
+
+        .sn-col {
+            width: 20px !important;
+            text-align: center !important;
+            white-space: nowrap;
+        }
+
+        .sticky-controls {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 20; /* Above table head */
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-wrapper {
+            margin-top: 10px; /* 👈 filter section ke neeche gap */
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+    </style>*@
+
+
+
+<div class="container-fluid mt-5 m-3">
+    <div class="d-flex justify-content-between mb-2 ">
+        <h3 style="color: #FF8C42;">Booth Management</h3>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSectorModal">Create</button>
+    </div>
+
+    <div class="table-wrapper shadow rounded P-2" id="tableWrapper">
+        <div class="table-controls">
+            <div id="entriesAndExport"></div>
+            <div id="searchBox"></div>
+        </div>
+
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head">
+                    <tr class="myhead">
+
+                        <th class="text-white" style="min-width: 5px !important">Booth No</th>
+                        <th class="text-white">Mandal</th>
+                        <th class="text-white">Sector Name</th>
+                        <th class="text-white">Village</th>
+                        @*<th class="text-white">Booth Name</th>*@
+                        <th class="text-white">Polling Station</th>
+                        <th class="text-white">Booth Adhyaksh</th>
+                        <th class="text-white">Contact</th>
+                        <th class="text-white">Caste</th>
+                        <th class="text-white">Profile Image</th>
+                        <th class="text-white">Location</th>
+                        <th class="text-white">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var data in Model)
+                    {
+                        <tr class="text-center align-middle text-white">
+
+                            <td style="text-align:center!important;min-width:5px!important">@data.BoothNumber</td>
+                            <td>@data.MandalName</td>
+                            <td>@data.SectorName</td>
+                            <td>@Html.Raw(string.Join(",<br>", data.VillageNames))</td>
+
+                            @*<td style="text-align:center!important;">@data.VillageNames</td>*@
+                            @*<td>@data.PollingStationBoothName</td>*@
+                            <td>@data.BoothName</td>
+                            <td>@data.InchargeName</td>
+                            <td>@data.PhoneNumber</td>
+                            <td style="text-align:left">@data.SubCasteName</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(data.ProfileImage))
+                                {
+                                    <img src="@Url.Content(data.ProfileImage)" class="img-thumbnail"
+                                         style="max-width:50px; max-height:50px;" />
+                                }
+                                else
+                                {
+                                    <span>No Image</span>
+                                }
+                            </td>
+                            @using System.Net
+
+                            <td class="text-center">
+                                <a href="https://www.google.com/maps/search/?api=1&query=@(WebUtility.UrlEncode(data.boothLocation))"
+                                   target="_blank" rel="noopener noreferrer" title="Open in Google Maps">
+                                    <i class="fa fa-map-marker-alt" style="font-size:18px;"></i>
+                                </a>
+                            </td>
+
+
+
+                            <td>
+                                <!-- Edit button -->
+                                <button class="edit-btn btn " data-id="@data.Booth_Id">
+                                    <i class="fas fa-edit text-success"></i>
+                                </button>
+
+
+                                <!-- Delete button -->
+                                <button type="button" class="btn btn-sm  me-1 delete-btn" data-id="@data.Booth_Id">
+                                    <i class="fas fa-trash-alt delete-icon"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+<!-- Modal -->
+<div class="modal fade" id="createSectorModal" tabindex="-1" aria-labelledby="createSectorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg ">
+        <div class="modal-content">
+            <form id="boothForm" enctype="multipart/form-data">
+                <div class="modal-header bg-orange text-white position-sticky top-0 z-3 shadow-sm table-head ">
+                    <div>
+                        <h5 class="modal-title text-white text-center" id="createSectorLabel">Create New Booth</h5>
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row g-0">
+
+                    <input type="hidden" name="Booth_Id" id="Booth_Id" value="0" />
+
+
+                    <div class="col-md-6">
+                        <label>Mandal</label>
+                        <select class="form-select" id="mandalDropdown" name="Mandal_Id">
+
+                            <option disabled selected>Select Mandal</option>
+
+                        </select>
+                    </div>
+
+
+
+                    <!-- Sector Dropdown -->
+                    <div class="col-md-6">
+                        <label>Sector</label>
+                        <select class="form-select" name="sector_Id" id="sectorDropdown">
+                            <option disabled selected>Select Mandal First</option>
+                        </select>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <label>Village</label>
+                        <select class="form-select js-example-basic-multiple" name="Village" id="Village" multiple="multiple">
+                            @*<option disabled >--Select Village--</option>*@
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Booth Number</label>
+                        <input type="text" class="form-control" name="BoothNumber" placeholder="Enter Booth number (e.g., 12)" required>
+                    </div>
+
+                    @*<div class="col-md-6">
+                            <label>Booth Name</label>
+                            <input type="text" class="form-control" name="PollingStationBoothName" placeholder="Enter Booth Name">
+                        </div>*@
+
+                    <div class="col-md-6">
+                        <label>Polling Station</label>
+                        <input type="text" class="form-control" name="BoothName" placeholder="Enter Polling Station (e.g., North Zone)">
+                    </div>
+
+
+
+                    <div class="col-md-6">
+                        <label>Polling Station Location</label>
+                        <input type="text" class="form-control" name="boothLocation" placeholder="Enter Polling Station Location ">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Booth Incharge?</label>
+                        <select class="form-select modal-incharge-select" name="BoothInchargeName">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+
+
+                    <!-- Additional Fields (Initially Hidden) -->
+                    <div class="modal-additional d-none row g-2">
+                        <div class="col-md-4">
+                            <label>InchargeName</label>
+                            <input type="text" class="form-control" name="InchargeName" placeholder="Inchargename">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label>Age</label>
+                            <input type="number" class="form-control" name="Age" placeholder="age">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>Father Name</label>
+                            <input type="text" class="form-control" name="FatherName" placeholder="Enter father's full name">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="categorySelect" class="form-label">Category</label>
+                            <select id="categorySelect" class="form-select" name="CasteId">
+                                <option value="">-- Select Category --</option>
+                                @foreach (var cat in ViewData["CategoryList"] as List<VishanSabha.Models.Caste>)
+                                {
+                                    <option value="@cat.Caste_Id">@cat.CasteName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="subCasteSelect" class="form-label">Caste</label>
+                            <select id="subCasteSelect" class="form-select modal-subcaste-select" name="subcaste">
+                                <option value="">Caste</option>
+                            </select>
+                        </div>
+
+
+
+                        <div class="col-md-6">
+                            <label>Education Level</label>
+                            <input type="text" class="form-control" name="Education" placeholder="Enter highest education (e.g., B.A., 12th)">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>Phone Number</label>
+                            <input type="tel" class="form-control" name="PhoneNumber" placeholder="Enter 10-digit mobile number">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="address">Address</label>
+                            <textarea id="address" class="form-control" name="Address" placeholder="Enter full address with landmark"></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="profileImage">Profile Image</label>
+                            <input type="file" id="profileImage" name="ProfileImage" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-12 mt-3" id="villageTableContainer">
+                        <!-- Table will be added here dynamically -->
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn  btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById('createSectorModal').addEventListener('hidden.bs.modal', function () {
+        const form = document.getElementById('boothForm');
+        form.reset();
+
+        // Clear hidden fields
+        document.getElementById('Booth_Id').value = '';
+
+
+        const villageField = document.getElementById('Village');
+        if (villageField) {
+            villageField.value = '';
+
+            $(villageField).val('').trigger('change');
+        }
+
+        // Reset submit button text
+        $("#mysectorform button[type=submit]").text("Save");
+    });
+</script>
+
+@*<script>
+        $('#createSectorModal').on('click', function () {
+            $('#boothForm')[0].reset();
+            $('#Booth_Id').val('0');
+            $('.modal-additional').addClass('d-none');
+            $('#Village').val(null).trigger('change');
+        });
+
+    </script>*@
+
+<script>
+    //$(document).ready(function () {
+    //    var $tableWrapper = $('#tableWrapper');
+    //    var $table = $('#myTable');
+
+    //    function updateDummyWidth() {
+    //        var tableWidth = $table[0].scrollWidth; // pura scrollable width lo
+    //        $('#scrollDummy').css('width', tableWidth + 'px');
+    //    }
+
+    //    updateDummyWidth();
+
+    //    // sync dono scrollbars
+    //    $('#tableScrollSync').on('scroll', function () {
+    //        $tableWrapper.scrollLeft($(this).scrollLeft());
+    //    });
+
+    //    $tableWrapper.on('scroll', function () {
+    //        $('#tableScrollSync').scrollLeft($(this).scrollLeft());
+    //    });
+
+    //    // resize par update
+    //    $(window).on('resize', updateDummyWidth);
+    //});
+
+
+
+</script>
+@*<script>
+        function populateVillages(sectorId, selectedVillageArray = []) {
+            let villageDropdown = $("#Village");
+            villageDropdown.html('<option disabled>Loading villages...</option>');
+
+            $.ajax({
+                url: '/admin/GetVillageListBySectorlId',
+                type: 'GET',
+                data: { sectorId: sectorId },
+                success: function (response) {
+                    villageDropdown.empty();
+
+                    villageDropdown.append('<option disabled selected >--Select Village--</option>');
+                    if (response && response.length > 0) {
+                        $.each(response, function (index, village) {
+                            villageDropdown.append('<option value="' + village.villageId + '">' + village.Villagename + '</option>');
+                        });
+
+
+                        if (selectedVillageArray.length > 0) {
+                            $('#Village').val(selectedVillageArray).trigger('change');
+                        }
+                    } else {
+                        villageDropdown.append('<option disabled>No villages found</option>');
+                    }
+                },
+                error: function (xhr, status) {
+                    villageDropdown.html('<option disabled>Error loading villages</option>');
+                    console.error("Error fetching villages:", xhr, status);
+                }
+            });
+        }
+
+        // Sector dropdown change pe villages load karna
+        $(document).on('change', '#sectorDropdown', function () {
+            populateVillages($(this).val());
+        });
+    </script>*@
+
+@*bind mondal in selecter*@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('/Admin/GetMandals') // Adjust path if needed
+            .then(response => response.json())
+            .then(data => {
+                debugger;
+                const dropdown = document.getElementById("mandalDropdown");
+                let elements = '<option disabled selected>Select Mandal</option>';
+
+                data.forEach(mandal => {
+                    elements += `<option value="${mandal.Id}">${mandal.Name}</option>`
+                });
+
+                dropdown.innerHTML = elements;
+            })
+            .catch(error => {
+                console.error("Failed to load mandals:", error);
+                const dropdown = document.getElementById("mandalDropdown");
+                dropdown.innerHTML = '<option disabled selected>Error loading mandals</option>';
+            });
+    });
+
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const mandalDropdown = document.getElementById("mandalDropdown");
+        const sectorDropdown = document.getElementById("sectorDropdown");
+
+        mandalDropdown.addEventListener("change", function () {
+            const mandalId = this.value;
+            if (!mandalId) {
+                sectorDropdown.innerHTML = '<option disabled selected>Select Mandal First</option>';
+                return;
+            }
+
+            fetch(`/Admin/GetSectorsByMandal?mandalId=${mandalId}`)
+                .then(res => res.json())
+                .then(data => {
+                    sectorDropdown.innerHTML = '<option disabled selected>Select Sector</option>';
+                    data.forEach(sector => {
+                        const opt = document.createElement("option");
+                        opt.value = sector.Id;
+                        opt.text = sector.SectorName;
+                        sectorDropdown.appendChild(opt);
+                    });
+                })
+                .catch(err => {
+                    console.error("Error fetching sectors:", err);
+                    sectorDropdown.innerHTML = '<option disabled selected>Error loading sectors</option>';
+                });
+        });
+    });
+</script>
+
+@*this script use to select cast then open subcasts*@
+
+<script>
+  $(document).ready(function () {
+    // When caste changes, load subcastes dynamically
+    $('#categorySelect').change(function () {
+        var casteId = $(this).val();
+
+        $('#subCasteSelect').empty().append('<option value="">-- Loading --</option>');
+
+        if (casteId) {
+            $.ajax({
+                url: '@Url.Action("GetSubcastesByCategory", "Admin")',
+                type: 'GET',
+                data: { categoryId: casteId },
+                success: function (data) {
+                    $('#subCasteSelect').empty().append('<option value="">-- Select Sub Caste --</option>');
+                    $.each(data, function (i, item) {
+                        $('#subCasteSelect').append(
+                            `<option value="${item.SubCaste_Id}">${item.SubCasteName}</option>`
+                        );
+                    });
+                },
+                error: function () {
+                    $('#subCasteSelect').empty().append('<option value="">-- Error Loading --</option>');
+                }
+            });
+        } else {
+            $('#subCasteSelect').empty().append('<option value="">-- Select Sub Caste --</option>');
+        }
+    });
+});
+
+</script>
+
+
+
+
+
+
+@*this script use to form open and close click yas or no*@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const inchargeSelect = document.querySelector(".modal-incharge-select");
+        const additionalFields = document.querySelector(".modal-additional");
+
+        inchargeSelect.addEventListener("change", function () {
+            if (inchargeSelect.value === "1") {
+                additionalFields.classList.remove("d-none");
+            } else {
+                additionalFields.classList.add("d-none");
+            }
+        });
+    });
+
+</script>
+
+
+
+@*this script use to select cast then open subcasts*@
+
+<script>
+    $(document).ready(function () {
+        $('#boothForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            let selectedVillage = $('#Village').val();
+            if (selectedVillage) {
+                formData.set('Village', selectedVillage);
+            }
+
+
+
+            var villageIds = [];
+            var aanshikIds = [];
+
+            $('#villageTableContainer tbody tr').each(function () {
+                var villageId = $(this).data('village-id');
+                var aanshikValue = $(this).find('input[type=radio]:checked').val();
+
+                villageIds.push(villageId); // All selected villages
+
+                if (aanshikValue === 'Yes') {
+                    aanshikIds.push(villageId); // Only Yes villages
+                }
+            });
+
+            // Set in formData
+            formData.set('Village', villageIds.join(','));      // Village column: all selected village IDs
+            formData.set('Aanshik', aanshikIds.join(','));
+
+            $.ajax({
+                url: '/Admin/addbooth',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(() => {
+                            $('#createSectorModal').modal('hide');
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: response.message || 'Failed to add booth',
+                        });
+                    }
+                }
+
+            });
+        });
+    });
+</script>
+
+
+@*delete booth data*@
+
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '.delete-btn', function () {
+            var boothId = $(this).data('id');
+            var row = $(this).closest('tr');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to delete this booth?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#999',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Admin/DeleteBooth',
+                        type: 'POST',
+                        data: { id: boothId },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Booth has been deleted.',
+                                    'success'
+                                );
+                                row.fadeOut(500, function () {
+                                    $(this).remove();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message || 'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function () {
+                            Swal.fire(
+                                'Error!',
+                                'Unable to delete booth. Try again later.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+</script>
+
+@*fill the data in form - getbyID*@
+<script>
+    //$(document).ready(function () {
+
+
+    //    $(document).on('click', '.edit-btn', function () {
+    //        var boothId = $(this).data('id');
+
+    //        $.ajax({
+    //            url: '/Admin/GetById_Booth',
+    //            type: 'GET',
+    //            data: { Id: boothId },
+    //            success: function (data) {
+    //                console.log(data);
+
+    //                populateMandalDropdown(data.Mandal_Id);
+    //                populateSectorDropdown(data.Sector_Id);
+
+    //                let boothdata = $('#Booth_Id').val(data.Booth_Id);
+    //                $('input[name="BoothNumber"]').val(data.BoothNumber);
+    //                $('input[name="BoothName"]').val(data.BoothName);
+    //                $('input[name="PollingStationBoothName"]').val(data.PollingStationBoothName);
+    //                $('input[name="boothLocation"]').val(data.boothLocation);
+    //                $('select[name="BoothInchargeName"]').val(data.BoothInchargeName);
+
+    //                let villageArray = [];
+    //                if (data.villageId) {
+    //                    if (typeof data.villageId === "string") {
+    //                        villageArray = data.villageId.split(',').map(v => v.trim());
+    //                    } else if (Array.isArray(data.villageId)) {
+    //                        villageArray = data.villageId.map(v => v.toString());
+    //                    } else {
+    //                        villageArray = [data.villageId.toString()];
+    //                    }
+    //                }
+
+    //                // Populate villages and bind selected values
+    //                populateVillages(data.Sector_Id, villageArray);
+
+    //                console.log(data);
+
+    //                if (data.BoothInchargeName == 1) {
+    //                    $('.modal-additional').removeClass('d-none');
+    //                } else {
+    //                    $('.modal-additional').addClass('d-none');
+    //                }
+
+    //                $('input[name="InchargeName"]').val(data.InchargeName);
+    //                $('input[name="Age"]').val(data.Age);
+    //                $('input[name="FatherName"]').val(data.FatherName);
+
+    //                $('#categorySelect').val(data.castname).trigger('change');
+
+
+    //                setTimeout(() => {
+    //                    $('#subCasteSelect').val(data.subcaste);
+    //                }, 500);
+
+    //                $('input[name="Education"]').val(data.Education);
+    //                $('input[name="PhoneNumber"]').val(data.PhoneNumber);
+    //                $('textarea[name="Address"]').val(data.Address);
+
+    //                $('#createSectorModal').modal('show');
+    //            },
+    //            error: function (xhr, status, error) {
+    //                alert('Error loading booth data: ' + error);
+    //                console.log(xhr.responseText);
+    //            }
+    //        });
+    //    });
+
+
+    //    $('select[name="BoothInchargeName"]').on('change', function () {
+    //        if ($(this).val() == 1) {
+    //            $('.modal-additional').removeClass('d-none');
+    //        } else {
+    //            $('.modal-additional').addClass('d-none');
+    //        }
+    //    });
+
+
+    //    function populateMandalDropdown(selectedId) {
+
+    //        $('#mandalDropdown').val(selectedId);
+    //    }
+
+    //    function populateSectorDropdown(selectedId) {
+    //        $('#sectorDropdown').val(selectedId);
+    //    }
+    //});
+</script>
+
+<script>
+    $(document).on('click', '.edit-btn', function () {
+        const boothId = $(this).data('id');
+
+        $.getJSON('/Admin/GetById_Booth', { Id: boothId }, function (data) {
+            console.log(data, "Booth Data");
+            if (!data) {
+                Swal.fire('Error', 'Unable to load booth details.', 'error');
+                return;
+            }
+
+            // -------------------- Basic fields --------------------
+            $('#Booth_Id').val(data.Booth_Id);
+            $('input[name="BoothNumber"]').val(data.BoothNumber);
+            $('input[name="PollingStationBoothName"]').val(data.PollingStationBoothName);
+            $('input[name="BoothName"]').val(data.BoothName);
+            $('input[name="boothLocation"]').val(data.boothLocation);
+            $('input[name="InchargeName"]').val(data.InchargeName);
+            $('input[name="Age"]').val(data.Age);
+            $('input[name="FatherName"]').val(data.FatherName);
+            $('input[name="Education"]').val(data.Education);
+            $('input[name="PhoneNumber"]').val(data.PhoneNumber);
+            $('textarea[name="Address"]').val(data.Address);
+
+            // -------------------- Caste & SubCaste --------------------
+            $('#categorySelect').val(data.castname).trigger('change');
+            setTimeout(() => {
+                $('#subCasteSelect').val(data.subcaste).trigger('change');
+            }, 500);
+
+            // -------------------- Booth Incharge --------------------
+            $('select[name="BoothInchargeName"]').val(data.BoothInchargeName);
+            if (data.BoothInchargeName == 1) {
+                $('.modal-additional').removeClass('d-none');
+            } else {
+                $('.modal-additional').addClass('d-none');
+            }
+
+            // -------------------- Mandal --------------------
+            $('#mandalDropdown').val(data.Mandal_Id);
+
+            // -------------------- Sectors --------------------
+            fetch(`/Admin/GetSectorsByMandal?mandalId=${data.Mandal_Id}`)
+                .then(res => res.json())
+                .then(sectors => {
+                    let opts = '<option disabled>Select Sector</option>';
+                    let sectorFound = false;
+
+                    sectors.forEach(s => {
+                        const selected = s.Id === data.Sector_Id ? 'selected' : '';
+                        if (selected) sectorFound = true;
+                        opts += `<option value="${s.Id}" ${selected}>${s.SectorName}</option>`;
+                    });
+
+                    if (!sectorFound && data.Sector_Id) {
+                        opts += `<option value="${data.Sector_Id}" selected>${data.SectorName || 'Unknown Sector'}</option>`;
+                    }
+
+                    $('#sectorDropdown').html(opts);
+                });
+
+            // -------------------- Villages & Aanshik --------------------
+            let villageArray = [];
+            if (data.villageId) {
+                if (typeof data.villageId === "string") {
+                    villageArray = data.villageId.split(',').map(v => v.trim());
+                } else if (Array.isArray(data.villageId)) {
+                    villageArray = data.villageId.map(v => v.toString());
+                } else {
+                    villageArray = [data.villageId.toString()];
+                }
+            }
+
+            let aanshikArray = [];
+            if (data.Aanshik) {
+                if (typeof data.Aanshik === "string") {
+                    aanshikArray = data.Aanshik.split(',').map(v => v.trim());
+                } else if (Array.isArray(data.Aanshik)) {
+                    aanshikArray = data.Aanshik.map(v => v.toString());
+                }
+            }
+
+            // true = edit mode
+            populateVillages(data.Mandal_Id, villageArray, aanshikArray, true);
+
+            // -------------------- Show Modal --------------------
+            $('#createSectorModal').modal('show');
+        }).fail((xhr, s, e) => {
+            Swal.fire('Error', 'Unable to load booth details.', 'error');
+            console.error(xhr.responseText);
+        });
+    });
+
+    // -------------------- Mandal change (if allowed) --------------------
+    $('#mandalDropdown').on('change', function () {
+        const mandalId = $(this).val();
+        // false = not edit, show all villages
+        populateVillages(mandalId, [], [], false);
+    });
+
+    // -------------------- Populate villages function --------------------
+    function populateVillages(mandalId, selectedVillageArray = [], aanshikArray = [], isEdit = false) {
+        let villageDropdown = $("#Village");
+        villageDropdown.html('<option disabled>Loading villages...</option>');
+
+        $.ajax({
+            url: '/Admin/GetVillageListByMandalId',
+            type: 'GET',
+            data: { mandalId: mandalId },
+            success: function (response) {
+                villageDropdown.empty();
+
+                if (response && response.length > 0) {
+                    villageDropdown.append('<option disabled>-- Select Village --</option>');
+
+                    // Populate dropdown (all villages for the mandal)
+                    response.forEach(v => {
+                        const selected = selectedVillageArray.includes(v.villageId.toString()) ? 'selected' : '';
+                        villageDropdown.append(`<option value="${v.villageId}" ${selected}>${v.Villagename}</option>`);
+                    });
+
+                    // Build table
+                    let tableHtml = `
+                    <table class="table table-bordered align-middle text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Serial No</th>
+                                <th>Village Name</th>
+                                <th>Aanshik</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                    // On edit, show only selected villages; otherwise, show all
+                    let villagesToShow = isEdit
+                        ? response.filter(v => selectedVillageArray.includes(v.villageId.toString()))
+                        : response;
+
+                    villagesToShow.forEach((village, index) => {
+                        const aanshikValue = aanshikArray.includes(village.villageId.toString()) ? 'Yes' : 'No';
+
+                        tableHtml += `
+                        <tr data-village-id="${village.villageId}">
+                            <td>${index + 1}</td>
+                            <td>${village.Villagename}</td>
+                            <td>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input aanshik-radio" type="radio" name="Aanshik_${index}" value="Yes" ${aanshikValue === 'Yes' ? 'checked' : ''}>
+                                    <label class="form-check-label text-success">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input aanshik-radio" type="radio" name="Aanshik_${index}" value="No" ${aanshikValue === 'No' ? 'checked' : ''}>
+                                    <label class="form-check-label text-danger">No</label>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                    tableHtml += '</tbody></table>';
+                    $('#villageTableContainer').html(tableHtml);
+                } else {
+                    villageDropdown.append('<option disabled>No villages found</option>');
+                }
+            },
+            error: function (xhr, status) {
+                villageDropdown.html('<option disabled>Error loading villages</option>');
+                console.error("Error fetching villages:", xhr, status);
+            }
+        });
+    }
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        function populateVillages(mandalId, selectedVillageArray = []) {
+            let villageDropdown = $("#Village");
+            villageDropdown.html('<option disabled>Loading villages...</option>');
+
+            $.ajax({
+                url: '/admin/GetVillageListByMandalId',
+                type: 'GET',
+                data: { mandalId: mandalId },
+                success: function (response) {
+                    villageDropdown.empty();
+
+                    if (response && response.length > 0) {
+                        villageDropdown.append('<option disabled>-- Select Village --</option>');
+                        $.each(response, function (index, village) {
+                            villageDropdown.append('<option value="' + village.villageId + '">' + village.Villagename + '</option>');
+                        });
+
+                        // Bind selected villages if provided
+                        if (selectedVillageArray.length > 0) {
+                            $('#Village').val(selectedVillageArray).trigger('change');
+                        }
+                    } else {
+                        villageDropdown.append('<option disabled>No villages found</option>');
+                    }
+                },
+                error: function (xhr, status) {
+                    villageDropdown.html('<option disabled>Error loading villages</option>');
+                    console.error("Error fetching villages:", xhr, status);
+                }
+            });
+        }
+
+        // Mandal dropdown change
+        $(document).on('change', '#mandalDropdown', function () {
+            populateVillages($(this).val());
+        });
+
+        // Village selection – populate table
+        $('#Village').on('change', function () {
+            var selectedOptions = $(this).find('option:selected');
+
+            $('#villageTableContainer').empty();
+
+            if (selectedOptions.length > 0) {
+                var tableHtml = `
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Serial No</th>
+                            <th>Village Name</th>
+                            <th>Aanshik</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+                selectedOptions.each(function (index) {
+                    var villageId = $(this).val();
+                    var villageName = $(this).text();
+
+                    tableHtml += `
+                    <tr data-village-id="${villageId}">
+                        <td>${index + 1}</td>
+                        <td>${villageName}</td>
+                        <td>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input aanshik-radio"
+                                       type="radio"
+                                       name="Aanshik_${index}"
+                                       value="Yes"
+                                       >
+                                <label class="form-check-label text-success">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input aanshik-radio"
+                                       type="radio"
+                                       name="Aanshik_${index}"
+                                       value="No" checked>
+                                <label class="form-check-label text-danger">No</label>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                });
+
+                tableHtml += `</tbody></table>`;
+                $('#villageTableContainer').html(tableHtml);
+            }
+        });
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 350,
+                autoWidth: false,  
+                columnDefs: [
+                    { width: "90px", targets: 0 },    // S.N.
+                    //{ width: "136px", targets: 1 },   // Mandal Name
+                    //{ width: "136px", targets: 2 },
+                    //{ width: "136px", targets: 3 },
+                    //{ width: "136px", targets: 4 },
+                    //{ width: "136px", targets: 5 },
+                    //{ width: "136px", targets: 6 },
+                    //{ width: "136px", targets: 7 }
+                ]
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/Booth?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+

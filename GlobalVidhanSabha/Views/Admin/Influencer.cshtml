@@ -1,0 +1,1002 @@
+﻿
+@{
+    ViewBag.Title = "Influencer";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var CategoryList = ViewData["CategoryList"] as List<VishanSabha.Models.Caste>;
+    var designations = ViewData["DesignationList"] as List<VishanSabha.Models.EffectiveDesignation>;
+    var list = ViewData["InfluencerList"] as List<VishanSabha.Models.Influencer>;
+}
+
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 530px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+<div class="container-fluid mt-5 m-3">
+    <div class="d-flex justify-content-between mb-3 pt-3">
+        <h2 class="text-orange" style="color: #FF8C42">Influencer Person</h2>
+        <button class="btn btn-primary" id="createNewBtn" data-bs-toggle="modal" data-bs-target="#influencerPersonModal">
+            Create
+        </button>
+    </div>
+    <div class="  " style="white-space:nowrap!important;">
+
+        <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+            <thead class="table-head">
+                <tr class="myhead">
+                    <th style="text-align:center!important;">S.N</th>
+                    <th class="coll-col">Booth No</th>
+                    <th>Village</th>
+                    <th>Designation</th>
+                    <th>Name</th>
+                    <th class="caste-col">Caste</th>
+                    <th>Contact</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (list != null)
+                {
+                    int index = 1;
+                    foreach (var item in list)
+                    {
+                        <tr>
+                            <td class="coll-col" style="text-align:center!important;">@index</td>
+                            <td class="coll-col"  style="text-align:center!important;">@item.BoothNumber</td>
+                            <td>@item.VillageListName</td>
+                            <td>@(!string.IsNullOrEmpty(item.EffectiveDesignationdata) ? item.EffectiveDesignationdata : "N/A" )</td>
+                            <td>@item.PersonName</td>
+                            <td class="caste-col">@item.SubCasteName</td>
+                            <td>@item.Mobile</td>
+                            <td>@item.Description</td>
+                            <td>
+                                <button class="btn btn-sm  me-1 edit-btn"
+                                        data-id="@item.Id"
+                                        title="Edit">
+                                    <i class="fas fa-edit edit-icon"></i>
+                                </button>
+                                <button class="btn btn-sm  me-1 delete-btn"
+                                        data-id="@item.Id"
+                                        title="Delete">
+                                    <i class="fas fa-trash-alt delete-icon"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        index++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- === Effective Person Modal === -->
+<div class="modal fade" id="influencerPersonModal" tabindex="-1" aria-labelledby="effectivePersonLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="influencerPersonForm" method="post" data-mode="create">
+                <input type="hidden" name="Id" id="influencerId" />
+
+                <!-- Modal Header -->
+                <div class="modal-header table-head">
+                    <h5 class="modal-title text-white fw-bold" id="effectivePersonLabel">Create Influencer Person</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <!-- Is Effective Person -->
+                        <div class="" id="effectiveContainer">
+                            <label for="boothDropdown" class="form-label">Effective Person</label>
+                            <select class="form-select form-select-sm" name="IsEffective" id="effectivePerson" required>
+                                <option selected disabled>-- Select Option --</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <!--Designation-->
+                        <div class="col-md-6 g-3" id="designationContainer">
+                            <label for="Designation" class="form-label">Designation</label>
+                            <select name="Designation" id="designation" class="form-select form-select-sm" required>
+                                <option value="">-- Select Designation --</option>
+                                @if (designations != null)
+                                {
+                                    foreach (var item in designations)
+                                    {
+                                        <option value="@item.Id">@item.EffectiveDesignationdata</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!--Person-->
+                        <div class="col-md-6 g-3" id="personContainer">
+                            <label for="person" class="form-label">Person</label>
+                            <select name="PersonId" id="personDropdown" class="form-select form-select-sm" required>
+                                <option value="">-- Select Person --</option>
+                            </select>
+                        </div>
+
+                        <!-- Booth -->
+                        <div class="col-md-6" id="boothContainer">
+                            <label for="boothDropdown" class="form-label">Booth</label>
+                            <select class="form-select form-select-sm" name="BoothId" id="boothNo">
+                                <option value="">-- Select Booth --</option>
+                                @foreach (var booth in (IEnumerable<VishanSabha.Models.Booth>)ViewBag.BoothList)
+                                {
+                                    <option value="@booth.Booth_Id">@booth.BoothNumber</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6" id="villageContainer">
+
+                            <label class="form-label small">Village </label>
+                            <select class="form-select js-example-basic-multiple" name="VillageListId" required id="VillageList" multiple="multiple">
+                                <option value="">-- Select Village --</option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <div class="row" id="detailContainer">
+
+
+                            <!-- Name -->
+                            <div class="col-md-6 g-3">
+                                <label for="Name" class="form-label">Name</label>
+                                <input type="text" name="PersonName" class="form-control form-control-sm" placeholder="Enter Name" required />
+                            </div>
+
+                            <!-- Category -->
+                            <div class="col-md-6 g-3">
+                                <label for="Category" class="form-label">Category</label>
+                                <select class="form-control form-select-sm" id="Category" name="Category">
+                                    <option value="">-- Select Category --</option>
+                                    @if (CategoryList != null && CategoryList.Any())
+                                    {
+                                        foreach (var data in CategoryList)
+                                        {
+                                            <option value="@data.Caste_Id">@data.CasteName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <!-- Caste -->
+                            <div class="col-md-6 g-3">
+                                <label for="Caste" class="form-label">Caste</label>
+                                <select class="form-control form-select-sm" id="Caste" name="Caste">
+                                    <option value="" disabled selected>-- Select Caste --</option>
+                                </select>
+                            </div>
+
+                            <!-- Mobile -->
+                            <div class="col-md-6 g-3">
+                                <label for="Mobile" class="form-label">Mobile</label>
+                                <input type="tel" name="Mobile" class="form-control form-control-sm" placeholder="Enter Mobile Number" maxlength="10"/>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-md-12 g-3">
+                                <label for="Description" class="form-label">Description</label>
+                                <textarea name="Description" class="form-control form-control-sm" placeholder="Enter Description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer border-0">
+                    <button type="submit" id="submitBtn" class="btn btn-outline-orange">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+<script>
+    document.getElementById('influencerPersonModal').addEventListener('hidden.bs.modal', function () {
+        const form = document.getElementById('influencerPersonForm');
+        form.reset();
+
+
+        const hiddenId = document.getElementById('influencerId');
+        if (hiddenId) hiddenId.value = '';
+
+
+        const villageField = $('#VillageList');
+        if (villageField.length) {
+            villageField.val(null).trigger('change');
+        }
+
+
+        //$('#boothno, #Category, #Caste, #Occupation').val('').trigger('change');
+
+
+        //$('#boothNo, #fatherName, #name,#voterNo,#pastaddress,#curraddress,#description').val('');
+
+
+        //const url = new URL(window.location);
+        //if (url.search) {
+        //    url.search = '';
+        //    window.history.replaceState({}, document.title, url.toString());
+        //}
+
+        // Optional: reset button text
+        // $('#submitPravasiVoter').text('Submit');
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $('#designationContainer').hide();
+        $('#personContainer').hide();
+        $('#boothContainer').hide();
+        $('#villageContainer').hide();
+        $('#detailContainer').hide();
+        $('#effectiveContainer').addClass('col-sm-12');
+        $('#effectivePerson').on('change', function () {
+            const isEff = $(this).val();
+            $('#effectiveContainer').removeClass();
+            $('#effectiveContainer').addClass('col-sm-6');
+            if (isEff === "true") {
+                // Effective Person hai → show
+                $('#designationContainer').show();
+                $('#personContainer').show();
+                $('#boothContainer').hide();
+                $('#villageContainer').hide();
+                $('#detailContainer').hide();
+                $('#designation').attr('required', true);
+                $('#personDropdown').attr('required', true);
+                $('#detailContainer input, #detailContainer select, #detailContainer textarea').removeAttr('required');
+            } else {
+                // Nahi hai → hide
+                $('#designationContainer').hide();
+                $('#personContainer').hide();
+                $('#boothContainer').show();
+                $('#villageContainer').show();
+                $('#detailContainer').show();
+                $('#designation, #personDropdown').removeAttr('required');
+                $('#detailContainer input, #detailContainer select, #detailContainer textarea').attr('required', true);
+            }
+        });
+        $('#designation').on('change', function () {
+            const desgId = $(this).val();
+            $.ajax({
+                url: '/admin/GetPersonsByDesignation',
+                type: 'get',
+                data: { desgId: desgId },
+                success: function (res) {
+                    if (res.status) {
+                        let $dropdown = $('#personDropdown');
+                        $dropdown.empty();
+                        $dropdown.append('<option value="" selected>-- Select Person --</option>');
+
+                        $.each(res.data, function (i, person) {
+                            $dropdown.append(
+                                $('<option>', { value: person.effectivePersonId, text: person.Name })
+                            );
+                        });
+                    } else {
+                        Swal.fire('Warning', 'No person found in this designation', 'warning');
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire('Error', 'Some error occured while getting data', 'error').then(() => {
+                        console.log(xhr);
+                    });
+                }
+            });
+        });
+
+        $("#Category").change(function () {
+            var selectedId = $(this).val();
+
+            if (selectedId) {
+                $.ajax({
+                    url: '/Admin/GetSubcasteByCategory',
+                    type: 'GET',
+                    data: { id: selectedId },
+                    success: function (response) {
+
+                        $("#Caste").empty();
+                        $("#Caste").append('<option value="">-- Select Caste --</option>');
+
+
+                        $.each(response, function (i, item) {
+                            $("#Caste").append('<option value="' + item.SubCaste_Id + '">' + item.SubCasteName + '</option>');
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Some error occured!!'
+                        });
+                    }
+                });
+            } else {
+                $("#Caste").empty();
+                $("#Caste").append('<option value="">-- Select Caste --</option>');
+            }
+        });
+
+        // Form submission
+        $('#submitBtn').on('click', function (e) {
+            e.preventDefault();
+            const form = $('#influencerPersonForm')[0];
+            var formData = new FormData(form);
+
+            const effectivePerson = $('#effectivePerson').val() === 'true'; // ✅ convert to boolean
+            const designation = $('#designation').val();
+            const person = $('#personDropdown').val();
+            const selectedVillages = $('#VillageList').val();
+            const villageIds = (selectedVillages && selectedVillages.length) ? selectedVillages.join(',') : '';
+
+            formData.set('IsEffective', effectivePerson ? 'true' : 'false');
+            formData.set('Designation', designation);
+            formData.set('PersonId', person);
+            formData.set('VillageListId', villageIds);
+
+            $.ajax({
+                url: '/admin/AddInfluencer',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire('Success', res.message, 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Something went wrong!', 'error');
+                }
+            });
+        });
+
+
+
+        //$('#influencerPersonForm').on('submit', function (e) {
+        //    e.preventDefault();
+
+        //    var form = $(this);
+        //    var formData = form.serializeArray(); // Serialize all visible fields
+
+        //    $.ajax({
+        //        url: '/admin/AddInfluencer',
+        //        type: 'POST',
+        //        data: formData,
+        //        success: function (res) {
+        //            if (res.success) {
+        //                Swal.fire('Success', res.message, 'success').then(() => {
+        //                    location.reload();
+        //                });
+        //            } else {
+        //                Swal.fire('Error', res.message, 'error');
+        //            }
+        //        },
+        //        error: function (err) {
+        //            Swal.fire('Error', 'Something went wrong!', 'error');
+        //        }
+        //    });
+        //});
+
+        $('#createNewBtn').click(function () {
+            $('#influencerPersonForm')[0].reset();
+            $('#Id').val(0);
+            $('#influencerPersonModal .modal-title').text('Create Influencer Person');
+        });
+
+        // Delete (soft)
+        $('.delete-btn').click(function () {
+            var id = $(this).data('id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will delete the record.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Admin/DeleteInfluencerPerson',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire('Deleted!', response.message, 'success').then(() => {
+                                    location.reload();
+                                })
+                            } else {
+                                Swal.fire('Error', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'An unexpected error occurred.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+        $('.edit-btn').click(function () {
+            var id = $(this).data('id');
+
+            $.ajax({
+                url: '/admin/GetInfluencerById',
+                type: 'GET',
+                data: { id: id },
+                success: function (data) {
+                    console.log(data, "Influencer data");
+
+                    if (data) {
+
+                        $('#influencerId').val(data.Id);
+
+
+                        $('#effectivePerson').val(data.IsEffective.toString()).trigger('change');
+
+                        if (data.IsEffective) {
+                            $('#designation').val(data.Designation);
+                            $('#designation').val(data.Designation).trigger('change');
+
+
+                            setTimeout(() => {
+                                $('#personDropdown').val(data.PersonId);
+                            }, 500);
+                        }
+
+                        else {
+                            $('input[name="PersonName"]').val(data.PersonName);
+                            $('#Category').val(data.Category).trigger('change');
+
+                            setTimeout(() => {
+                                $('#Caste').val(data.Caste);
+                            }, 300);
+
+                            $('input[name="Mobile"]').val(data.Mobile);
+                            $('#boothNo').val(data.BoothId).trigger('change');
+
+
+                            const preselectedVillages = (data.VillageListId || "")
+                                .split(',')
+                                .map(v => v.trim())
+                                .filter(v => v !== "");
+
+
+                            setTimeout(() => {
+
+                                $('#VillageList').val(preselectedVillages).trigger('change');
+                            }, 1000);
+
+                            $('textarea[name="Description"]').val(data.Description);
+                        }
+
+                        // Open modal and update title
+                        $('#influencerPersonModal').modal('show');
+                        $('#effectivePersonLabel').text('Edit Influencer Person');
+                    } else {
+                        Swal.fire('Error', 'Record not found', 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Failed to load influencer data', 'error');
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#boothNo').on('change', function () {
+    const boothId = $(this).val();
+    if (!boothId) return;
+
+    $.ajax({
+        url: '@Url.Action("GetVillagesByBoothId", "Admin")',
+        type: 'GET',
+        data: { boothId },
+        success: function (villages) {
+            const $villageList = $('#VillageList');
+            $villageList.empty();
+            villages.forEach(v => {
+                $villageList.append(`<option value="${v.villageId}">${v.Villagename}</option>`);
+            });
+
+            // Re-apply previously selected villages if editing
+            if (window.selectedVillages && window.selectedVillages.length > 0) {
+                $villageList.val(window.selectedVillages).trigger('change');
+            }
+        }
+    });
+});
+
+
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 355
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/Influencer?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>
+@*<script>
+        $(document).ready(function () {
+
+
+
+
+            $('#effectivePersonForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var formData = {
+                    effectivePersonId: $('#effectivePersonId').val() || 0,
+                    Designation: $('select[name="Designation"]').val(),
+                    Booth_Id: $('select[name="Booth_Id"]').val(),
+                    Name: $('input[name="Name"]').val(),
+                    Cast: $('select[name="Cast"]').val(),
+                    Category: $('select[name="Category"]').val(),
+                    Mobile: $('input[name="Mobile"]').val(),
+                    Description: $('textarea[name="Description"]').val()
+                };
+
+                $.ajax({
+                    url: '/Admin/EffectivePerson',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Success', response.message, 'success');
+                            $('#effectivePersonModal').modal('hide');
+                            setTimeout(() => location.reload(), 1200);
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'An unexpected error occurred.', 'error');
+                    }
+                });
+            });
+
+            // Load data for editing
+            $('.edit-btn').click(function () {
+                var id = $(this).data('id');
+                $.ajax({
+                    url: '/Admin/GetEffectivePersonById',
+                    type: 'GET',
+                    data: { id: id },
+                    success: function (data) {
+                        console.log(data, "E person")
+                        if (data) {
+                            $('#effectivePersonId').val(data.effectivePersonId);
+                            $('select[name="Designation"]').val(data.Designation);
+                            $('input[name="Name"]').val(data.Name);
+
+                            $('select[name="Booth_Id"]').val(data.Booth_Id);
+                            $('#Category').val(data.Category).trigger('change');
+
+
+                            setTimeout(() => {
+                                $('#Caste').val(data.Cast);
+                            }, 500);
+
+                            $('input[name="Mobile"]').val(data.Mobile);
+                            $('textarea[name="Description"]').val(data.Description);
+
+                            $('#effectivePersonModal').modal('show');
+                            $('#effectivePersonModal .modal-title').text('Edit Effective Person');
+                        } else {
+                            Swal.fire('Error', 'Record not found', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Failed to load data', 'error');
+                    }
+                });
+            });
+
+
+            // Delete (soft)
+            $('.delete-btn').click(function () {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This will deactivate the record.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/Admin/DeleteEffectivePerson',
+                            type: 'POST',
+                            data: { id: id },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', response.message, 'success');
+                                    setTimeout(() => location.reload(), 1000);
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'An unexpected error occurred.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>*@

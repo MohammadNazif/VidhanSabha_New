@@ -1,0 +1,552 @@
+﻿
+@{
+    ViewBag.Title = "PannaPramukhList";
+    Layout = "~/Views/Shared/_LayoutBooth.cshtml";
+    var pannalist = ViewData["PannaList"] as List<VishanSabha.Models.PannaPramukh>;
+
+    var casteList = ViewData["CasteList"] as List<VishanSabha.Models.SubCaste>;
+}
+
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #boothTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #boothTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #boothTable td,
+    #boothTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #boothTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        .table-scroll thead th {
+            /*                    position: sticky !important;*/
+            top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 60px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 520px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 110px !important;
+    }
+
+    #boothTable th:nth-child(1),
+    #boothTable td:nth-child(1) {
+        width: 40px !important;
+        max-width: 190px !important;
+        min-width: 100px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .table-clr {
+        color: white !important;
+    }
+</style>
+
+
+
+<div class="container-fluid mt-5 m-3">
+    <div class="d-flex justify-content-between mb-2">
+        <h4 style="color: #FF8C42;">PannaPramukh List</h4>
+    </div>
+
+    <div class="row">
+
+        @*<div class="col-sm-2">
+                <select class="form-select form-select-sm shadow-sm border-primary" multiple id="VillageFilter">
+                    @if (casteList != null && casteList.Any())
+                    {
+                        foreach (var data in casteList)
+                        {
+                            <option value="@data.SubCaste_Id">@data.SubCasteName</option>
+                        }
+                    }
+                </select>
+            </div>*@
+
+        <div class="col-sm-2">
+            <select class="form-select form-select-sm shadow-sm border-primary" multiple id="CasteFilter">
+                @if (casteList != null && casteList.Any())
+                {
+                    foreach (var data in casteList)
+                    {
+                        <option value="@data.SubCaste_Id">@data.SubCasteName</option>
+                    }
+                }
+            </select>
+        </div>
+
+
+        <div class="col-sm-2">
+            <button type="button" class="btn btn-outline-secondary w-100 btn-sm shadow-sm" id="filterButton" title="Filters">
+                <i class="bi bi-arrow-clockwise"></i> Filter
+            </button>
+        </div>
+        <div class="col-sm-2">
+            <button type="button" class="btn btn-outline-secondary w-100 btn-sm shadow-sm" id="resetFilters" title="Reset Filters">
+                <i class="bi bi-arrow-clockwise"></i> Reset Filter
+            </button>
+        </div>
+    </div>
+
+    <div class="table-wrapper shadow rounded p-2">
+
+
+        <div class="table-controls d-flex justify-content-between align-items-center mb-2 flex-wrap ">
+            <div id="entriesAndExport" class="d-flex align-items-center gap-2">
+                <div id="exportIcons" class="d-flex align-items-center gap-1">
+
+                    <a href="#" id="PravasiDownloadExcel" title="Download Excel">
+                        <i class="bi bi-file-earmark-excel-fill"
+                           style="font-size: 1.3rem; color: #1D6F42; cursor:pointer;"></i>
+                    </a>
+
+                    <!-- PDF Export -->
+                    <a href="#" id="PravasiDownloadPdf" title="Download PDF">
+                        <i class="bi bi-file-earmark-pdf-fill"
+                           style="font-size: 1.3rem; color: #D32F2F; cursor:pointer;"></i>
+                    </a>
+
+                    @*<a href="@Url.Action("PannaPramukhExportReport", "Export", new { format = "excel" })"
+                          <i class="bi bi-file-earmark-excel-fill"  style="font-size: 1.3rem; color: #1D6F42; cursor:pointer;"></i>
+                         </a>
+
+                               <a href="@Url.Action("PannaPramukhExportReport", "Export", new { format = "pdf" })"
+                          <i class="bi bi-file-earmark-pdf-fill"  style="font-size: 1.3rem; color: #D32F2F; cursor: pointer;"></i>
+                        </a>*@
+                </div>
+
+            </div>
+            <div id="searchBox"></div>
+        </div>
+
+
+
+
+        <div class="  " style="white-space:nowrap!important;">
+
+            <table id="boothTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                <thead class="table-head" style="color:white!important;">
+                    <tr class="text-light myhead">
+                        <th class="table-clr" style="text-align:center!important;">S.N.</th>
+                        <th class="table-clr">Mandal</th>
+                        <th class="table-clr">Sector</th>
+                        @*<th  class="table-clr">Booth Name</th>*@
+                        <th class="table-clr">Polling Station</th>
+                        <th class="table-clr">Panna No.</th>
+                        <th class="name-th table-clr">Panna Pramukh</th>
+                        <th class="table-clr">Category</th>
+                        <th class="table-clr">Caste</th>
+                        <th class="table-clr">Voter Id</th>
+                        @*<th  class="table-clr">Aadhar No.</th>*@
+                        <th class="table-clr">Village</th>
+                        <th class="table-clr">Address</th>
+                        <th class="table-clr">Contact</th>
+                        <th class="table-clr">ProfileImage</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (pannalist != null && pannalist.Any())
+                    {
+                        int i = 1;
+                        foreach (var data in pannalist)
+                        {
+                            <tr>
+                                <td class="text-center" style="text-align:center!important;">@i</td>
+
+                                <td>@data.MandalName</td>
+                                <td>@data.SectorName</td>
+                                @*<td>@data.PollingStationBoothName</td>*@
+                                <td>@data.BoothName</td>
+                                <td class="text-center">@data.PannaNumber</td>
+                                <td>@data.Pannapramukh</td>
+                                <td>@data.Categoryname</td>
+                                <td>@data.SubCasteName</td>
+                                <td class="text-center">@data.VoterNumber</td>
+                                @*<td>@data.AadharNumber</td>*@
+                                <td>@data.village</td>
+                                <td>@data.Address</td>
+                                <td>@data.Mobile</td>
+                                <td><img src="@data.ProfileImage" height="40" width="40" /></td>
+                            </tr>
+                            i++;
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+
+@*This is JavaScript File To Use A filter*@
+<script src="~/Scripts/BoothFilterData.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#boothTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 320
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Booth/PannaPramukhList?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#boothTable')) {
+                $('#boothTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        // Excel Export
+        $('#PravasiDownloadExcel').on('click', function (e) {
+            e.preventDefault();
+
+            var selectedCaste = $('#CasteFilter').val() ? $('#CasteFilter').val().join(',') : "";
+
+            var url = `/Export/PannaPramukhExportReport?format=excel`
+                + `&casteIds=${selectedCaste}`;
+
+            console.log("Excel Export URL:", url);
+            window.location.href = url;
+        });
+
+        // PDF Export
+        $('#PravasiDownloadPdf').on('click', function (e) {
+            e.preventDefault();
+
+            var selectedCaste = $('#CasteFilter').val() ? $('#CasteFilter').val().join(',') : "";
+
+            var url = `/Export/PannaPramukhExportReport?format=pdf`
+                + `&casteIds=${selectedCaste}`;
+
+            console.log("PDF Export URL:", url);
+            window.location.href = url;
+        });
+
+        // Reset Filters
+        $('#resetFilters').on('click', function () {
+            $('#CasteFilter').val([]);  // correct ID
+            console.log("Filters reset");
+        });
+
+    });
+</script>

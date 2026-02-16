@@ -1,0 +1,831 @@
+﻿@model VishanSabha.Models.doubleVoter
+@{
+    ViewBag.Title = "DoubleVote";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var doubleVoterList = ViewData["DoubleVoterList"] as List<VishanSabha.Models.doubleVoter>;
+    var BoothList = ViewData["BoothList"] as List<VishanSabha.Models.Booth>;
+}
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 530px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+<div class="container-fluid my-5  m-3">
+    <div class="d-flex justify-content-between mb-0 mt-1">
+        <h2 style=" color: #FF8C42;">Double Voter List/Married</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#doubleVoterModal">
+           Create
+        </button>
+    </div>
+
+    @*<div class="row mb-3">
+            <div class="col-sm-3">
+                <label for="boothFilter" class="form-label fw-bold">Filter by Booth</label>
+                <select id="boothFilter" class="form-select form-select-sm w-auto" onchange="filterBooth()">
+                    <option value="all">All Booths</option>
+                    @foreach (var booth in (IEnumerable<VishanSabha.Models.Booth>)ViewData["BoothList"])
+                    {
+                        <option value="@booth.Booth_Id" @(ViewBag.SelectedBooth == booth.Booth_Id.ToString() ? "selected" : "")>
+                            @booth.BoothNumber
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>*@
+    <div class="row g-2">
+        <div class="table-wrapper shadow rounded p-3">
+
+            <div class="table-controls ">
+                <div id="entriesAndExport"></div>
+                <div id="searchBox"></div>
+            </div>
+            <div class="  " style="white-space:nowrap!important;">
+
+                <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+                    <thead class="table-head">
+                        <tr class="myhead">
+                            <th style="text-align:center!important;">S.N.</th>
+                            <th class="text-white py-2" style="width:10px!important">BoothNo</th>
+                            @*<th class="text-white py-2" style="width:10px!important">Booth Name</th>*@
+                            <th class="text-white py-2" style="text-align:left!important">Village</th>
+                            <th class="text-white py-2" style="text-align:left!important">Name</th>
+                            <th class="text-white py-2" style="text-align:left!important">Father Name</th>
+                            <th class="text-white py-2" style="text-align:left!important">Past Address</th>
+                            <th class="text-white py-2" style="text-align:left!important">Curr. Address</th>
+                            <th class="text-white py-2" style="text-align:left!important">Voter Id</th>
+                            <th class="text-white py-2" style="text-align:left!important">Reason</th>
+                            <th class="text-white py-2">Action</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody class="text-left">
+                        @if (doubleVoterList != null && doubleVoterList.Any())
+                        {
+                            int i = 1;
+                            foreach (var data in doubleVoterList)
+                            {
+                                <tr>
+                                    <td style="text-align:center!important;">@i</td>
+                                    <td style="text-align:center!important;width:10px!important;height:20px!important;">@data.BoothNumber</td>
+                                    @*<td >@data.PollingStationBoothName</td>*@
+                                    <td>@data.village</td>
+                                    <td>@data.name</td>
+                                    <td>@data.fathername</td>
+                                    <td>@data.pastAddress</td>
+                                    <td>@data.currAddress</td>
+                                    <td style="text-align:left!important;">@data.voterno</td>
+                                    <td>@data.description</td>
+                                    <td style="text-align:center!important;">
+                                        <a href="/admin/DoubleVote?id=@data.id" class="edit-btn btn text-success">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+
+                                        <button type="button"
+                                                class="btn btn-sm  me-1 delete-btn text-danger"
+                                                data-id="@data.id">
+                                            <i class="fas fa-trash-alt delete-icon"></i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Add double voter ModaL-->
+<div class="modal fade mt-2" id="doubleVoterModal" tabindex="-1" aria-labelledby="doubleVoterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header text-light" style="background: #fd7e14;">
+                <h5 class="modal-title" id="doubleVoterModalLabel">Add Double Voter</h5>
+                <button type="button" class="btn-close text-light" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Body with form -->
+            <div class="modal-body">
+                <form id="doubleVoterForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="boothNo" class="form-label">Booth No</label>
+                            <select class="form-select" id="boothNo" name="BoothNumber">
+                                <option>--select Booth No--</option>
+                                @if (BoothList != null && BoothList.Any())
+                                {
+                                    foreach (var data in BoothList)
+                                    {
+                                        <option value="@data.Booth_Id" @(Model.boothid == data.Booth_Id ? "selected" : "")>
+                                            @data.BoothNumber
+                                        </option>
+                                    }
+                                }
+
+
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Village </label>
+                            <select class="form-select js-example-basic-multiple" name="VillageListId" required id="VillageList" multiple="multiple">
+                                <option value="">-- Select Village --</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Name + Father Name ek row me -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" placeholder="Enter Name" name="name" value="@Model.name">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="fatherName" class="form-label">Father Name</label>
+                            <input type="text" class="form-control" id="fatherName" placeholder="Enter Father Name" name="fathername" value="@Model.fathername">
+                        </div>
+                    </div>
+
+                    <!-- Voter No + Past Address ek row me -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="voterNo" class="form-label">Voter Id</label>
+                            <input type="text" class="form-control" id="voterNo" placeholder="Enter Voter No" name="voterno" value="@Model.voterno">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="pastaddress" class="form-label">Previous Address</label>
+                            <input type="text" class="form-control" id="pastaddress" placeholder="Enter Past Address" name="pastAddress" value="@Model.pastAddress">
+                        </div>
+                    </div>
+
+                    <!-- Current Address + Description ek row me -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="curraddress" class="form-label">Current Address</label>
+                            <input type="text" class="form-control" id="curraddress" placeholder="Enter Current Address" name="currAddress" value="@Model.currAddress">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" placeholder="Enter Description" name="description" style="height:30px;">@Model.description</textarea>
+
+                        </div>
+                    </div>
+
+
+                    <!-- Footer -->
+                    @if (Model.id > 0)
+                    {
+                        <input type="hidden" name="id" value="@Model.id" id="id" />
+                        <div class="modal-footer justify-content-center">
+                            <button type="submit" class="btn text-light" id="submitDoubleVoter" style="background: #fd7e14!important;">
+                                Update
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="modal-footer justify-content-center">
+                            <button type="submit" class="btn text-light" id="submitDoubleVoter" style="background: #fd7e14!important;">
+                                Submit
+                            </button>
+                        </div>
+                    }
+                </form>
+
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+
+<script>
+    document.getElementById('doubleVoterModal').addEventListener('hidden.bs.modal', function () {
+        const form = document.getElementById('doubleVoterForm');
+        form.reset();
+
+
+        const hiddenId = document.getElementById('id');
+        if (hiddenId) hiddenId.value = '';
+
+
+        const villageField = $('#VillageList');
+        if (villageField.length) {
+            villageField.val(null).trigger('change');
+        }
+
+
+        //$('#boothno, #Category, #Caste, #Occupation').val('').trigger('change');
+
+
+        $('#boothNo, #fatherName, #name,#voterNo,#pastaddress,#curraddress,#description').val('');
+
+
+        const url = new URL(window.location);
+        if (url.search) {
+            url.search = '';
+            window.history.replaceState({}, document.title, url.toString());
+        }
+
+        // Optional: reset button text
+        // $('#submitPravasiVoter').text('Submit');
+    });
+</script>
+
+
+<script>
+    function filterBooth() {
+        var boothId = document.getElementById("boothFilter").value;
+        window.location.href = '/Admin/DoubleVote?boothId=' + boothId;
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+<script>
+    @*insert*@
+    $(document).on("submit", "#doubleVoterForm", function (e) {
+        e.preventDefault();
+        console.log("Form submit event fired");
+
+        let formData = new FormData(this);
+
+        // ✅ Get all selected village IDs
+        const selectedVillages = $('#VillageList').val(); // returns array of selected values
+
+        if (selectedVillages && selectedVillages.length > 0) {
+            // Convert array to comma-separated string
+            const villageIds = selectedVillages.join(',');
+            formData.set('VillageListId', villageIds); // override with comma-separated value
+        } else {
+            formData.set('VillageListId', ''); // no selection
+        }
+        $.ajax({
+            url: '/Admin/AddDoubleVoter',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.status) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                        timer: 1500,
+                        showConfirmButton: true
+                    }).then(() => {
+
+                        var modalEl = document.getElementById('doubleVoterModal');
+                        var modal = bootstrap.Modal.getInstance(modalEl);
+                        modal.hide();
+
+
+                        $("#doubleVoterForm")[0].reset();
+                        location.href = '/admin/DoubleVote';
+
+
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    });
+                }
+            },
+
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", xhr.responseText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Some error occurred!!'
+                });
+            }
+        });
+    });
+
+
+
+
+    //delete
+    $(document).on('click', '.delete-btn', function () {
+        var id = $(this).data('id');
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/DeleteDoubleVoter',
+                    type: 'POST',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.status) {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: res.message,
+                                icon: "success",
+                                timer: 2000,
+                                showConfirmButton: true,
+                                didClose: () => {
+                                    location.href='/admin/DoubleVote'
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: res.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Some error occurred!'
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        @if (Request.QueryString["id"] != null && Model != null && Model.id > 0)
+        {
+            <text>
+                var myModal = new bootstrap.Modal(document.getElementById('doubleVoterModal'));
+                myModal.show();
+            </text>
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        // Initialize Select2
+        $('#VillageList').select2();
+
+
+        window.selectedVillages = "@(Model.VillageListId ?? "")"
+            .split(',')
+            .map(x => x.trim())
+            .filter(x => x !== "");
+
+        const boothId = $('#boothNo').val();
+
+
+        if (boothId) {
+            loadVillages(boothId, window.selectedVillages);
+        }
+
+        $('#boothNo').on('change', function () {
+            const newBoothId = $(this).val();
+            if (newBoothId) {
+                window.selectedVillages = [];
+                loadVillages(newBoothId, []);
+            } else {
+                $('#VillageList').empty();
+            }
+        });
+
+        // ✅ AJAX loader function
+        function loadVillages(boothId, selected) {
+            $.ajax({
+                url: '@Url.Action("GetVillagesByBoothId", "Admin")',
+                type: 'GET',
+                data: { boothId: boothId },
+                success: function (villages) {
+                    console.log(villages, "Village");
+                    const $villageList = $('#VillageList');
+                    $villageList.empty();
+                    //$villageList.append('<option value="">-- Select Village --</option>');
+
+                    // loop and append
+                    villages.forEach(v => {
+                        const isSelected = selected.includes(v.villageId.toString());
+                        const option = `<option value="${v.villageId}" ${isSelected ? "selected" : ""}>${v.Villagename}</option>`;
+                        $villageList.append(option);
+                    });
+
+                    // Refresh select2 UI
+                    $villageList.trigger('change');
+                },
+                error: function () {
+                    console.error("❌ Error loading villages");
+                }
+            });
+        }
+    });
+</script>
+
+@*<script>
+        $(document).ready(function () {
+            $('#boothNo').on('change', function () {
+        const boothId = $(this).val();
+        if (!boothId) return;
+
+        $.ajax({
+            url: '@Url.Action("GetVillagesByBoothId", "Admin")',
+            type: 'GET',
+            data: { boothId },
+            success: function (villages) {
+                const $villageList = $('#VillageList');
+                $villageList.empty();
+                villages.forEach(v => {
+                    $villageList.append(`<option value="${v.villageId}">${v.Villagename}</option>`);
+                });
+
+                // Re-apply previously selected villages if editing
+                if (window.selectedVillages && window.selectedVillages.length > 0) {
+                    $villageList.val(window.selectedVillages).trigger('change');
+                }
+            }
+        });
+    });
+
+
+
+        });
+    </script>*@
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 100;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [100, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 345
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 100;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/DoubleVote?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>

@@ -1,0 +1,328 @@
+﻿<style>
+/*    .table-compact-custom {
+        font-size: 0.85rem;
+    }
+*/
+        /*.table-compact-custom th {
+            background-color: #002147;
+            color: white;*/
+/*            font-weight: 600;*/
+            /*text-transform: uppercase;
+            padding: 8px 10px !important;*/
+/*            border-bottom: 2px solid #eef2f7 !important;*/
+        /*}*/
+/*
+        .table-compact-custom td {
+            padding: 6px 10px !important;
+            vertical-align: middle;
+        }
+*/
+/*    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        padding: 4px 10px;
+        font-size: 0.85rem;
+    }*/
+
+    .bg-navy {
+        background: #001a35 !important;
+    }
+
+    .table-compact-custom th,
+    .table-compact-custom td {
+        /* padding only, border handled by Bootstrap */
+        padding: 6px 10px !important;
+        vertical-align: middle;
+    }
+    #designationModal .modal-dialog {
+        max-width: 500px;
+    }
+
+    #designationModal .modal-content {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .sno-col {
+        width: 50px; /* adjust this value */
+        text-align: center;
+    }
+
+   
+ 
+</style>
+
+
+<!-- Card -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold text-navy">Designation Management</h6>
+        <button class="btn btn-sm btn-navy py-1 px-3" onclick="openModal()">
+            <i class="bi bi-plus-lg me-1"></i> Add Designation
+        </button>
+    </div>
+
+    <div class="card-body p-1">
+        <div class="table-responsive">
+            <table id="govTable" class="table table-hover table-bordered table-sm table-compact-custom w-100">
+                <thead>
+                    <tr>
+                        <th class="text-center sno-col">S.No</th>
+                        <th>Designation Name</th>
+                        <th>Designation Type</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add/Edit -->
+<div class="modal fade" id="designationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-navy text-white py-1 px-3">
+                <h6 class="modal-title fw-bold" id="modalTitle">Add Designation</h6>
+                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-3">
+                <form id="designationForm">
+                    <input type="hidden" id="DesignationId" value="0">
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold text-muted">Designation Name</label>
+                        <input type="text" class="form-control form-control-sm border-2" id="DesignationName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Designation Type</label>
+                        <select class="form-select form-select-sm border-2" id="DesignationType" required>
+                            <option value="">-- Select --</option>
+                            <option value="Pradesh Samithi">Pradesh Samithi</option>
+                            <option value="Pradesh Karyakari Samithi">Pradesh Karyakari Samithi </option>
+
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between">
+
+                        <button type="submit" class="btn  btn-navy btn-sm fw-bold w-100">
+                            <i class="bi bi-check-circle me-1"></i> Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+
+<script>
+    let table;
+    let loadData;
+
+    $(document).ready(function () {
+
+        // Initialize DataTable
+
+        loadData = function () {
+
+            if ($.fn.DataTable.isDataTable('#govTable')) {
+                $('#govTable').DataTable().clear().destroy();
+            }
+
+            initPaginatedTable({
+                apiUrl: '/api/Admin/getAllDesignation',
+                tableSelector: '#govTable',
+                pageSizeSelector: '#pageSize',
+                columns: [
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+                    { data: "DesignationName" },
+                    { data: "DesignationType" },
+                    {
+                        data: "DesignationId",
+                        orderable: false,
+                        searchable: false,
+                        className: "text-center",
+                        render: function (id) {
+                            return `
+                <button class="btn btn-sm btn-light border p-1 px-2 me-1 btn-edit" data-id="${id}">
+                    <i class="bi bi-pencil-square text-primary"></i>
+                </button>
+                <button class="btn btn-sm btn-light border p-1 px-2 btn-delete" data-id="${id}">
+                    <i class="bi bi-trash text-danger"></i>
+                </button>`;
+                        }
+                    }
+                ]
+            });
+        };
+
+//       loadData = function () {
+
+//    if ($.fn.DataTable.isDataTable('#govTable')) {
+//        $('#govTable').DataTable().clear().destroy();
+//    }
+
+//    initPaginatedTable({
+//        apiUrl: '/api/Admin/getAllDesignation',
+//        tableSelector: '#govTable',
+//        pageSizeSelector: '#pageSize',
+//        columns: [
+//            {
+//                data: null,
+//                orderable: false,
+//                searchable: false,
+//                className: "text-center",
+//                render: function (data, type, row, meta) {
+//                    return meta.row + 1;
+//                }
+//            },
+//            { data: "DesignationName" },
+//            { data: "DesignationType" },
+//            {
+//                data: "DesignationId",
+//                orderable: false,
+//                searchable: false,
+//                className: "text-center",
+//                render: function (id) {
+//                    return `
+//                    <button class="btn btn-sm btn-light border p-1 px-2 me-1 btn-edit" data-id="${id}">
+//                        <i class="bi bi-pencil-square text-primary"></i>
+//                    </button>
+//                    <button class="btn btn-sm btn-light border p-1 px-2 btn-delete" data-id="${id}">
+//                        <i class="bi bi-trash text-danger"></i>
+//                    </button>`;
+//                }
+//            }
+//        ]
+//    });
+//};
+
+        loadData();
+
+
+        // Add/Edit form submit
+        $('#designationForm').on('submit', function (e) {
+            e.preventDefault();
+            let model = {
+                DesignationId: parseInt($('#DesignationId').val()),
+                DesignationName: $('#DesignationName').val(),
+                DesignationType: $('#DesignationType').val()
+            };
+
+            Swal.fire({ title: 'Saving...', didOpen: () => Swal.showLoading() });
+
+            $.ajax({
+                url: '/api/Admin/SaveDesignation',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire('Success', res.message, 'success').then(() => {
+                            $('#designationModal').modal('hide');
+                            loadData();
+                        });
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                },
+                error: function (xhr) {
+                    let msg = "Server error";
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        msg = xhr.responseJSON.error;
+                    }
+                    Swal.fire('Error', msg, 'error');
+                }
+            });
+        });
+
+        // Edit click
+        $('#govTable').on('click', '.btn-edit', function () {
+            const id = $(this).data('id');
+            console.log("Edit clicked, id:", id);
+
+            $.ajax({
+                url: `/api/Admin/getDesignationByid?id=${id}`,
+                type: 'GET',
+                success: function (res) {
+                    if (res.success) {
+                        $('#DesignationId').val(res.data.DesignationId);
+                        $('#DesignationName').val(res.data.DesignationName);
+                        $('#DesignationType').val(res.data.DesignationType);
+                        $('#btnDelete').show();
+                        $('#modalTitle').text('Update Designation');
+                        $('#designationModal').modal('show');
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Server error', 'error');
+                }
+            });
+        });
+
+        // Delete click
+        $('#govTable').on('click', '.btn-delete', function () {
+            const id = $(this).data('id');
+            console.log("Delete clicked, id:", id);
+
+            if (!id) return;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will delete permanently!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/api/Admin/DeleteDesignation?id=${id}`,
+                        type: 'DELETE',
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire('Deleted!', res.message, 'success');
+                                $('#designationModal').modal('hide');
+                                loadData();
+                            } else {
+                                Swal.fire('Error', res.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'Server error', 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+    });
+
+    // Open Add Modal
+    function openModal() {
+        $('#DesignationId').val(0);
+        $('#DesignationName').val('');
+        $('#DesignationType').val('');
+        $('#modalTitle').text('Add Designation');
+        $('#btnDelete').hide();
+
+        const modal = new bootstrap.Modal(document.getElementById('designationModal'));
+        modal.show();
+    }
+
+</script>
+

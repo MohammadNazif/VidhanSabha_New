@@ -1,0 +1,401 @@
+﻿@{
+ 
+    Layout = "~/Views/Shared/_LayoutSector.cshtml";
+}
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    body {
+        font-family: "Poppins", sans-serif !important;
+    }
+
+    .dashboard-card {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,.1);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Bottom strip */
+        .dashboard-card::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px; /* thinner strip */
+        }
+
+    .card-body {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 14px 18px;
+        margin-right: 14px;
+    }
+
+    .card-icon {
+        font-size: 28px !important;
+        flex-shrink: 0;
+        text-align: right; /* icon stays right-aligned inside its box */
+    }
+
+    .card-text-wrapper {
+        text-align: right; /* ✅ text aligned to right */
+        flex: 1;
+    }
+    /* Strip colors */
+    .card-green::after {
+        background-color: #43a047;
+    }
+
+    .card-yellow::after {
+        background-color: #fbc02d;
+    }
+
+    .card-blue::after {
+        background-color: #1a73e8;
+    }
+
+    .card-red::after {
+        background-color: #e53935;
+    }
+
+    .card-purple::after {
+        background-color: #8e24aa;
+    }
+
+    .card-teal::after {
+        background-color: #00897b;
+    }
+
+    .card-gray::after {
+        background-color: #6c757d;
+    }
+
+    .card-orange-bottom {
+        border-bottom: 3px solid #e65100;
+    }
+
+    /* Text + icon alignment */
+
+    .card-body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        gap: 14px;
+    }
+
+    .card-icon {
+        font-size: 28px !important;
+        flex-shrink: 0;
+        text-align: left;
+    }
+
+    .card-text-wrapper {
+        text-align: left;
+        flex: 1;
+    }
+
+    .card-title {
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+
+    .card-number {
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1.2;
+        display: block;
+    }
+
+    .col-md-3 {
+        min-height: 140px !important;
+    }
+
+    .card-text-wrapper {
+        flex: 1; /* takes full width */
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end; /* ✅ push text & number to right */
+    }
+</style>
+
+<div class="container-fluid my-5">
+    <div class="row g-4 ms-3 mt-5">
+        <!-- Sector -->
+        @*<div class="col-md-3">
+                <div class="card dashboard-card card-red p-0 text-center">
+                    <a href="" style="text-decoration:none; color: inherit;">
+                        <div class="card-body">
+                            <div class="card-icon text-danger">
+                                <i class="fa-solid fa-diagram-project"></i>
+                            </div>
+                            <div class="card-text-wrapper ">
+                                <span class="card-title text-muted">Sector</span>
+                                <span class="card-number text-dark fw-bold"></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>*@
+
+        <!-- Booth -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-green p-0 text-center">
+                <a href="/Sector/BoothListBySector" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-success">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted text-end">Booth</span>
+                            <span class="card-number text-dark fw-bold text-end">@ViewBag.BoothCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- PannaPramukh -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-yellow p-0 text-center">
+                <a href="/Sector/PannaListBySector" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-warning">
+                            <i class="fa-solid fa-id-badge"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted ">PannaPramukh</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.pannaCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Voters -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-gray p-0 text-center">
+                <a href="/Sector/BoothVoterdesListBySector" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-secondary">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Booth Voter Des</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.BoothVoterCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-card card-purple p-0 text-center">
+                <a href="/Sector/GetBoothSamitiBySecIncId" style="text-decoration:none; color: inherit;">
+                    <div class="card-body">
+                        <div class="card-icon" style="color: #8e24aa;">
+                            <i class="fa-solid fa-face-smile"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">BoothSmithi</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.boothSamithiCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Next Row -->
+    <div class="row g-4 ms-3">
+        <!-- Satisfied -->
+        <!-- Unsatisfied -->
+        @*<div class="col-md-3 mt-0">
+                <div class="card dashboard-card card-blue p-0 text-center">
+                    <div class="card-body">
+                        <div class="card-icon text-primary">
+                            <i class="fa-solid fa-face-frown"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Unsatisfied</span>
+                            <span class="card-number text-dark fw-bold">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+        <!-- Activities -->
+        <div class="col-md-3 mt-0">
+            <div class="card dashboard-card card-teal p-0 text-center">
+                <a href="/Sector/ActivityList" style="text-decoration:none; color: inherit;">
+                    <div class="card-body">
+                        <div class="card-icon" style="color: #00897b;">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Activities</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.ActivityCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pravasi -->
+        <div class="col-md-3 mt-0">
+            <div class="card dashboard-card card-red p-0 text-center">
+                <a href="/sector/PravasiList" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-danger">
+                            <i class="fa-solid fa-plane-departure"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Pravasi</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.PravasiCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3 mt-0">
+            <div class="card dashboard-card card-gray p-0 text-center">
+                <a href="/sector/NewVoters" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-secondary">
+                            <i class="fa-solid fa-person-booth"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">New Voters</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.NewvoterCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3 mt-0">
+            <div class="card dashboard-card card-blue p-0 text-center">
+                <a href="/Sector/EffectivePerson" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-primary">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div class="card-text-wrapper ">
+                            <span class="card-title text-muted"  style="font-size:12px!important; font-weight:500">Prabhavshali Vyakti </span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.EffectivePersonCount </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Last Row -->
+    <div class="row g-3 ms-3">
+        <!-- Eligible Voters -->
+        <!-- Reports -->
+        <div class="col-md-3 mt-0">
+            <div class="card dashboard-card card-red p-0 text-center">
+                <a href="/Sector/DoubleVoter" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-danger">
+                            <i class="fa-solid fa-clone"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Double Voters</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.DoubleVoteCount </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!--  SatisfiedCount UnSatisfiedCount-->
+        <div class="col-md-3 mt-0">
+            <div class="card dashboard-card card-green p-0 text-center">
+                <a href="/sector/SatisfiedPersonList" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-success">
+                            <i class="fa-solid fa-face-frown"></i>
+
+                        </div>
+                        <div class="card-text-wrapper ">
+                            <span class="card-title text-muted">Sahmat</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.SatisfiedCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+
+        <div class="col-md-3 mt-0">
+            <div class="card dashboard-card card-yellow p-0 text-center">
+                <a href="/sector/UnSatisfiedPersonList" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-warning">
+                            <i class="fa-solid fa-face-smile"></i>
+
+                        </div>
+                        <div class="card-text-wrapper ">
+                            <span class="card-title text-muted">Asahmat</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.UnSatisfiedCount </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+
+        <div class="col-md-3 mt-0">
+            <div class="card dashboard-card card-teal p-0 text-center">
+                <a href="/sector/SeniorCitizen" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon" style="color: #00897b;">
+                            <i class="fa-solid fa-person-booth"></i>
+
+                        </div>
+                        <div class="card-text-wrapper ">
+                            <span class="card-title text-muted">Varishth Nagrik</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.SeniorCount </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </div>
+    <div class="row g-3 ms-3">
+        <!-- Eligible Voters -->
+        <!-- Reports -->
+        <div class="col-md-3 mt-0">
+            <div class="card dashboard-card card-blue p-0 text-center">
+                <a href="/Sector/Handicaped" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-primary">
+                            <i class="fa-solid fa-clone"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Viklaang</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.Handicaped</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+

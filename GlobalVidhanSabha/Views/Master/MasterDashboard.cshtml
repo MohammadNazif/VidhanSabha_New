@@ -1,0 +1,259 @@
+﻿<div class="container-fluid p-4">
+    @*<div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold mb-0">System Overview</h5>
+        </div>*@
+
+    <div class="row g-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a href="/Master/VidhanSabhaRagiter" style="text-decoration: none; color: inherit;">
+                <div class="stat-card d-flex align-items-center justify-content-between">
+
+                    <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-people"></i>
+                    </div>
+
+                    <div class="text-end">
+                        <h3 class="fw-bold mb-0" id="totalMembers">0</h3>
+                        <p class="text-muted mb-0 small">Vidhan Sabha</p>
+                    </div>
+
+                </div>
+            </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a href="/Master/VidhanSabhaRagiter" style="text-decoration: none; color: inherit;">
+                <div class="stat-card d-flex align-items-center justify-content-between">
+
+                    <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-file-check"></i>
+                    </div>
+
+                    <div class="text-end">
+                        <h3 class="fw-bold" id="withPrabhari">0</h3>
+                        <p class="text-muted mb-0 small">With Prabhari</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a href="/Master/VidhanSabhaRagiter" style="text-decoration: none; color: inherit;">
+                <div class="stat-card d-flex align-items-center justify-content-between" style="cursor:pointer;">
+
+                    <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-mic"></i>
+                    </div>
+
+                    <div class="text-end">
+                        <h3 class="fw-bold" id="withoutPrabhari">0</h3>
+                        <p class="text-muted mb-0 small">Without Prabhari</p>
+                    </div>
+
+                </div>
+            </a>
+        </div>
+
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a href="/Master/" style="text-decoration: none; color: inherit;">
+                <div class="stat-card d-flex align-items-center justify-content-between" style="cursor:pointer;">
+
+                    <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-mic"></i>
+                    </div>
+
+                    <div class="text-end">
+                        <h3 class="fw-bold" id="withoutPrabhari">0</h3>
+                        <p class="text-muted mb-0 small">Without Prabhari</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a href="/Master/" style="text-decoration: none; color: inherit;">
+                <div class="stat-card d-flex align-items-center justify-content-between" style="cursor:pointer;">
+
+                    <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-mic"></i>
+                    </div>
+
+                    <div class="text-end">
+                        <h3 class="fw-bold" id="withoutPrabhari">0</h3>
+                        <p class="text-muted mb-0 small">Without Prabhari</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
+        <div class="row g-2 mt-2">
+
+            <!-- State wise Vidhan Sabha -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">State Wise Vidhan Sabha</h6>
+                        <canvas id="stateChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- District wise Vidhan Sabha -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">District Wise Vidhan Sabha</h6>
+                        <canvas id="districtChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+@*<script src="~/Scripts/jquery-3.7.0.min.js"></script>*@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const pieColors = [
+        '#ff6384',
+        '#ff9f40',
+        '#ffcd56',
+        '#4bc0c0',
+        '#36a2eb',
+        '#9966ff',
+        '#c9cbcf'
+    ];
+</script>
+
+<script>
+    let stateChartObj;
+
+    function loadStateChart() {
+        $.get('/api/Admin/GetStateWiseVidhanSabhaChart', function (res) {
+
+            const labels = res.data.map(x => x.Key);
+            const values = res.data.map(x => x.Value);
+
+            if (stateChartObj) {
+                stateChartObj.destroy();
+            }
+
+            stateChartObj = new Chart(document.getElementById('stateChart'), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'State Wise Vidhan Sabha',
+                        data: values,
+                        backgroundColor: pieColors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'State Wise Vidhan Sabha'
+                        }
+                    }
+                }
+            });
+        });
+    }
+</script>
+
+<script>
+    let districtChartObj;
+
+    function loadDistrictChart() {
+        $.get('/api/Admin/GetDistrictWiseVidhanSabhaChart', function (res) {
+
+            const labels = res.data.map(x => x.Key);
+            const values = res.data.map(x => x.Value);
+
+            if (districtChartObj) {
+                districtChartObj.destroy();
+            }
+
+            districtChartObj = new Chart(document.getElementById('districtChart'), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'District Wise Vidhan Sabha',
+                        data: values,
+                        backgroundColor: pieColors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'District Wise Vidhan Sabha'
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    $(document).ready(function () {
+        loadStateChart();
+        loadDistrictChart();
+    });
+</script>
+
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        function loadDashboardCounts() {
+            $.ajax({
+                url: '/api/Admin/GetDashboardCounts',
+                type: 'GET',
+                success: function (response) {
+                    // Nested data path fix
+                    if (response.success && response.data.success) {
+                        var counts = response.data.data;
+
+                        $('#totalMembers').text(counts.TotalVidhanSabhaCount);
+                        $('#withPrabhari').text(counts.TotalVidhanSabhaWithPrabhari);
+                        $('#withoutPrabhari').text(counts.TotalVidhanSabhaWithoutPrabhari);
+                    } else {
+                        console.error('Failed to fetch dashboard counts');
+                    }
+                },
+                error: function (err) {
+                    console.error('Error:', err);
+                }
+            });
+        }
+
+        loadDashboardCounts();
+    });
+</script>
+

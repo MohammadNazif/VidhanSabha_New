@@ -1,0 +1,757 @@
+﻿
+
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+<style>
+    body {
+        font-family: "Poppins", sans-serif !important;
+    }
+
+    .dashboard-card {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,.1);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Bottom strip */
+        .dashboard-card::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px; /* thinner strip */
+        }
+
+    .card-body {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 14px 18px;
+        margin-right: 14px;
+    }
+
+    .card-icon {
+        font-size: 28px !important;
+        flex-shrink: 0;
+        text-align: right; /* icon stays right-aligned inside its box */
+    }
+
+    .card-text-wrapper {
+        text-align: right; /* ✅ text aligned to right */
+        flex: 1;
+    }
+    /* Strip colors */
+    .card-green::after {
+        background-color: #43a047;
+    }
+
+    .card-yellow::after {
+        background-color: #fbc02d;
+    }
+
+    .card-blue::after {
+        background-color: #1a73e8;
+    }
+
+    .card-red::after {
+        background-color: #e53935;
+    }
+
+    .card-purple::after {
+        background-color: #8e24aa;
+    }
+
+    .card-teal::after {
+        background-color: #00897b;
+    }
+
+    .card-gray::after {
+        background-color: #6c757d;
+    }
+
+    .card-orange-bottom {
+        border-bottom: 3px solid #e65100;
+    }
+
+    /* Text + icon alignment */
+
+    .card-body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        gap: 14px;
+    }
+
+    .card-icon {
+        font-size: 28px !important;
+        flex-shrink: 0;
+        text-align: left;
+    }
+
+    .card-text-wrapper {
+        text-align: left;
+        flex: 1;
+    }
+
+    .card-title {
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+
+    .card-number {
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1.2;
+        display: block;
+    }
+
+    .col-md-3 {
+        min-height: 140px !important;
+    }
+
+    .card-text-wrapper {
+        flex: 1; /* takes full width */
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end; /* ✅ push text & number to right */
+    }
+
+    .dashboard-card-header {
+        background-color: #ff8c42 !important;
+        color: white !important;
+        font-weight: 400;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .chart-box {
+        width: 100%;
+        max-width: 240px; /* ya jo max chahiye */
+        height: auto;
+        aspect-ratio: 1/1; /* square maintain karega */
+    }
+</style>
+
+
+
+<div class="container ms-3 my-5">
+    <!-- First Row -->
+    <div class="row g-4 mt-4">
+        <!-- Sector -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-red p-0 text-center">
+                <a href="/admin/CombinedSectorReports" style="text-decoration:none; color: inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-danger">
+                            <i class="fa-solid fa-diagram-project"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Sector</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.SectorCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Booth -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-green p-0 text-center">
+                <a href="/admin/BoothReports" style="text-decoration:none; color: inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-success">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Booth</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.BoothCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- PannaPramukh -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-yellow p-0 text-center">
+                <a href="/admin/PannaPramukh" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-warning">
+                            <i class="fa-solid fa-id-badge"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">PannaPramukh</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.PannaCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Sahmat -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-purple p-0 text-center">
+                <a href="/admin/SahmatAhsamat?type=Sahamat" style="text-decoration:none; color: inherit;">
+                    <div class="card-body">
+                        <div class="card-icon" style="color: #8e24aa;">
+                            <i class="fa-solid fa-face-smile"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Sahmat</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.sahamat</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Row -->
+    <div class="row g-4">
+        <!-- Asahmat -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-blue p-0 text-center">
+                <a href="/admin/SahmatAhsamat?type=Asahamat" style="text-decoration:none; color: inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-primary">
+                            <i class="fa-solid fa-face-frown"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Asahmat</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.Asahamat</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Activities -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-teal p-0 text-center">
+                <a href="/admin/Activity" style="text-decoration:none; color: inherit;">
+                    <div class="card-body">
+                        <div class="card-icon" style="color: #00897b;">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Activities</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.Activity</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pravasi -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-red p-0 text-center">
+                <a href="/admin/PravasiVoter" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-danger">
+                            <i class="fa-solid fa-plane-departure"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Pravasi</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.PravasiCount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- New Voters -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-gray p-0 text-center">
+                <a href="/admin/NewVoters" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-secondary">
+                            <i class="fa-solid fa-person-booth"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">New Voters</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.Voterscount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Third Row -->
+    <div class="row g-4">
+        <!-- Double Voter -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-yellow p-0 text-center">
+                <a href="/admin/DoubleVote" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-warning">
+                            <i class="fa-solid fa-user-xmark"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Double Voter</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.DoubleVotercount</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Effective Person -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-blue p-0 text-center">
+                <a href="/admin/EffectivePerson" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-primary">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted" style="font-size:12px!important;">Prabhavshali Vyakti</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.EffectivePerson</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Block -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-green p-0 text-center">
+                <a href="/admin/Block" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-success">
+                            <i class="fa-solid fa-cubes"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Block</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.Block</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- BDC -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-blue p-0 text-center">
+                <a href="/admin/Bdc" style="text-decoration:none; color:inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-primary">
+                            <i class="fa-solid fa-users-gear"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">BDC</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.Bdc</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sector -->
+        <div class="col-md-3">
+            <div class="card dashboard-card card-red p-0 text-center">
+                <a href="/admin/InfluencerList" style="text-decoration:none; color: inherit;">
+                    <div class="card-body">
+                        <div class="card-icon text-danger">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="card-text-wrapper">
+                            <span class="card-title text-muted">Influencer Person</span>
+                            <span class="card-number text-dark fw-bold">@ViewBag.Influencer</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    <div class="container ms-4 d-flex justify-content-center">
+        <div class="row w-100" style="max-width: 1200px;">
+
+            <!-- VidhanSabha Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-lg border-0 h-100 text-center">
+                    <div class="card-header fw-bold dashboard-card-header">
+                        VidhanSabha Vote Share (2017 - 2022) - Bijnor
+                        <button id="showOverallVidhanBtn" class="btn btn-outline-primary btn-sm py-0 px-2 float-end">All UP</button>
+                    </div>
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <div class="row w-100">
+                            <!-- 2017 Chart -->
+                            <div class="col-6 d-flex flex-column align-items-center">
+                                <h6 class="text-muted small">2017</h6>
+                                <div class="chart-box">
+                                    <canvas id="votePie1"></canvas>
+                                </div>
+                            </div>
+                            <!-- 2022 Chart -->
+                            <div class="col-6 d-flex flex-column align-items-center">
+                                <h6 class="text-muted small">2022</h6>
+                                <div class="chart-box">
+                                    <canvas id="votePie2"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- LokSabha Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-lg border-0 h-100 text-center">
+                    <div class="card-header fw-bold dashboard-card-header">
+                        LokSabha Vote Share (2019 - 2024) - Bijnor
+                        <button id="showOverallLokBtn" class="btn btn-outline-primary btn-sm py-0 px-2 float-end">All UP</button>
+                    </div>
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <div class="row w-100">
+                            <!-- 2019 Chart -->
+                            <div class="col-6 d-flex flex-column align-items-center">
+                                <h6 class="text-muted small">2019</h6>
+                                <div class="chart-box">
+                                    <canvas id="votePie3"></canvas>
+                                </div>
+                            </div>
+                            <!-- 2024 Chart -->
+                            <div class="col-6 d-flex flex-column align-items-center">
+                                <h6 class="text-muted small">2024</h6>
+                                <div class="chart-box">
+                                    <canvas id="votePie4"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Hidden Overall VidhanSabha -->
+            <!-- Hidden Overall VidhanSabha -->
+            <div id="overallVidhanCard" class="col-md-6 mb-4" style="display:none;">
+                <div class="card shadow-lg border-0 text-center position-relative">
+
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2"
+                            style="z-index: 10;"
+                            aria-label="Close"
+                            onclick="document.getElementById('overallVidhanCard').style.display='none'">
+                    </button>
+                    <div class="card-header fw-bold dashboard-card-header">
+                        Overall UP VidhanSabha Results
+                    </div>
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <div class="row w-100">
+                            <div class="col-6 d-flex flex-column align-items-center">
+                                <h6 class="text-muted small">2017 (Overall UP)</h6>
+                                <div class="chart-box">
+                                    <canvas id="overallPie2017"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-6 d-flex flex-column align-items-center">
+                                <h6 class="text-muted small">2022 (Overall UP)</h6>
+                                <div class="chart-box">
+                                    <canvas id="overallPie2022"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden Overall LokSabha -->
+            <div id="overallLokCard" class="col-md-6 mb-4" style="display:none;">
+                <div class="card shadow-lg border-0 text-center position-relative">
+
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2"
+                            style="z-index: 10;"
+                            aria-label="Close"
+                            onclick="document.getElementById('overallLokCard').style.display='none'">
+                    </button>
+                    <div class="card-header fw-bold dashboard-card-header">
+                        Overall UP LokSabha Results
+                    </div>
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <div class="row w-100">
+                            <div class="col-6 d-flex flex-column align-items-center">
+                                <h6 class="text-muted small">2019 (Overall UP)</h6>
+                                <div class="chart-box">
+                                    <canvas id="overallPie2019"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-6 d-flex flex-column align-items-center">
+                                <h6 class="text-muted small">2024 (Overall UP)</h6>
+                                <div class="chart-box">
+                                    <canvas id="overallPie2024"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@*<script>
+        // ---------------- Party Official Colors ----------------
+        const partyColors = {
+            "BJP": "#FF4500",        // Saffron
+            "INC": "#138808",        // Congress Green
+            "Congress": "#138808",
+            "SP": "#FF0000",         // Samajwadi Party Red
+            "BSP": "#0000FF",        // Bahujan Samaj Party Blue
+            "RLD": "#228B22",        // Rashtriya Lok Dal Green
+            "AIMIM": "#006400",      // AIMIM Dark Green
+            "NOTA": "#808080",       // Grey
+            "OTH": "#87CEEB",        // Sky Blue
+            "Others": "#87CEEB"      // Sky Blue
+        };
+
+        // ---------------- VidhanSabha Results ----------------
+        // 2017 Result Data
+        const partyNames2017 = ['BJP', 'SP', 'BSP', 'RLD', 'NOTA'];
+        const votePercents2017 = [42.95, 31.85, 20.26, 3.17, 0.51];
+
+        // 2022 Result Data
+        const partyNames2022 = ['BJP', 'RLD', 'BSP', 'AIMIM', 'NOTA'];
+        const votePercents2022 = [38.54, 37.96, 20.64, 0.91, 0.44];
+
+        // ---------------- LokSabha Results ----------------
+        // 2019 (Bijnor)
+        const partyNames2019 = ['BSP', 'BJP', 'Others'];
+        const votePercents2019 = [
+            parseFloat((561045 / 1100763 * 100).toFixed(2)), // BSP
+            parseFloat((491104 / 1100763 * 100).toFixed(2)), // BJP
+            parseFloat(((1100763 - (561045 + 491104)) / 1100763 * 100).toFixed(2)) // Others
+        ];
+
+        // 2024 (Bijnor)
+        const total2024 = 1010300; // actual total
+        const partyNames2024 = ['RLD', 'SP', 'BSP', 'Others'];
+        const votePercents2024 = [
+            parseFloat((404493 / total2024 * 100).toFixed(2)), // RLD
+            parseFloat((366985 / total2024 * 100).toFixed(2)), // SP
+            parseFloat((218986 / total2024 * 100).toFixed(2)), // BSP
+            parseFloat(((8072 + 7318 + 4446 + 2000) / total2024 * 100).toFixed(2)) // Others
+        ];
+
+        // ---------------- Color Mapping ----------------
+        function getColors(labels) {
+            return labels.map(p => partyColors[p] || "#6C757D");
+        }
+
+        // ---------------- Chart Creator ----------------
+        function createDoughnutChart(canvasId, labels, data) {
+            new Chart(document.getElementById(canvasId), {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: getColors(labels)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                generateLabels: function (chart) {
+                                    const data = chart.data;
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        return {
+                                            text: `${label}: ${value}%`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            hidden: false
+                                        };
+                                    });
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value}%`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+
+        // ---------------- Initialize Graphs ----------------
+        // VidhanSabha
+        createDoughnutChart("votePie1", partyNames2017, votePercents2017); // 2017
+        createDoughnutChart("votePie2", partyNames2022, votePercents2022); // 2022
+
+        // LokSabha
+        createDoughnutChart("votePie3", partyNames2019, votePercents2019); // 2019
+        createDoughnutChart("votePie4", partyNames2024, votePercents2024); // 2024
+
+
+
+    </script>*@
+
+
+<script>
+    // ---------------- Party Official Colors ----------------
+    const partyColors = {
+        "BJP": "#FF4500",
+        "INC": "#138808",
+        "Congress": "#138808",
+        "SP": "#FF0000",
+        "BSP": "#0000FF",
+        "RLD": "#228B22",
+        "AIMIM": "#006400",
+        "NOTA": "#808080",
+        "OTH": "#87CEEB",
+        "Others": "#87CEEB"
+    };
+
+
+
+
+    // ---------------- Chart Creator ----------------
+    function createDoughnutChart(canvasId, labels, percentages, votes) {
+        new Chart(document.getElementById(canvasId), {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: percentages,
+                    backgroundColor: labels.map(p => partyColors[p] || "#6C757D")
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            generateLabels: function (chart) {
+                                return chart.data.labels.map((label, i) => {
+                                    const color = chart.data.datasets[0].backgroundColor[i];
+                                    const pct = chart.data.datasets[0].data[i];
+                                    const voteCount = votes[i] || '-';
+                                    return {
+                                        text: `${label}: ${pct}% (${voteCount} votes)`,
+                                        fillStyle: color,
+                                        hidden: false
+                                    };
+                                });
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (ctx) {
+                                const voteCount = votes[ctx.dataIndex] || '-';
+                                return `${ctx.label}: ${ctx.raw}% (${voteCount} votes)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                }
+            }
+        });
+    }
+
+    // ---------------- Bijnor VidhanSabha ----------------
+    const partyNames2017 = ['BJP', 'SP', 'BSP', 'RLD', 'NOTA'];
+    const votePercents2017 = [42.95, 31.85, 20.26, 3.17, 0.51];
+    const votes2017 = [561045, 417805, 265524, 41450, 6692]; // actual votes
+
+    const partyNames2022 = ['BJP', 'RLD', 'BSP', 'AIMIM', 'NOTA'];
+    const votePercents2022 = [38.54, 37.96, 20.64, 0.91, 0.44];
+    const votes2022 = [389432, 383550, 208512, 9180, 8870]; // actual votes
+
+    createDoughnutChart("votePie1", partyNames2017, votePercents2017, votes2017);
+    createDoughnutChart("votePie2", partyNames2022, votePercents2022, votes2022);
+
+    // ---------------- Bijnor LokSabha ----------------
+    const partyNames2019 = ['BSP', 'BJP', 'Others'];
+    const votePercents2019 = [50.95, 44.61, 4.44];
+    const votes2019 = [561045, 491104, 49014];
+
+    const partyNames2024 = ['RLD', 'SP', 'BSP', 'Others'];
+    const votePercents2024 = [39.48, 35.82, 21.38, 1.9];
+    const votes2024 = [404493, 366985, 218986, 19436];
+
+    createDoughnutChart("votePie3", partyNames2019, votePercents2019, votes2019);
+    createDoughnutChart("votePie4", partyNames2024, votePercents2024, votes2024);
+
+    // ---------------- Overall UP VidhanSabha ----------------
+    const overallParty2017 = ["BJP", "BSP", "SP", "Congress", "Others"];
+    const overallVotes2017 = [39.67, 22.23, 21.82, 6.25, 10.03];
+    const overallVoteCounts2017 = [x = 0, y = 0, z = 0, a = 0, b = 0]; // add actual votes if available
+
+    const overallParty2022 = ["BJP", "SP", "BSP", "Congress", "Others"];
+    const overallVotes2022 = [41.29, 32.06, 12.88, 2.33, 11.44];
+    const overallVoteCounts2022 = [0, 0, 0, 0, 0]; // actual votes if available
+
+    createDoughnutChart("overallPie2017", overallParty2017, overallVotes2017, overallVoteCounts2017);
+    createDoughnutChart("overallPie2022", overallParty2022, overallVotes2022, overallVoteCounts2022);
+
+    // ---------------- Overall UP LokSabha ----------------
+    const overallParty2019 = ["BJP", "SP+BSP+RLD", "Congress", "Others"];
+    const overallVotes2019 = [49.6, 38.9, 6.3, 5.2];
+    const overallVoteCounts2019 = [0, 0, 0, 0]; // actual votes if available
+
+    const overallParty2024 = ["BJP+Allies", "INDIA (SP+INC+RLD etc)", "BSP", "Others"];
+    const overallVotes2024 = [41.4, 43.6, 9.4, 5.6];
+    const overallVoteCounts2024 = [0, 0, 0, 0]; // actual votes if available
+
+    createDoughnutChart("overallPie2019", overallParty2019, overallVotes2019, overallVoteCounts2019);
+    createDoughnutChart("overallPie2024", overallParty2024, overallVotes2024, overallVoteCounts2024);
+
+    // ---------------- Button Toggles ----------------
+    document.getElementById("showOverallVidhanBtn").addEventListener("click", () => {
+        const card = document.getElementById("overallVidhanCard");
+        card.style.display = card.style.display === "none" ? "block" : "none";
+    });
+
+    document.getElementById("showOverallLokBtn").addEventListener("click", () => {
+        const card = document.getElementById("overallLokCard");
+        card.style.display = card.style.display === "none" ? "block" : "none";
+    });
+
+</script>

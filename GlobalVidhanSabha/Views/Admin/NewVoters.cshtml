@@ -1,0 +1,1139 @@
+﻿@model IEnumerable<VishanSabha.Models.NewVoters>
+
+
+@{
+    ViewBag.Title = "Sector";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<!-- ✅ Custom CSS goes here -->
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+        color: white !important;
+        /*        display:none;*/
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left !important;
+        vertical-align: middle;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    #myTable img {
+        width: 50px !important;
+        height: auto;
+    }
+
+    /*.table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }*/
+
+    #myTable td,
+    #myTable th {
+        white-space: nowrap;
+        padding: 3px 6px !important; /* kam padding → row height kam */
+        font-size: 11px !important; /* chhota text */
+        line-height: 1.2 !important; /* compact vertical spacing */
+        height: 26px !important;
+    }
+
+    #myTable th {
+        color: white !important;
+    }
+
+    .btn-outline-orange {
+        border-color: orange;
+        color: orange;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #FF8C42;
+            color: white;
+        }
+
+    .btn-xs {
+        padding: 1px 5px;
+        font-size: 8px;
+        line-height: 1.2;
+        border-radius: 3px;
+    }
+
+    .edit-icon, .delete-icon {
+        font-size: 14px;
+    }
+
+    .edit-icon {
+        color: green;
+    }
+
+    .edit-btn:hover .edit-icon {
+        color: white;
+    }
+
+    .delete-icon {
+        color: red;
+    }
+
+    .delete-btn:hover .delete-icon {
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px; /* font size chhota ya bada karne ke liye */
+        margin-top: 10px;
+        padding: 5px 10px; /* button ke andar ki padding */
+        min-width: 40px; /* button ki minimum width */
+        height: 20px; /* button ki height */
+        border-radius: 5px; /* corners round karne ke liye */
+        margin: 0 2px; /* buttons ke beech thodi gap */
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+
+    #exportIcons a {
+        text-decoration: none;
+    }
+
+
+    .table-wrapper {
+        margin-top: 10px; /* 👈 filter section ke neeche gap */
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+
+
+
+    .table-controls {
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        background: #fff;
+        /*        padding: 8px 0;*/
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-scroll {
+        max-height: 400px; /* adjust height */
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+        overflow: auto;
+        z-index: 1;
+        /*        padding-top:80px;*/
+    }
+
+        .table-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky header */
+        /*.table-scroll thead th {*/
+        /*            position: sticky !important;*/
+        /*top: 0;
+            background-color: #FF8C42;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }*/
+
+        .table-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background-color: #a4a4a4;
+            border-radius: 4px;
+        }
+
+    .table-responsive {
+        max-height: 400px; /* scroll area height */
+        overflow-y: auto;
+    }
+
+    .select2-container {
+        z-index: 99999 !important;
+    }
+
+    .container-fluid {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 45px !important; /* 👈 Header ke niche thoda extra space */
+        position: relative;
+        z-index: 1;
+    }
+
+    .dataTables_length label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-right: 6px; /* 👈 "Show" aur dropdown ke beech gap */
+        letter-spacing: 0.5px; /* 👈 thoda wide look */
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important; /* Default border */
+        outline: none !important; /* Default blue outline hatayega */
+        box-shadow: none !important; /* Shadow remove karega */
+    }
+
+        div.dataTables_filter input[type="search"]:focus {
+            border: 1px solid #FF8C42 !important; /* 👈 Focus hone par bhi same border */
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+    .divSize {
+        width: 150px !important;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    .table-wrapper {
+        height: 520px !important;
+        overflow: hidden;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    #entriesAndExport {
+        position: absolute;
+        top: 20px !important;
+        left: 230px !important;
+        background: white;
+        z-index: 10;
+    }
+    /*    .dt-layout-row:first-child {
+        position: fixed !important;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: white;
+    }*/
+
+    .dt-scroll-body .myhead {
+        display: none !important;
+    }
+
+    .dt-scroll-body tbody td {
+        min-width: 100px !important;
+    }
+
+
+    #myTable th:nth-child(1),
+    #myTable td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /*  #myTable th:nth-child(2),
+    #myTable td:nth-child(2) {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: center;
+        white-space: nowrap;
+    }*/
+</style>
+
+
+
+
+
+<div class="container-fluid  m-3" >
+    <div class="d-flex justify-content-between mb-2">
+        <h3 style="color: #FF8C42;">New Voters</h3>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSectorModal">Create</button>
+    </div>
+
+    @*<div class="row mb-2">
+            <div class="col-sm-3">
+                <label for="boothFilter" class="form-label fw-bold">Filter by Booth</label>
+                <select id="boothFilter"
+                        class="selectpicker form-control"
+                        multiple data-live-search="true"
+                        data-actions-box="true"
+                        data-width="150px">
+                    <option value="all">All Booths</option>
+                    @foreach (var booth in (IEnumerable<VishanSabha.Models.Booth>)ViewBag.BoothList)
+                    {
+                        <option value="@booth.Booth_Id">@booth.BoothNumber</option>
+                    }
+                </select>
+            </div>
+        </div>*@
+
+
+<div class="table-wrapper shadow rounded p-3">
+    <div class="table-controls">
+        <div id="entriesAndExport"></div>
+        <div id="searchBox"></div>
+    </div>
+    <div class="  " style="white-space:nowrap!important;">
+
+        <table id="myTable" class="table table-responsive-lg table-hover table-bordered align-middle">
+
+
+            <thead class="table-head">
+                <tr class="myhead">
+                    <th class="text-white py-2" style="width:20px;text-align:center!important;">S.N.</th>
+                    <th class="text-white py-2" style="width: 20px; ">Booth No</th>
+                    @*<th class="text-white py-2"> Booth Name</th>*@
+                    <th class="text-white py-2"> Village</th>
+                    @*<th class="text-white py-2"> Location</th>*@
+                    <th class="text-white py-2"> Name</th>
+                    <th class="text-white py-2">Father Name</th>
+                    <th class="text-white py-2">Contact</th>
+                    <th class="text-white py-2">Category </th>
+                    <th class="text-white py-2">Caste </th>
+                    <th class="text-white py-2">DOB</th>
+                    <th class="text-white py-2">Age Till (1-Jan-2027)</th>
+                    @*<th class="text-white py-2">Education</th>*@
+                    @*<th class="text-white py-2">MobileNumber</th>*@
+
+
+
+                    @*<th class="text-white py-2">Education</th>*@
+
+                    <th class="text-white">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                }
+                @foreach (var data in Model)
+                {
+                    <tr class="text-center align-middle" id="">
+                        <td class="py-2" style="text-align:center!important;width:20px">@i</td>
+                        <td class="py-2" style="text-align: center!important;">@data.BoothNumber</td>
+                        @*<td class="py-2">@data.PollingStationBoothName</td>*@
+                        <td class="py-2">@data.Village</td>
+                        @*<td class="py-2 text-center">
+                                <a href="https://www.google.com/maps/search/?api=1&query=@(WebUtility.UrlEncode(data.location))"
+                                   target="_blank" rel="noopener noreferrer" title="Open in Google Maps">
+                                    <i class="fa fa-map-marker-alt" style="font-size:18px;"></i>
+                                </a>
+                            </td>*@
+                        <td class="py-2">@data.Name</td>
+                        <td class="py-2">@data.FatherName</td>
+                        <td class="py-2">@data.MobileNumber</td>
+                        <td class="py-2">@data.CategoryName</td>
+                        <td class="py-2">@data.caste</td>
+                        @*<td class="py-2">@(data.DOB.HasValue ? data.DOB.Value.ToString("dd/MM/yyyy") : "")</td>*@
+                        <td class="py-2">
+                            @(data.DOB.HasValue ? data.DOB.Value.ToString("dd/MM/yyyy") : "")
+                        </td>
+                        <td class="py-2">@data.totalage</td>
+
+                        @*<td class="py-2">@data.Education</td>*@
+
+                        <!-- Edit button -->
+                        <td>
+                            <button type="button"
+                                    class="btn btn-sm  me-1 edit-btn"
+                                    data-id="@data.Id">
+                                <i class="fas fa-edit text-success"></i>
+                            </button>
+                            <!-- Delete button -->
+                            <button type="button"
+                                    class="btn btn-sm me-1 delete-btn"
+                                    data-id="@data.Id">
+                                <i class="fas fa-trash-alt delete-icon"></i>
+                            </button>
+
+                        </td>
+                    </tr>
+                    i++;
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="createSectorModal" tabindex="-1" aria-labelledby="createSectorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="margin-top:-23px!important;">
+            <form id="myVoterform" enctype="multipart/form-data">
+                <input type="hidden" id="Id" name="Id" />
+                <div class="modal-header table-head ">
+                    <h5 class="modal-title text-white text-center fw-bold" id="createSectorLabel">Create New Voter</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body row g-2">
+
+                    <div class="col-md-6">
+                        <label for="Booth_Id">Select Booth</label>
+                        <select class="form-select" id="Booth_Id" name="Booth_Id" required>
+                            <option value="">-- Select Booth Number --</option>
+                            @if (ViewBag.BoothList != null)
+                            {
+                                foreach (var booth in ViewBag.BoothList)
+                                {
+                                    <option value="@booth.Booth_Id">@booth.BoothNumber</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small">Village </label>
+                        <select class="form-select js-example-basic-multiple" name="VillageListId" required id="VillageList" multiple="multiple">
+                            <option value="">-- Select Village --</option>
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="Name"> Name</label>
+                        <input type="text" class="form-control" id="voterName" name="Name" placeholder="Voter name" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="FatherName">Father Name</label>
+                        <input type="text" class="form-control" id="FatherName" name="FatherName" placeholder="FatherName name" required>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <label for="MobileNumber">Mobile Number</label>
+                        <input type="tel" class="form-control" id="MobileNumber" name="MobileNumber" placeholder="Enter Contact No."
+                               maxlength="10" pattern="[0-9]{10}" title="Enter 10-digit mobile number" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="categorySelect" class="form-label">Category</label>
+                        <select id="categorySelect" class="form-select" name="CasteId">
+                            <option value="">--Select Category--</option>
+                            @foreach (var cat in ViewData["CategoryList"] as List<VishanSabha.Models.Caste>)
+                            {
+                                <option value="@cat.Caste_Id">@cat.CasteName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Sub Caste -->
+                    <div class="col-md-6">
+                        <label for="subCasteSelect" class="form-label"> Caste</label>
+                        <select id="subCasteSelect" class="form-select" name="SubCasteId">
+                            <option value="">--Select Caste--</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <label for="DOB">DOB</label>
+                        <input type="date" class="form-control" id="DOB" name="DOB" placeholder="Enter DOB" required max="2009-12-31">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="age">Age (Till 01/01/2027)</label>
+                        <input type="text" class="form-control" id="age" name="totalage" placeholder="age" readonly>
+                    </div>
+
+                    @*<div class="col-md-6">
+                            <label for="Education">Education</label>
+                            <input type="text" class="form-control" id="Education" name="Education" placeholder="Enter Education" required>
+                        </div>*@
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-orange">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    document.getElementById('createSectorModal').addEventListener('hidden.bs.modal', function () {
+        const form = document.getElementById('myVoterform');
+        form.reset();
+
+        // Clear hidden fields
+        document.getElementById('Id').value = '';
+
+
+        const villageField = document.getElementById('VillageList');
+        if (villageField) {
+            villageField.value = '';
+
+            $(villageField).val('').trigger('change');
+        }
+        $("#createSectorModal .modal-title").text("Create New Voter");
+
+        $("#myVoterform button[type=submit]").text("Save");
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#boothFilter').selectpicker();
+    });
+</script>
+
+<script>
+    document.getElementById("DOB").addEventListener("change", function () {
+        let dob = new Date(this.value);
+        let fixedDate = new Date("2027-01-01");
+
+        if (isNaN(dob.getTime())) {
+            document.getElementById("age").value = "";
+            return;
+        }
+
+        if (dob > fixedDate) {
+            document.getElementById("age").value = "";
+            alert("DOB 1 Jan 2027 se pehle ka hona chahiye!");
+            return;
+        }
+
+        let years = fixedDate.getFullYear() - dob.getFullYear();
+        let months = fixedDate.getMonth() - dob.getMonth();
+        let days = fixedDate.getDate() - dob.getDate();
+
+
+        if (days < 0) {
+            months--;
+            let prevMonth = new Date(fixedDate.getFullYear(), fixedDate.getMonth(), 0);
+            days += prevMonth.getDate();
+        }
+
+
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+
+        document.getElementById("age").value =
+            years + " Years " + months + " Months " + days + " Days";
+    });
+</script>
+
+
+
+
+<script>
+    $(document).on("click", ".delete-btn", function () {
+        var id = $(this).data("id");
+
+        if (!id) {
+            Swal.fire("Error!", "No ID found for deletion.", "error");
+            return;
+        }
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This record will be permanently deleted!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/deleteVoters',
+                    type: 'POST',
+                    data: { Id: id },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire("Deleted!", response.message, "success").then(() => {
+                                //$("#row_" + id).fadeOut(500, function () {
+                                //    $(this).remove();
+                                //});
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error!", response.message, "error");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire("Error!", "Something went wrong while deleting.", "error");
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<script>
+
+    $(document).on("click", ".edit-btn", function () {
+        // Reset modal fields when closed
+        $('#createSectorModal').on('hidden.bs.modal', function () {
+            $(this).find('input, textarea, select').val('');
+        });
+
+        var id = $(this).data("id");
+
+        if (!id) {
+            Swal.fire("Error!", "No ID found.", "error");
+            return;
+        }
+
+        $.ajax({
+            url: '/Admin/GetVoterbyId',
+            type: 'GET',
+            data: { Id: id },
+            success: function (response) {
+                if (!response || !response.Id) {
+                    Swal.fire("Error!", "No voter data found.", "error");
+                    return;
+                }
+
+                // ✅ Fill form with returned data
+                $("#Id").val(response.Id);
+                $("#voterName").val(response.Name);
+                $("#FatherName").val(response.FatherName);
+                $("#MobileNumber").val(response.MobileNumber || '');
+                $("#age").val(response.totalage);
+                $("#Education").val(response.Education || '');
+
+                // ✅ Booth select
+                $('#Booth_Id').val(response.Booth_Id).trigger('change');
+
+                // ✅ Store selected village IDs globally
+                window.selectedVillages = response.VillageListId
+                    ? response.VillageListId.split(',').map(v => v.trim())
+                    : [];
+
+                // ✅ After Booth change populates Village dropdown via AJAX, select saved villages
+                $(document).off('ajaxComplete.villageSelect').on('ajaxComplete.villageSelect', function (e, xhr, settings) {
+                    if (settings.url.includes('/Admin/GetVillagesByBooth')) { // <- match your actual endpoint
+                        const $villageList = $('#VillageList');
+                        if (window.selectedVillages.length > 0) {
+                            $villageList.val(window.selectedVillages).trigger('change');
+                        }
+                        // Unbind after applying once
+                        $(document).off('ajaxComplete.villageSelect');
+                    }
+                });
+
+                // ✅ Category & Subcategory
+                $("#categorySelect").val(response.CasteId).trigger("change");
+                setTimeout(() => {
+                    $("#subCasteSelect").val(response.SubCasteId).trigger("change");
+                }, 300);
+
+                // ✅ DOB
+                if (response.DOBString) {
+                    $("#DOB").val(response.DOBString);
+                }
+
+                // ✅ Update modal UI
+                $("#createSectorModal .modal-title").text("Edit Voter");
+                $("#myVoterform button[type=submit]").text("Update");
+                $("#createSectorModal").modal("show");
+            },
+            error: function () {
+                Swal.fire("Error!", "Something went wrong while fetching data.", "error");
+            }
+        });
+    });
+
+    //$(document).on("click", ".edit-btn", function () {
+    //    // Modal reset when closed
+    //    $('#createSectorModal').on('hidden.bs.modal', function () {
+    //        $(this).find('input, textarea, select').val('');
+    //    });
+
+    //    var id = $(this).data("id");
+
+    //    if (!id) {
+    //        Swal.fire("Error!", "No ID found.", "error");
+    //        return;
+    //    }
+
+    //    $.ajax({
+    //        url: '/Admin/GetVoterbyId',
+    //        type: 'GET',
+    //        data: { Id: id },
+    //        success: function (response) {
+    //            if (!response || !response.Id) {
+    //                Swal.fire("Error!", "No voter data found.", "error");
+    //                return;
+    //            }
+
+    //            // ✅ Fill form with returned data
+    //            $("#Id").val(response.Id);
+    //            //$("#Booth_Id").val(response.Booth_Id).trigger('change');
+    //            $("#voterName").val(response.Name);
+    //            $("#FatherName").val(response.FatherName);
+    //            $("#MobileNumber").val(response.MobileNumber || '');
+    //            $("#age").val(response.totalage);
+    //            $("#Education").val(response.Education || '');
+
+
+    //            // ✅ Booth
+    //            $('#Booth_Id').val(item.Booth_Id).trigger('change');
+
+    //            // ✅ Store selected villages temporarily
+    //            window.selectedVillages = item.VillageListId
+    //                ? item.VillageListId.split(',').map(v => v.trim())
+    //                : [];
+
+    //            // ✅ Wait for Booth change AJAX to load villages, then set selected ones
+    //            const waitForVillageList = setInterval(() => {
+    //                const $villageList = $('#VillageList');
+    //                if ($villageList.find('option').length > 0) {
+    //                    $villageList.val(window.selectedVillages).trigger('change');
+    //                    clearInterval(waitForVillageList);
+    //                }
+    //            }, 300);
+    //            // ✅ Bind Category (CasteId) and SubCategory (SubCasteId)
+    //            $("#categorySelect").val(response.CasteId).trigger("change");
+    //            setTimeout(function () {
+    //                $("#subCasteSelect").val(response.SubCasteId).trigger("change");
+    //            }, 300);
+    //            if (response.DOBString) {
+    //                $("#DOB").val(response.DOBString); // yyyy-MM-dd set ho जाएगा, time नहीं आएगा
+    //            }
+
+    //            // ✅ Handle DOB (yyyy-MM-dd format)
+    //            //if (response.DOB) {
+    //            //    const date = new Date(response.DOB);
+    //            //    if (!isNaN(date.getTime())) {
+    //            //        const formattedDate = date.toISOString().split('T')[0];
+    //            //        $("#DOB").val(formattedDate);
+    //            //    }
+    //            //}
+
+
+    //            // ✅ Update modal title and button text
+    //            $("#createSectorModal .modal-title").text("Edit Voter");
+    //            $("#myVoterform button[type=submit]").text("Update");
+
+    //            // ✅ Show modal
+    //            $("#createSectorModal").modal("show");
+    //        },
+    //        error: function () {
+    //            Swal.fire("Error!", "Something went wrong while fetching data.", "error");
+    //        }
+    //    });
+    //});
+</script>
+
+
+
+@*edit & save data using ajax jquery*@
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).on('submit', '#myVoterform', function (e) {
+        e.preventDefault();
+
+        const form = document.getElementById('myVoterform');
+        const formData = new FormData(form);
+
+        // 🧮 Optional: Age validation
+        const dobInput = $('#DOB').val();
+        if (!dobInput) {
+            Swal.fire('Error', 'Please enter Date of Birth.', 'error');
+            return;
+        }
+
+        const enteredDOB = new Date(dobInput);
+        const cutoffDate = new Date('2009-12-31');
+        if (enteredDOB > cutoffDate) {
+            Swal.fire('Error', 'DOB must be on or before 31-Dec-2009.', 'error');
+            return;
+        }
+
+        $.ajax({
+            url: '/Admin/AddNewVoter', // ⚠️ Change controller name
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: true,
+                        //timer: 1500
+                        didClose: () => {
+                            location.reload(true);
+                        }
+                    });
+
+                    $('#createSectorModal').modal('hide');
+                    $('#myVoterform')[0].reset();
+
+                    // Optionally reload list/table here
+                    // loadVoterList();
+                } else {
+                    Swal.fire('Error', response.message || 'Failed to save voter', 'error');
+                }
+            },
+            error: function (xhr) {
+                Swal.fire('Error', xhr.responseText || 'Something went wrong', 'error');
+            }
+        });
+    });
+</script>
+
+@*<script>
+        $(document).on('submit', '#myVoterform', function (e) {
+            e.preventDefault();
+
+            // Validate DOB (age check)
+            const dobInput = $('#DOB').val();
+            if (!dobInput) {
+                Swal.fire('Error', 'Please enter your Date of Birth.', 'error');
+                return;
+            }
+
+            const enteredDOB = new Date(dobInput);
+            const cutoffDate = new Date('2009-12-31'); // Must be born on/before this date
+            if (enteredDOB > cutoffDate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Underage!',
+                    text: 'Only individuals who turn 18 on or before 01/01/2027 are allowed to register.',
+                    confirmButtonColor: '#d33'
+                });
+                return;
+            }
+
+            // Collect form data
+            let form = document.getElementById('myVoterform');
+            let formData = new FormData(form);
+
+            // ✅ Handle multi-village select properly
+            let selectedVillages = $('#VillageList').val();
+            if (selectedVillages && selectedVillages.length > 0) {
+                selectedVillages.forEach(v => formData.append("VillageListId", v));
+            } else {
+                formData.append("VillageListId", '');
+            }
+
+            // ✅ Ensure SubCasteId is captured
+            formData.set("SubCasteId", $('#subCasteSelect').val() || '');
+
+            console.log("Submitting voter form with:", Object.fromEntries(formData.entries()));
+
+            // Disable submit button while saving
+            const submitBtn = $(this).find('button[type="submit"]');
+            submitBtn.prop('disabled', true).text('Saving...');
+
+            $.ajax({
+                url: '/Admin/AddNewVoter',
+                type: 'POST',
+                data: formData,
+                processData: false,   // important for FormData
+                contentType: false,   // important for FormData
+                success: function (response) {
+                    submitBtn.prop('disabled', false).text('Save');
+
+                    if (response.success) {
+                        const title = response.status === 'update' ? 'Voter Updated' : 'New Voter Created';
+                        const text = response.status === 'update'
+                            ? 'Voter has been updated successfully!'
+                            : 'Voter has been added successfully!';
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: title,
+                            text: text,
+                            confirmButtonColor: '#3085d6'
+                        }).then(() => {
+                            $('#createSectorModal').modal('hide');
+                            resetVoterForm();
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message || 'Something went wrong.',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                },
+                error: function () {
+                    submitBtn.prop('disabled', false).text('Save');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong while saving the voter.',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            });
+        });
+
+        // ✅ Reset function (cleanly clears modal and form)
+        function resetVoterForm() {
+            const form = $('#myVoterform')[0];
+            form.reset();
+            $('#Id').val('');
+            $('#VillageList').val(null).trigger('change');
+            $('#categorySelect').val('').trigger('change');
+            $('#subCasteSelect').empty().append('<option value="">--Select Caste--</option>');
+        }
+
+        $('#createSectorModal').on('hidden.bs.modal', function () {
+            resetVoterForm();
+        });
+    </script>*@
+
+
+
+@*this script use to select cast then open subcasts*@
+<script>
+    $(document).ready(function () {
+        $('#categorySelect').change(function () {
+            var selectedOption = $(this).find('option:selected');
+            var categoryId = selectedOption.val();
+            var categoryName = selectedOption.text();
+
+            $('#CasteName').val(categoryName);
+            $('#subCasteSelect').empty().append('<option value="">-- Loading --</option>');
+            $('#subcaste').val(''); // Reset hidden subcaste
+
+            if (categoryId) {
+                $.ajax({
+                    url: '@Url.Action("GetSubcastesByCategory", "Admin")',
+                    type: 'GET',
+                    data: { categoryId: categoryId },
+                    success: function (data) {
+                        $('#subCasteSelect').empty().append('<option value="">-- Select Caste --</option>');
+                        $.each(data, function (i, item) {
+                            $('#subCasteSelect').append('<option value="' + item.SubCaste_Id + '">' + item.SubCasteName + '</option>');
+                        });
+                    },
+                    error: function () {
+                        $('#subCasteSelect').empty().append('<option value="">-- Error Loading --</option>');
+                    }
+                });
+            } else {
+                $('#subCasteSelect').empty().append('<option value="">-- Select Caste --</option>');
+            }
+        });
+    });
+</script>
+<script>
+$(document).ready(function () {
+  $("#boothFilter").on("change", function () {
+    var selectedBooths = $(this).val() || ["all"];
+
+    if (selectedBooths.includes("all")) {
+        selectedBooths = ["all"];
+        $("#boothFilter").selectpicker('val', ["all"]);
+    }
+
+
+    const newUrl = window.location.pathname + "?boothId=" + selectedBooths.join(",");
+    window.history.replaceState(null, null, newUrl);
+
+
+    $.ajax({
+        url: '@Url.Action("NewVoters", "Admin")',
+        type: 'GET',
+        traditional: true,
+        data: $.param({ boothId: selectedBooths }, true),
+        success: function (response) {
+            var newTable = $(response).find("#myTable tbody").html();
+
+            if ($.trim(newTable).length === 0) {
+                $("#myTable tbody").html(
+                    `<tr>
+                        <td colspan="10" class="text-center text-muted">No records found</td>
+                    </tr>`
+                );
+            } else {
+                $("#myTable tbody").html(newTable);
+
+                // Re-number rows
+                $("#myTable tbody tr").each(function (index) {
+                    $(this).find("td:first").text(index + 1);
+                });
+            }
+        },
+        error: function (xhr) {
+            console.log("Error:", xhr.responseText);
+        }
+    });
+});
+
+});
+</script>
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+    $('#Booth_Id').on('change', function () {
+    const boothId = $(this).val();
+    if (!boothId) return;
+
+    $.ajax({
+        url: '@Url.Action("GetVillagesByBoothId", "Admin")',
+        type: 'GET',
+        data: { boothId },
+        success: function (villages) {
+            const $villageList = $('#VillageList');
+            $villageList.empty();
+            villages.forEach(v => {
+                $villageList.append(`<option value="${v.villageId}">${v.Villagename}</option>`);
+            });
+
+            // Re-apply previously selected villages if editing
+            if (window.selectedVillages && window.selectedVillages.length > 0) {
+                $villageList.val(window.selectedVillages).trigger('change');
+            }
+        }
+    });
+});
+
+
+
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        let dt;
+        let currentPage = 1;
+        let limit = 10;
+
+        initDataTable(limit);
+
+        function initDataTable(limit) {
+
+            dt = new DataTable('#myTable', {
+                paging: true,
+                pageLength: limit,
+                lengthMenu: [10, 200, 300, 400, 500],
+                searching: true,
+                scrollX: true,
+                scrollY: 350
+            });
+
+            dt.on('page.dt', function () {
+
+                limit = getLimit();
+                currentPage = dt.page() + 1;
+
+                console.log("Page:", currentPage, "Limit:", limit);
+
+                loadBackend(currentPage, limit);
+            });
+        }
+
+        function getLimit() {
+            return parseInt($(".dt-length select").val()) || 10;
+        }
+
+        $(document).on("change", ".dt-length select", function () {
+            limit = getLimit();
+            console.log("Limit changed:", limit);
+        });
+
+        function loadBackend(page, limit) {
+            $.ajax({
+                url: `/Admin/NewVoters?page=${page}&limit=${limit}`,
+                type: "GET",
+                success: function (html) {
+                    $("#tableContainer").html(html);
+                    reinitialize(limit);
+                }
+            });
+        }
+
+        function reinitialize(limit) {
+            if ($.fn.DataTable.isDataTable('#myTable')) {
+                $('#myTable').DataTable().destroy();
+            }
+            initDataTable(limit);
+        }
+    });
+</script>

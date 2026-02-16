@@ -1,0 +1,530 @@
+﻿<style>
+
+    .bg-navy {
+        background: #001a35 !important;
+    }
+
+    #designationModal .modal-dialog {
+        max-width: 500px;
+    }
+
+    #designationModal .modal-content {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    /* Change switch color when checked */
+    .form-check-input:checked {
+        background-color: #002147 !important;
+        border-color: #002147 !important;
+    }
+
+    /* Remove default blue focus glow */
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.15rem rgba(0, 33, 71, 0.25) !important;
+        border-color: #002147 !important;
+    }
+
+</style>
+
+<div class="card border-0 shadow-sm rounded-3 ">
+    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold text-navy">Vidhan Sabha Registration</h6>
+        <button class="btn btn-sm btn-navy py-1 px-3" onclick="openVidhanSabhaModal()">
+            <i class="bi bi-plus-lg me-1"></i>Add Vidhan Sabha
+        </button>
+    </div>
+    <div class="card-body p-2">
+        <div class="table-responsive">
+            <table id="vidhanSabhaTable" class="table table-hover table-bordered table-sm table-compact-custom w-100">
+                <thead>
+                    <tr>
+                        <th class="text-center">S.No</th>
+                        <th>State</th>
+                        <th>District</th>
+                        <th class="text-nowrap">Vidhan Sabha</th>
+                        <th>Prabhari</th>
+                        <th>Gmail</th>
+                        <th>Contact</th>
+                        <th>Address</th>
+                        <th>Profession</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="vidhanSabhaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-navy text-white py-2 px-3">
+                <h6 class="modal-title fw-bold" id="modalTitle">Vidhan Sabha Registration</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                <form id="vidhanSabhaForm">
+                    <input type="hidden" id="Id" value="0">
+
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold text-muted">Select State</label>
+                        <select class="form-select form-select-sm" id="StateId">
+                            <option value="">-- Select State --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold text-muted">Select District</label>
+                        <select class="form-select form-select-sm" id="DistrictId" disabled>
+                            <option value="">-- First Select State --</option>
+                        </select>
+                    </div>
+
+
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Vidhan Sabha Name</label>
+                        <input type="text" class="form-control form-control-sm border-2 shadow-none" id="VidhanSabhaName" required>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input text-white" type="checkbox" role="switch" id="Prabhari">
+                        <label class="form-check-label small fw-bold " for="Prabhari" style="color: #002147">Assign Prabhari Details?</label>
+                    </div>
+
+                    <div id="prabhariDetails" style="display: none;" class="p-2 border rounded bg-light mb-3">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Prabhari Name</label>
+                                <input type="text" class="form-control form-control-sm" id="Name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Email</label>
+                                <input type="email" class="form-control form-control-sm" id="Email">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Phone No</label>
+                                <input type="text" class="form-control form-control-sm" id="PhoneNo">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Category</label>
+                                <select class="form-select form-select-sm" id="Category">
+                                    <option value="">--Select Category--</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Sub Caste</label>
+                                <select class="form-select form-select-sm" id="Caste">
+                                    <option value="">--Select Sub Caste--</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Education</label>
+                                <input type="text" class="form-control form-control-sm" id="Education">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Profession</label>
+                                <input type="text" class="form-control form-control-sm" id="Profession">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Profile</label>
+                                <input type="file" class="form-control form-control-sm" id="Profile">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold text-muted">Address</label>
+                                <textarea class="form-control form-control-sm" id="Address" rows="1"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 pt-2">
+                        <button type="submit" class="btn btn-navy btn-sm flex-grow-1 fw-bold py-2 shadow-sm">
+                            <i class="bi bi-cloud-arrow-up me-1"></i> Save Registration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+
+<script>
+    let vsTable;
+    let loadData;
+
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    function loadSubCaste(categoryId, callback) {
+        $.get('/api/Admin/GetSubCasteByCategory', { categoryId: categoryId }, function (res) {
+            if (!res.success || !res.data || !res.data.data) return;
+
+            let options = '<option value="">--Select Sub Caste--</option>';
+            $.each(res.data.data, function (i, item) {
+                options += `<option value="${item.Id}">${item.Name}</option>`;
+            });
+
+            $('#Caste').html(options);
+
+            if (callback) callback();
+        });
+    }
+
+    $(document).ready(function () {
+
+        loadCasteCategory();
+
+        $('#Category').on('change', function () {
+            let categoryId = $(this).val();
+            $('#Caste').html('<option value="">--Select Sub Caste--</option>');
+
+            if (categoryId) {
+                loadSubCaste(categoryId);
+            }
+        });
+
+
+        function loadCasteCategory() {
+            $.get('/api/Admin/GetCasteCategory', function (res) {
+                if (!res.success || !res.data || !res.data.data) return;
+
+                let options = '<option value="">--Select Category--</option>';
+                $.each(res.data.data, function (i, item) {
+                    options += `<option value="${item.Id}">${item.Name}</option>`;
+                });
+
+                $('#Category').html(options);
+            });
+        }
+
+        // Load states
+        $.get('/api/Admin/getAllState', function (res) {
+            let options = '<option value="">--Select State--</option>';
+            res.data.forEach(s => options += `<option value="${s.StateId}">${s.StateName}</option>`);
+            $('#StateId').html(options);
+        });
+
+        // On state change, load districts
+        $('#StateId').on('change', function () {
+            const stateId = $(this).val();
+
+            if (stateId) {
+                $.get(`/api/Admin/getDistrictsByState?stateId=${stateId}`, function (res) {
+
+                    let options = '<option value="">--Select District--</option>';
+
+                    if (res.success && res.data && res.data.data) {
+                        res.data.data.forEach(d => {
+                            options += `<option value="${d.DistrictId}">${d.DistrictName}</option>`;
+                        });
+                    }
+
+                    $('#DistrictId').html(options).prop('disabled', false);
+                });
+            } else {
+                $('#DistrictId')
+                    .html('<option value="">--First Select State--</option>')
+                    .prop('disabled', true);
+            }
+        });
+
+
+
+  
+        // 1. Checkbox Toggle Logic
+        $('#Prabhari').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('#prabhariDetails').slideDown();
+            } else {
+                $('#prabhariDetails').slideUp();
+                $('#prabhariDetails input, #prabhariDetails select, #prabhariDetails textarea').val('');
+            }
+        });
+
+        // 2. Initialize DataTable
+
+        loadData = function () {
+
+            // 🔴 prevent multiple DataTable initialization
+            if ($.fn.DataTable.isDataTable('#vidhanSabhaTable')) {
+                $('#vidhanSabhaTable').DataTable().clear().destroy();
+            }
+
+            // 🔹 URL params
+            const stateId = getQueryParam("StateId");
+            const DistrictId = getQueryParam("DistrictId");
+
+            // 🔹 default API (old behavior)
+            let apiUrl = '/api/Admin/getAllVidhanSabha';
+
+            // 🔹 NEW LOGIC
+            if (DistrictId) {
+                apiUrl = `/api/Admin/getVidhanSabhaByState?DistrictId=${DistrictId}`;
+            }
+
+           
+            vsTable = initPaginatedTable({
+                apiUrl: apiUrl,
+                tableSelector: '#vidhanSabhaTable',
+                pageSizeSelector: '#pageSizeSelector',
+                columns: [
+                    {
+                        data: null,
+                        className: "text-center",
+                        render: (data, type, row, meta) => meta.row + 1
+                    },
+                    { data: "StateName" },
+                    { data: "DistrictName" },
+                    { data: "VidhanSabhaName" },
+                    { data: "Name", render: d => d || '-' },
+                    { data: "Email", render: d => d || '-' },
+                    { data: "PhoneNo", className: "text-center", render: d => d || '-' },
+                    { data: "Address", render: d => d || '-' },
+                    { data: "Profession", render: d => d || '-' },
+                    {
+                        data: "Id",
+                        className: "text-center",
+                        render: (id) => `
+                <button class="btn btn-sm btn-light p-1 px-2 me-1"
+                    onclick="editVS(${id})">
+                    <i class="bi bi-pencil-square text-primary"></i>
+                </button>
+                <button class="btn btn-sm btn-light p-1 px-2"
+                    onclick="deleteVS(${id})">
+                    <i class="bi bi-trash text-danger"></i>
+                </button>`
+                    }
+                ]
+            });
+        };
+
+
+      
+
+        loadData();
+        // 3. Form Submit (Add/Update)
+
+        $('#vidhanSabhaForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const isPrabhari = $('#Prabhari').is(':checked');
+
+            let formData = new FormData();
+
+            formData.append("Id", $('#Id').val());
+            formData.append("VidhanSabhaName", $('#VidhanSabhaName').val());
+            formData.append("StateId", $('#StateId').val());
+            formData.append("DistrictId", $('#DistrictId').val());
+            formData.append("Prabhari", isPrabhari);
+
+            if (isPrabhari) {
+                formData.append("Name", $('#Name').val());
+                formData.append("Email", $('#Email').val());
+                formData.append("PhoneNo", $('#PhoneNo').val());
+                formData.append("Category", $('#Category').val());
+                formData.append("Caste", $('#Caste').val());
+                formData.append("Education", $('#Education').val());
+                formData.append("Address", $('#Address').val());
+                formData.append("Profession", $('#Profession').val());
+
+               
+
+                let fileInput = document.getElementById("Profile");
+                if (fileInput.files.length > 0) {
+                    formData.append("Profile", fileInput.files[0]);
+                }
+            }
+
+            $.ajax({
+                url: '/api/Admin/SaveVidhanSabhaRegistration',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    Swal.fire('Success', 'Saved Successfully', 'success');
+                    $('#vidhanSabhaModal').modal('hide');
+                    loadData();
+                },
+                error: function (xhr) {
+
+                    let msg = 'Something went wrong';
+
+                    if (xhr.responseJSON) {
+
+                        // ✅ ASP.NET Web API default error
+                        if (xhr.responseJSON.ExceptionMessage) {
+                            msg = xhr.responseJSON.ExceptionMessage;
+                        }
+                        else if (xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        else if (xhr.responseJSON.Message) {
+                            msg = xhr.responseJSON.Message;
+                        }
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: msg
+                    });
+                }
+
+
+            });
+        });
+    });
+
+    function openVidhanSabhaModal() {
+
+        $('#vidhanSabhaForm')[0].reset();
+        $('#Id').val(0);
+        $('#Prabhari').prop('checked', false);
+        $('#prabhariDetails').hide();
+        $('#modalTitle').text('New Vidhan Sabha Registration');
+
+        const stateId = getQueryParam("StateId");
+        const districtId = getQueryParam("DistrictId");
+
+        // 1️⃣ Load states
+        $.get('/api/Admin/getAllState', function (res) {
+
+            let options = '<option value="">--Select State--</option>';
+            if (res.data) {
+                res.data.forEach(s => {
+                    options += `<option value="${s.StateId}">${s.StateName}</option>`;
+                });
+            }
+
+            $('#StateId').html(options);
+
+            // 2️⃣ Auto select state if coming from count click
+            if (stateId) {
+                $('#StateId').val(stateId).trigger('change');
+
+                // 3️⃣ Load districts for that state
+                $.get(`/api/Admin/getDistrictsByState?stateId=${stateId}`, function (res) {
+
+                    let dOptions = '<option value="">--Select District--</option>';
+
+                    if (res.success && res.data && res.data.data) {
+                        res.data.data.forEach(d => {
+                            dOptions += `<option value="${d.DistrictId}">${d.DistrictName}</option>`;
+                        });
+                    }
+
+                    $('#DistrictId').html(dOptions).prop('disabled', false);
+
+                    // 4️⃣ Auto select district
+                    if (districtId) {
+                        $('#DistrictId').val(districtId);
+                    }
+                });
+
+            } else {
+                $('#DistrictId')
+                    .html('<option value="">--First Select State--</option>')
+                    .prop('disabled', true);
+            }
+        });
+
+        new bootstrap.Modal(document.getElementById('vidhanSabhaModal')).show();
+    }
+
+
+    function editVS(id) {
+        $.ajax({
+            url: `/api/Admin/getVidhanSabhaById?id=${id}`,
+            type: 'GET',
+            success: function (res) {
+                let data;
+
+                // Handle different response formats
+                if (res.success && res.data) {
+                    data = res.data;
+                } else if (res && res.Id) {
+                    data = res;
+                } else {
+                    Swal.fire('Error', 'Failed to load data', 'error');
+                    return;
+                }
+
+                $('#Id').val(data.Id);
+                $('#VidhanSabhaName').val(data.VidhanSabhaName);
+
+                if (data.Prabhari) {
+                    $('#Prabhari').prop('checked', true);
+                    $('#prabhariDetails').show();
+                    $('#Name').val(data.Name || '');
+                    $('#Email').val(data.Email || '');
+                    $('#PhoneNo').val(data.PhoneNo || '');
+
+                    //$('#Category').val(data.Category || '');
+                    //$('#Caste').val(data.Caste || '');
+
+                    $('#Category').val(data.Category || '');
+
+                    if (data.Category) {
+                        loadSubCaste(data.Category, function () {
+                            $('#Caste').val(data.Caste || '');
+                        });
+                    }
+
+                    $('#Education').val(data.Education || '');
+                    $('#Address').val(data.Address || '');
+                    $('#Profession').val(data.Profession || '');
+                } else {
+                    $('#Prabhari').prop('checked', false);
+                    $('#prabhariDetails').hide();
+                }
+
+                $('#modalTitle').text('Update Registration');
+                var vidhanSabhaModal = new bootstrap.Modal(document.getElementById('vidhanSabhaModal'));
+                vidhanSabhaModal.show();
+            },
+            error: function () {
+                Swal.fire('Error', 'Failed to load data', 'error');
+            }
+        });
+    }
+
+    function deleteVS(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/api/Admin/DeleteVidhanSabha?id=${id}`,
+                    type: 'DELETE',
+                    success: function (res) {
+                        if (res && res.success) {
+                            Swal.fire('Deleted!', 'Record has been deleted.', 'success');
+                            loadData();
+                        } else {
+                            Swal.fire('Error', 'Failed to delete record', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'API connection failed', 'error');
+                    }
+                });
+            }
+        });
+    }
+</script>

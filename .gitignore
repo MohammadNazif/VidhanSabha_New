@@ -1,0 +1,44 @@
+## Build results
+bin/
+obj/
+Debug/
+Release/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider
+.idea/
+
+## VS Code
+.vscode/
+
+## NuGet
+packages/
+*.nupkg
+.nuget/
+
+## Logs
+*.log
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## IIS Express
+.vs/config/applicationhost.config
+
+## Publish output
+publish/
+wwwroot/dist/
+wwwroot/lib/
+
+## Entity Framework
+*.edmx.diagram
+
+## Local environment files
+appsettings.Development.json

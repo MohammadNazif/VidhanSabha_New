@@ -1,0 +1,301 @@
+﻿@model IEnumerable<VishanSabha.Models.PravasiVoter>
+
+
+@{
+    ViewBag.Title = "PravasiReports";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var casteList = ViewData["CasteList"] as List<VishanSabha.Models.SubCaste>;
+    var BoothList = ViewData["BoothList"] as List<VishanSabha.Models.Booth>;
+    var SectorList = ViewData["SectorList"] as List<VishanSabha.Models.Sector>;
+    var occupationList = ViewData["Occupation"] as List<VishanSabha.Models.Occupation>;
+}
+
+
+<style>
+    body {
+        background-color: #fdfaf6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-head {
+        background-color: #FF8C42;
+    }
+
+    .myhead {
+        font-size: 12px;
+        color: white;
+        padding: 15px 10px;
+    }
+
+    .table-head th, #myTable td {
+        text-align: left;
+        vertical-align: middle;
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-height: 80vh !important;
+    }
+
+    #myTable td, #myTable th {
+        white-space: nowrap;
+    }
+
+    .dataTables_length select {
+        font-size: 12px !important;
+        padding: 2px 5px !important;
+        width: 54px !important;
+        height: 28px !important;
+    }
+
+    .dataTables_filter input {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+        width: 150px !important;
+        height: 28px !important;
+        border-radius: 4px;
+    }
+
+    div.dataTables_filter input[type="search"] {
+        border: 1px solid #FF8C42 !important;
+    }
+
+    #myTable_paginate .paginate_button {
+        font-size: 12px;
+        margin-top: 10px;
+        padding: 5px 10px;
+        min-width: 40px;
+        height: 30px;
+        border-radius: 5px;
+        margin: 0 2px;
+        cursor: pointer;
+        background-color: #FF8C42;
+        color: black;
+        border: none;
+    }
+</style>
+
+<div class="container-fluid m-3 mt-5 w-100">
+    <div class="d-flex justify-content-between mb-2">
+        <h4 style="color: #FF8C42;">Pravasi Voter Reports</h4>
+    </div>
+    <div class="row">
+        <div class="col-sm-2">
+            <select class="form-select form-select-sm shadow-sm !rounded-pill border-primary" multiple id="boothFilter">
+
+                @if (BoothList != null && BoothList.Any())
+                {
+                    foreach (var data in BoothList)
+                    {
+                        <option value="@data.Booth_Id">@data.BoothNumber</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <select class="form-select form-select-sm shadow-sm rounded-pill border-primary" multiple id="casteFilter">
+
+                @if (casteList != null && casteList.Any())
+                {
+                    foreach (var data in casteList)
+                    {
+                        <option value="@data.SubCaste_Id">@data.SubCasteName</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <select class="form-select form-select-sm shadow-sm rounded-pill border-primary" multiple id="occupationFilter">
+
+                @if (occupationList != null && occupationList.Any())
+                {
+                    foreach (var data in occupationList)
+                    {
+                        <option value="@data.id">@data.occupation</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <select class="form-select form-select-sm shadow-sm !rounded-pill border-primary" multiple id="sectorFilter">
+
+                @if (SectorList != null && SectorList.Any())
+                {
+                    foreach (var data in SectorList)
+                    {
+                        <option value="@data.Id">@data.SectorName</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <button type="button" class="btn btn-outline-secondary w-100 shadow-sm round-0" id="filterButton" title="Filters">
+                <i class="bi bi-arrow-clockwise"></i> Filter
+            </button>
+        </div>
+        <div class="col-sm-2">
+            <button type="button" class="btn btn-outline-secondary w-100 shadow-sm round-0" id="resetFilters" title="Reset Filters">
+                <i class="bi bi-arrow-clockwise"></i> Reset Filter
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive shadow rounded p-2">
+        <table id="myTable" class="table table table-hover table-bordered align-middle dataTable-auto">
+
+            <div class="d-flex flex-wrap gap-3 m-2 align-items-center">
+                <a href="@Url.Action("PravasiVoterExportReport", "Export", new { format = "excel" })"
+                   class="btn btn-outline-success shadow-sm d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-excel-fill"></i>
+                    <span> Excel</span>
+                </a>
+
+                <a href="@Url.Action("PravasiVoterExportReport", "Export", new { format = "pdf" })"
+                   class="btn btn-outline-danger shadow-sm d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                    <span> PDF</span>
+                </a>
+            </div>
+
+
+            <thead class="table-head">
+                <tr class="myhead">
+                    <th class="text-white py-2">S.N.</th>
+                    <th class="text-white py-2">Booth No</th>
+                    @*<th class="text-white py-2">Booth Name</th>*@
+                    <th class="text-white py-2">Booth Adhyaksh</th>
+                    @*<th class="text-white py-2">Sector</th>
+                        <th class="text-white py-2">Sector Sanyojak</th>*@
+
+                    <th class="text-white py-2">Pravasi Name</th>
+                    <th class="text-white py-2">Category</th>
+                    <th class="text-white py-2">Caste</th>
+                    <th class="text-white py-2">Contact</th>
+                    <th class="text-white py-2">Occupation</th>
+                    <th class="text-white py-2">Current Address</th>
+
+                    <th class="text-white py-2">Sector</th>
+                    <th class="text-white py-2">Sector Sanyojak</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int srNo = 1;
+                }
+                @foreach (var pravasi in Model)
+                {
+
+                    <tr class="text-center align-middle">
+                        <td class="text-center">@srNo</td>
+                        <td class="text-center">@pravasi.BoothNumber</td>
+                        @*<td>@pravasi.PollingStationBoothName</td>*@
+                        <td>@pravasi.BoothIncharge</td>
+
+                        <td class="py-2">@pravasi.name</td>
+                        <td class="py-2">@pravasi.CategoryName</td>
+                        <td class="py-2">@pravasi.CasteName</td>
+                        <td class="py-2">@pravasi.mobile </td>
+                        <td class="py-2">@pravasi.Occupation</td>
+                        <td class="py-2">@pravasi.currentAddress</td>
+
+                        <td class="py-2">@pravasi.SectorName</td>
+                        <td class="py-2">@pravasi.SectorIncharge</td>
+
+                    </tr>
+                    srNo++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+
+<!--Filter Script-->
+<script>
+    $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Split comma-separated values into arrays for multiple select
+        const boothNo = urlParams.get('boothIds') ? urlParams.get('boothIds').split(',') : [];
+        const casteId = urlParams.get('casteIds') ? urlParams.get('casteIds').split(',') : [];
+        //const desgId = urlParams.get('desgIds') ? urlParams.get('desgIds').split(',') : [];
+        const occuId = urlParams.get('occuIds') ? urlParams.get('occuIds').split(',') : [];
+        const sectorId = urlParams.get('sectorIds') ? urlParams.get('sectorIds').split(',') : [];
+        //const villageId = urlParams.get('villageIds') ? urlParams.get('villageIds').split(',') : []
+
+        // Set values
+        $('#boothFilter').val(boothNo).trigger('change');
+        $('#casteFilter').val(casteId).trigger('change');
+        //$('#designationFilter').val(desgId).trigger('change');
+        $('#occupationFilter').val(occuId).trigger('change');
+        $('#sectorFilter').val(sectorId).trigger('change');
+        var selectedSector = $('#sectorFilter').val();
+        //$('#villageFilter').val(villageId).trigger('change');
+
+        $('#boothFilter').select2({
+            placeholder: "Select Booth No."
+        });
+
+        $('#casteFilter').select2({
+            placeholder: "Select Caste"
+        });
+        //$('#designationFilter').select2({
+        //    placeholder: "Select Designation"
+        //});
+        $('#occupationFilter').select2({
+            placeholder: "Select Occupation"
+        });
+        $('#sectorFilter').select2({
+            placeholder: "Select Sector"
+        });
+        //$('#villageFilter').select2({
+        //    placeholder: "Select Village"
+        //});
+        $('#filterButton').on('click', function () {
+            debugger
+            var selectedBooth = $('#boothFilter').val();
+            var selectedCaste = $('#casteFilter').val();
+            //var selectedDesg = $('#designationFilter').val();
+            var selectedSector = $('#sectorFilter').val();
+            var selectedOccu = $('#occupationFilter').val();
+
+            //var selectedVill = $('#villageFilter').val();
+            // Check if both are empty
+            if ((!selectedBooth || selectedBooth.length === 0) &&
+                (!selectedCaste || selectedCaste.length === 0) &&
+                (!selectedOccu || selectedOccu.length === 0) &&
+                (!selectedSector || selectedSector.length === 0)
+            ) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No filter selected',
+                    text: 'Please select at least one booth or caste or occupation or sector to filter data.',
+                    confirmButtonText: 'OK'
+                });
+
+                return; // Stop further execution
+            } else {
+
+                const url = `${window.location.pathname}?boothIds=${selectedBooth}&casteIds=${selectedCaste}&occuIds=${selectedOccu}&sectorIds=${selectedSector}`;
+                window.location.href = url;
+            }
+        });
+
+        $('#resetFilters').click(function () {
+            $('#boothFilter').val('');
+            $('#casteFilter').val('');
+            $('#occupationFilter').val('');
+            $('#sectorFilter').val('');
+
+            // Reload page with empty query string
+            window.location.href = window.location.pathname;
+        });
+    })
+</script>
