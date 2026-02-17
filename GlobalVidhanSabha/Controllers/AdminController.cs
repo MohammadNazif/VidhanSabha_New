@@ -211,13 +211,13 @@ namespace VishanSabha.Controllers
 
        
 
-        //bOOTH CONTROLLER
+ 
         [HttpGet]
         public ActionResult Booth(int? page = null,int ? limit = null)
         {
             int VidhanSabhaId = Convert.ToInt32(Session["VidhanSabhaId"]);
             List<Booth> booth_list = service.GetAll_BoothForTable(VidhanSabhaId);
-            //ViewData["CategoryList"] = serviceGetAllCaste();
+
             return View(booth_list);
         }
 
@@ -674,12 +674,11 @@ namespace VishanSabha.Controllers
                         }
                     }
 
-                    // Save new image path
                     model.ProfileImageUrl = "/UploadedImages/ProfileImages/" + fileName;
                 }
                 else
                 {
-                    // Keep existing image if no new file uploaded during update
+
                     if (model.PannaPramukh_Id > 0)
                     {
                         var existing = service.GetAll_PannaPramukh()

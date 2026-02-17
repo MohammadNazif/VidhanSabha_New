@@ -221,7 +221,7 @@ namespace GlobalVidhanSabha.Models.AdminMain
                     cmd.Parameters.AddWithValue("@StateId", StateId);
 
                     await con.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync(); // executes soft delete
+                    await cmd.ExecuteNonQueryAsync(); 
                     return true;
                 }
             }
@@ -404,7 +404,7 @@ namespace GlobalVidhanSabha.Models.AdminMain
             }
             catch (SqlException ex)
             {
-                // Throw with exact SQL message
+                
                 throw new Exception(ex.Message);
             }
             catch (Exception ex)
@@ -776,8 +776,7 @@ namespace GlobalVidhanSabha.Models.AdminMain
                             {
                                 Id = Convert.ToInt32(dr["Id"]),
 
-                                //StateId = Convert.ToInt32(dr["StateId"]),
-                                //DistrictId = Convert.ToInt32(dr["DistrictId"]),
+                                
 
                                 StateId = dr["StateId"] as int?,
                                 DistrictId = dr["DistrictId"] as int?,
@@ -945,12 +944,11 @@ namespace GlobalVidhanSabha.Models.AdminMain
             }
             catch (SqlException ex)
             {
-                // Log DB specific error
                 throw new Exception("Database error while fetching districts by state.", ex);
             }
             catch (Exception ex)
             {
-                // Log general error
+            
                 throw new Exception("Unexpected error occurred while fetching districts.", ex);
             }
 
@@ -959,14 +957,13 @@ namespace GlobalVidhanSabha.Models.AdminMain
 
         public async Task<Dashboard> GetDashboardCountsAsync()
         {
-            // ek hi object me combine kar rahe hain
+          
             var dashboard = new Dashboard();
 
             using (SqlConnection con = new SqlConnection(conn))
             {
                 await con.OpenAsync();
 
-                // Total VidhanSabha
                 using (SqlCommand cmd = new SqlCommand("usp_Dashboard", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -975,7 +972,6 @@ namespace GlobalVidhanSabha.Models.AdminMain
                     dashboard.TotalVidhanSabhaCount = result != null ? Convert.ToInt32(result) : 0;
                 }
 
-                // With Prabhari
                 using (SqlCommand cmd = new SqlCommand("usp_Dashboard", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -984,7 +980,6 @@ namespace GlobalVidhanSabha.Models.AdminMain
                     dashboard.TotalVidhanSabhaWithPrabhari = result != null ? Convert.ToInt32(result) : 0;
                 }
 
-                // Without Prabhari
                 using (SqlCommand cmd = new SqlCommand("usp_Dashboard", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -1057,7 +1052,6 @@ namespace GlobalVidhanSabha.Models.AdminMain
                                 CreatedAt = Convert.ToDateTime(dr["CreatedAt"]),
                                 UpdatedAt = dr["UpdatedAt"] as DateTime?,
                                 Status = Convert.ToBoolean(dr["Status"]),
-
                                 DistrictName = dr["DistrictName"] as string,
                                 StateName = dr["StateName"] as string
                             });
@@ -1074,10 +1068,7 @@ namespace GlobalVidhanSabha.Models.AdminMain
             {
                 throw new Exception("Database error while fetching VidhanSabha by StateId", ex);
             }
-
-
         }
-
         public async Task<List<KeyValuePair<string, int>>> GetStateWiseVidhanSabhaChartAsync()
         {
             var list = new List<KeyValuePair<string, int>>();

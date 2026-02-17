@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using System.Windows.Input;
 using VishanSabha.Models;
 using VishanSabha.Services.Auth;
 
@@ -23,12 +25,11 @@ namespace VishanSabha.Controllers
             return View();
         }
 
-        // POST: Handle Login
+
         [HttpPost]
         public ActionResult Login(string Contact, string Password)
         {
             var user = _authService.ValidateUser(Contact, Password);
-
 
             if (user != null)
             {
@@ -57,10 +58,7 @@ namespace VishanSabha.Controllers
                 {
                     TempData["LoginSuccess"] = $"Welcome back, {user.Contact}!";
                     return RedirectToAction("SectorDashboard", "Sector");
-                    //, new{
-                    //    contact = user.Contact,
-                    //    Role = user.Role // or user.Name if exists
-                    //});
+           
                 }
                 else if (user.Role == "BoothIncharge")
                 {
@@ -74,13 +72,9 @@ namespace VishanSabha.Controllers
                 }
 
             }
-
             TempData["LoginError"] = "Invalid contact or password!";
             return View();
         }
-
-        // Logout
-        //[Authorize]
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
