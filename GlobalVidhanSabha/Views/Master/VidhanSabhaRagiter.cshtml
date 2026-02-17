@@ -1,4 +1,8 @@
-﻿<style>
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
 
     .bg-navy {
         background: #001a35 !important;
@@ -13,17 +17,24 @@
         overflow-y: auto;
     }
 
-    /* Change switch color when checked */
     .form-check-input:checked {
         background-color: #002147 !important;
         border-color: #002147 !important;
     }
 
-    /* Remove default blue focus glow */
     .form-check-input:focus {
         box-shadow: 0 0 0 0.15rem rgba(0, 33, 71, 0.25) !important;
         border-color: #002147 !important;
     }
+
+    .custom-modal {
+        max-width: 750px;
+        margin-top: 65px;
+    }
+    /*#vidhanSabhaModal .modal-content {
+        max-height: 85vh;*/ /* 80vh se kam kar diya */
+    /*overflow-y: auto;
+    }*/
 
 </style>
 
@@ -58,7 +69,7 @@
 </div>
 
 <div class="modal fade" id="vidhanSabhaModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog custom-modal">
         <div class="modal-content border-0 shadow-lg rounded-4">
             <div class="modal-header bg-navy text-white py-2 px-3">
                 <h6 class="modal-title fw-bold" id="modalTitle">Vidhan Sabha Registration</h6>
@@ -68,18 +79,21 @@
                 <form id="vidhanSabhaForm">
                     <input type="hidden" id="Id" value="0">
 
-                    <div class="mb-2">
-                        <label class="form-label small fw-bold text-muted">Select State</label>
-                        <select class="form-select form-select-sm" id="StateId">
-                            <option value="">-- Select State --</option>
-                        </select>
-                    </div>
+                    <div class="row g-2 mb-2">
 
-                    <div class="mb-2">
-                        <label class="form-label small fw-bold text-muted">Select District</label>
-                        <select class="form-select form-select-sm" id="DistrictId" disabled>
-                            <option value="">-- First Select State --</option>
-                        </select>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Select State</label>
+                            <select class="form-select form-select-sm" id="StateId">
+                                <option value="">-- Select State --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Select District</label>
+                            <select class="form-select form-select-sm" id="DistrictId" disabled>
+                                <option value="">-- First Select State --</option>
+                            </select>
+                        </div>
                     </div>
 
 
@@ -213,7 +227,6 @@
             $('#StateId').html(options);
         });
 
-        // On state change, load districts
         $('#StateId').on('change', function () {
             const stateId = $(this).val();
 
@@ -238,9 +251,6 @@
         });
 
 
-
-  
-        // 1. Checkbox Toggle Logic
         $('#Prabhari').on('change', function () {
             if ($(this).is(':checked')) {
                 $('#prabhariDetails').slideDown();
@@ -250,28 +260,25 @@
             }
         });
 
-        // 2. Initialize DataTable
 
         loadData = function () {
 
-            // 🔴 prevent multiple DataTable initialization
             if ($.fn.DataTable.isDataTable('#vidhanSabhaTable')) {
                 $('#vidhanSabhaTable').DataTable().clear().destroy();
             }
 
-            // 🔹 URL params
             const stateId = getQueryParam("StateId");
             const DistrictId = getQueryParam("DistrictId");
+            const filter = getQueryParam("filter");
 
-            // 🔹 default API (old behavior)
-            let apiUrl = '/api/Admin/getAllVidhanSabha';
+            //let apiUrl = '/api/Admin/getAllVidhanSabha';
+            let apiUrl = `/api/Admin/getAllVidhanSabha?filter=${filter || ''}`;
 
-            // 🔹 NEW LOGIC
             if (DistrictId) {
                 apiUrl = `/api/Admin/getVidhanSabhaByState?DistrictId=${DistrictId}`;
             }
 
-           
+
             vsTable = initPaginatedTable({
                 apiUrl: apiUrl,
                 tableSelector: '#vidhanSabhaTable',
@@ -294,24 +301,21 @@
                         data: "Id",
                         className: "text-center",
                         render: (id) => `
-                <button class="btn btn-sm btn-light p-1 px-2 me-1"
-                    onclick="editVS(${id})">
-                    <i class="bi bi-pencil-square text-primary"></i>
-                </button>
-                <button class="btn btn-sm btn-light p-1 px-2"
-                    onclick="deleteVS(${id})">
-                    <i class="bi bi-trash text-danger"></i>
-                </button>`
+                            <button class="btn btn-sm btn-light p-1 px-2 me-1"
+                                onclick="editVS(${id})">
+                                <i class="bi bi-pencil-square text-primary"></i>
+                            </button>
+                            <button class="btn btn-sm btn-light p-1 px-2"
+                                onclick="deleteVS(${id})">
+                                <i class="bi bi-trash text-danger"></i>
+                            </button>`
                     }
                 ]
             });
         };
 
-
-      
-
         loadData();
-        // 3. Form Submit (Add/Update)
+        // Form Submit (Add/Update)
 
         $('#vidhanSabhaForm').on('submit', function (e) {
             e.preventDefault();
@@ -324,7 +328,8 @@
             formData.append("VidhanSabhaName", $('#VidhanSabhaName').val());
             formData.append("StateId", $('#StateId').val());
             formData.append("DistrictId", $('#DistrictId').val());
-            formData.append("Prabhari", isPrabhari);
+            formData.append("Prabhari", isPrabhari ? "true" : "false");
+
 
             if (isPrabhari) {
                 formData.append("Name", $('#Name').val());
@@ -335,8 +340,6 @@
                 formData.append("Education", $('#Education').val());
                 formData.append("Address", $('#Address').val());
                 formData.append("Profession", $('#Profession').val());
-
-               
 
                 let fileInput = document.getElementById("Profile");
                 if (fileInput.files.length > 0) {
@@ -361,7 +364,7 @@
 
                     if (xhr.responseJSON) {
 
-                        // ✅ ASP.NET Web API default error
+                        //  error
                         if (xhr.responseJSON.ExceptionMessage) {
                             msg = xhr.responseJSON.ExceptionMessage;
                         }
@@ -397,22 +400,20 @@
         const districtId = getQueryParam("DistrictId");
 
         // 1️⃣ Load states
-        $.get('/api/Admin/getAllState', function (res) {
+        $.get('/api/Admin/getAllStateCount', function (res) {
 
             let options = '<option value="">--Select State--</option>';
-            if (res.data) {
-                res.data.forEach(s => {
+            if (res.success && res.data && res.data.data) {
+                res.data.data.forEach(s => {
                     options += `<option value="${s.StateId}">${s.StateName}</option>`;
                 });
             }
 
             $('#StateId').html(options);
 
-            // 2️⃣ Auto select state if coming from count click
             if (stateId) {
                 $('#StateId').val(stateId).trigger('change');
 
-                // 3️⃣ Load districts for that state
                 $.get(`/api/Admin/getDistrictsByState?stateId=${stateId}`, function (res) {
 
                     let dOptions = '<option value="">--Select District--</option>';
@@ -425,7 +426,6 @@
 
                     $('#DistrictId').html(dOptions).prop('disabled', false);
 
-                    // 4️⃣ Auto select district
                     if (districtId) {
                         $('#DistrictId').val(districtId);
                     }
@@ -441,7 +441,6 @@
         new bootstrap.Modal(document.getElementById('vidhanSabhaModal')).show();
     }
 
-
     function editVS(id) {
         $.ajax({
             url: `/api/Admin/getVidhanSabhaById?id=${id}`,
@@ -449,12 +448,9 @@
             success: function (res) {
                 let data;
 
-                // Handle different response formats
-                if (res.success && res.data) {
-                    data = res.data;
-                } else if (res && res.Id) {
-                    data = res;
-                } else {
+                if (res.success && res.data) data = res.data;
+                else if (res && res.Id) data = res;
+                else {
                     Swal.fire('Error', 'Failed to load data', 'error');
                     return;
                 }
@@ -462,16 +458,45 @@
                 $('#Id').val(data.Id);
                 $('#VidhanSabhaName').val(data.VidhanSabhaName);
 
+                // 1️⃣ State bind
+                $.get('/api/Admin/getAllState', function (stateRes) {
+                    let options = '<option value="">--Select State--</option>';
+                    if (stateRes.data) {
+                        stateRes.data.forEach(s => {
+                            options += `<option value="${s.StateId}">${s.StateName}</option>`;
+                        });
+                    }
+                    $('#StateId').html(options);
+
+                    if (data.StateId) {
+                        $('#StateId').val(data.StateId);
+
+                        // 2️⃣ District bind after state set
+                        $.get(`/api/Admin/getDistrictsByState?stateId=${data.StateId}`, function (distRes) {
+                            let dOptions = '<option value="">--Select District--</option>';
+                            if (distRes.success && distRes.data && distRes.data.data) {
+                                distRes.data.data.forEach(d => {
+                                    dOptions += `<option value="${d.DistrictId}">${d.DistrictName}</option>`;
+                                });
+                            }
+                            $('#DistrictId').html(dOptions).prop('disabled', false);
+
+                            if (data.DistrictId) {
+                                $('#DistrictId').val(data.DistrictId);
+                            }
+                        });
+                    } else {
+                        $('#DistrictId').html('<option value="">--First Select State--</option>').prop('disabled', true);
+                    }
+                });
+
+                // 3️⃣ Prabhari details
                 if (data.Prabhari) {
                     $('#Prabhari').prop('checked', true);
                     $('#prabhariDetails').show();
                     $('#Name').val(data.Name || '');
                     $('#Email').val(data.Email || '');
                     $('#PhoneNo').val(data.PhoneNo || '');
-
-                    //$('#Category').val(data.Category || '');
-                    //$('#Caste').val(data.Caste || '');
-
                     $('#Category').val(data.Category || '');
 
                     if (data.Category) {
@@ -489,14 +514,14 @@
                 }
 
                 $('#modalTitle').text('Update Registration');
-                var vidhanSabhaModal = new bootstrap.Modal(document.getElementById('vidhanSabhaModal'));
-                vidhanSabhaModal.show();
+                new bootstrap.Modal(document.getElementById('vidhanSabhaModal')).show();
             },
             error: function () {
                 Swal.fire('Error', 'Failed to load data', 'error');
             }
         });
     }
+
 
     function deleteVS(id) {
         Swal.fire({

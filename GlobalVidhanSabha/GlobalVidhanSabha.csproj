@@ -222,14 +222,19 @@
     <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
+    <Compile Include="Controllers\PrabhariController.cs" />
     <Compile Include="Controllers\SectorController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Admin\BaseApiController.cs" />
-    <Compile Include="Models\Admin\AdminMain.cs" />
-    <Compile Include="Models\Admin\AdminService.cs" />
-    <Compile Include="Models\Admin\IAdminService.cs" />
+    <Compile Include="Models\admin\AdminMain.cs" />
+    <Compile Include="Models\admin\AdminService.cs" />
+    <Compile Include="Models\admin\BaseApiController.cs" />
+    <Compile Include="Models\admin\EmailService.cs" />
+    <Compile Include="Models\admin\IAdminService.cs" />
+    <Compile Include="Models\samithimember\ISamithiMemberService.cs" />
+    <Compile Include="Models\samithimember\SamithiMemberService.cs" />
+    <Compile Include="Models\samithimember\VidhanSabhaModel.cs" />
     <Compile Include="Models\VidhanSabha\Activities.cs" />
     <Compile Include="Models\VidhanSabha\AllowAccess.cs" />
     <Compile Include="Models\VidhanSabha\BDC.cs" />
@@ -280,6 +285,7 @@
     <Compile Include="Services\BoothService.cs" />
     <Compile Include="Services\Sector\SectorService.cs" />
     <Compile Include="vidhanSabhaApiController\MasterApiController.cs" />
+    <Compile Include="vidhanSabhaApiController\SamithiMemberAPIController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\css\all.min.css" />
@@ -4532,9 +4538,6 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Master\addDesignation.cshtml" />
-    <Content Include="Views\Master\MasterDashboard.cshtml" />
-    <Content Include="Views\Master\addStateCount.cshtml" />
     <Content Include="wwwroot\lib\jquery\jquery.min.map" />
     <Content Include="wwwroot\lib\jquery\jquery.slim.min.map" />
     <Content Include="wwwroot\assets\summernote\font\summernote.eot" />
@@ -4597,8 +4600,6 @@
     <Content Include="wwwroot\assets\summernote\summernote-lite.js.map" />
     <Content Include="wwwroot\assets\summernote\summernote.css.map" />
     <Content Include="wwwroot\assets\summernote\summernote.js.map" />
-    <Content Include="Views\Master\addDistrictCount.cshtml" />
-    <Content Include="Views\Master\VidhanSabhaRagiter.cshtml" />
     <Content Include="UploadedImages\4d87b7bf-cae1-44aa-9704-85f2dfa66ff7.webp" />
     <Content Include="UploadedImages\9e7c54ec-df48-493a-a501-8264db3f3bf1.webp" />
     <Content Include="UploadedImages\d2261e0e-5659-4ba4-a09d-86d56ffb93e6.webp" />
@@ -4692,6 +4693,14 @@
     <Content Include="Views\Home\events.cshtml" />
     <Content Include="Views\Home\gallery.cshtml" />
     <Content Include="Views\Home\yojana.cshtml" />
+    <Content Include="Views\prabhari\AddSamithiMember.cshtml" />
+    <Content Include="Views\prabhari\PrabhariDashboard.cshtml" />
+    <Content Include="Views\master\addDesignation.cshtml" />
+    <Content Include="Views\master\addDistrictCount.cshtml" />
+    <Content Include="Views\master\addStateCount.cshtml" />
+    <Content Include="Views\master\MasterDashboard.cshtml" />
+    <Content Include="Views\master\VidhanSabhaRagiter.cshtml" />
+    <Content Include="Views\Shared\_PrabhariLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

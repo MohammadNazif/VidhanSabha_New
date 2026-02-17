@@ -22,6 +22,8 @@ namespace GlobalVidhanSabha.Models.AdminMain
         public int Count { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+
+        public int? RemainingCount { get; set; }
     }
 
     public class DistrictCountModel
@@ -32,8 +34,11 @@ namespace GlobalVidhanSabha.Models.AdminMain
         public int Count { get; set; }
         public string DistrictName { get; set; }
         public string StateName{ get; set; }
-       
-    }
+
+        public int? RemainingCount{ get; set; }
+
+
+}
     public class DistrictModel
     {
         public int DistrictId { get; set; }
@@ -70,16 +75,9 @@ namespace GlobalVidhanSabha.Models.AdminMain
         public DateTime? UpdatedAt { get; set; }
         public bool Status { get; set; }
 
-        
-
+       
         public string DistrictName { get; set; }
         public string StateName { get; set; }
-
-        public string Username { get; set; }
-        public string Password { get; set; }
-
-
-
 
 
     }
@@ -89,6 +87,9 @@ namespace GlobalVidhanSabha.Models.AdminMain
         public int TotalVidhanSabhaCount { get; set; }
         public int TotalVidhanSabhaWithPrabhari { get; set; }
         public int TotalVidhanSabhaWithoutPrabhari { get; set; }
+
+        public int TotalUsedStates { get; set; }
+        public int TotalUsedDistrict { get; set; }
     }
 
 

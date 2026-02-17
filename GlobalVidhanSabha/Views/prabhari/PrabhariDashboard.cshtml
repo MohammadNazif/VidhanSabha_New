@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_PrabhariLayout.cshtml";
 }
 
 <style>
@@ -148,7 +148,7 @@
 
 
 
-<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+@*<script src="~/Scripts/jquery-3.7.0.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -234,97 +234,13 @@
         );
 
     });
-</script>
+</script>*@
+
+
+
 
 
 @*<script>
-        let stateChartObj;
-
-        function loadStateChart() {
-            $.get('/api/Admin/GetStateWiseVidhanSabhaChart', function (res) {
-
-                const labels = res.data.map(x => x.Key);
-                const values = res.data.map(x => x.Value);
-
-                if (stateChartObj) {
-                    stateChartObj.destroy();
-                }
-
-                stateChartObj = new Chart(document.getElementById('stateChart'), {
-                    type: 'pie',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'State Wise Vidhan Sabha',
-                            data: values,
-                            backgroundColor: pieColors
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top'
-                            },
-                            title: {
-                                display: true,
-                                text: 'State Wise Vidhan Sabha'
-                            }
-                        }
-                    }
-                });
-            });
-        }
-    </script>
-
-    <script>
-        let districtChartObj;
-
-        function loadDistrictChart() {
-            $.get('/api/Admin/GetDistrictWiseVidhanSabhaChart', function (res) {
-
-                const labels = res.data.map(x => x.Key);
-                const values = res.data.map(x => x.Value);
-
-                if (districtChartObj) {
-                    districtChartObj.destroy();
-                }
-
-                districtChartObj = new Chart(document.getElementById('districtChart'), {
-                    type: 'pie',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'District Wise Vidhan Sabha',
-                            data: values,
-                            backgroundColor: pieColors
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top'
-                            },
-                            title: {
-                                display: true,
-                                text: 'District Wise Vidhan Sabha'
-                            }
-                        }
-                    }
-                });
-            });
-        }
-
-        $(document).ready(function () {
-            loadStateChart();
-            loadDistrictChart();
-        });
-    </script>*@
-
-
-
-<script>
     $(document).ready(function () {
         function loadDashboardCounts() {
             $.ajax({
@@ -353,5 +269,5 @@
 
         loadDashboardCounts();
     });
-</script>
+</script>*@
 

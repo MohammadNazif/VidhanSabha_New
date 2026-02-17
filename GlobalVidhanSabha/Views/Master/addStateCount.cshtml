@@ -1,7 +1,12 @@
-﻿<style>
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
     .form-label {
         margin-bottom: 2px;
     }
+
     #stateModal .modal-dialog {
         max-width: 500px;
     }
@@ -10,15 +15,16 @@
         max-height: 80vh;
         overflow-y: auto;
     }
+
     .count-link:hover {
         color: #0056b3;
         text-decoration: none;
     }
+
     .sno-col {
-        width: 50px; 
+        width: 50px;
         text-align: center;
     }
- 
 </style>
 
 
@@ -37,6 +43,7 @@
                         <th class="text-center sno-col">S.No</th>
                         <th>State Name</th>
                         <th class="text-center">Total Count</th>
+                        <th class="text-center">Remaining</th>
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
@@ -65,7 +72,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">Member Count</label>
+                        <label class="form-label small fw-bold text-muted">Count</label>
                         <input type="number" class="form-control form-control-sm border-2 shadow-none" id="Count" placeholder="0" required min="1">
                     </div>
 
@@ -87,142 +94,84 @@
     let stateDataTable;
     let loadData;
 
+    loadData = function () {
+
+        // destroy if already initialized
+        if ($.fn.DataTable.isDataTable('#stateTable')) {
+            $('#stateTable').DataTable().clear().destroy();
+        }
+
+        stateDataTable = initPaginatedTable({
+            apiUrl: '/api/Admin/getAllStateCount',
+            tableSelector: '#stateTable',
+            pageSizeSelector: '#pageSize',
+            columns: [
+                {
+                    data: null,
+                    className: "text-center",
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1;
+                    }
+                },
+                { data: "StateName" },
+
+                {
+                    data: "Count",
+                    className: "text-center",
+                    render: function (data, type, row) {
+                        return `
+                 <span class="count-link"
+                       data-stateid="${row.StateId}"
+                       style="cursor:pointer; color:#002147;">
+                     ${data}
+                 </span>`;
+                    }
+                },
+                {
+                    data: "RemainingCount",
+                    className: "text-center",
+                    render: function (data, type, row) {
+                        return `
+                       <span class="remaining-link"
+                            data-stateid="${row.StateId}"
+                             style="cursor:pointer; color:#198754;">
+                             ${data}
+                       </span>`;
+                    }
+                },
+
+                {
+                    data: "Id",
+                    className: "text-center",
+                    render: function (id, type, row, meta) {
+                        return `
+                     <button class="btn btn-sm btn-light border p-1 px-2 me-1"
+                         onclick="editStateCount(${id})">
+                         <i class="bi bi-pencil-square text-primary"></i>
+                     </button>
+                     <button class="btn btn-sm btn-light border p-1 px-2"
+                         onclick="deleteStateCount(${row.StateId})">
+                         <i class="bi bi-trash text-danger"></i>
+                     </button>`;
+                    }
+                }
+
+
+
+            ]
+        });
+    };
+
     $(document).ready(function () {
         // 1. Dropdown bind karein
         bindStateDropdown();
-
-        loadData = function () {
-
-            // destroy if already initialized
-            if ($.fn.DataTable.isDataTable('#stateTable')) {
-                $('#stateTable').DataTable().clear().destroy();
-            }
-
-            stateDataTable = initPaginatedTable({
-                apiUrl: '/api/Admin/getAllStateCount',
-                tableSelector: '#stateTable',
-                pageSizeSelector: '#pageSize',
-                columns: [
-                    {
-                        data: null,
-                        className: "text-center",
-                        render: function (data, type, row, meta) {
-                            return meta.row + 1;
-                        }
-                    },
-                    { data: "StateName" },
-
-                    {
-                        data: "Count",
-                        className: "text-center",
-                        render: function (data, type, row) {
-                            return `
-                        <span class="count-link"
-                              data-stateid="${row.StateId}"
-                              style="cursor:pointer; color:#002147;">
-                            ${data}
-                        </span>`;
-                        }
-                    },
-                    {
-                        data: "Id",
-                        className: "text-center",
-                        render: function (id, type, row, meta) {
-                            return `
-            <button class="btn btn-sm btn-light border p-1 px-2 me-1"
-                onclick="editStateCount(${id})">
-                <i class="bi bi-pencil-square text-primary"></i>
-            </button>
-            <button class="btn btn-sm btn-light border p-1 px-2"
-                onclick="deleteStateCount(${row.StateId})">
-                <i class="bi bi-trash text-danger"></i>
-            </button>`;
-                        }
-                    }
-
-
-                    //{
-                    //    data: "Id",
-                    //    className: "text-center",
-                    //    render: function (id) {
-                    //        return `
-                    //    <button class="btn btn-sm btn-light border p-1 px-2 me-1"
-                    //        onclick="editStateCount(${id})">
-                    //        <i class="bi bi-pencil-square text-primary"></i>
-                    //    </button>
-                    //    <button class="btn btn-sm btn-light border p-1 px-2"
-                    //        onclick="deleteStateCount(${id})">
-                    //        <i class="bi bi-trash text-danger"></i>
-                    //    </button>`;
-                    //    }
-                    //}
-                ]
-            });
-        };
-
-
-        //loadData = function loadtable() {
-        //    stateDataTable = initPaginatedTable({
-        //        apiUrl: '/api/Admin/getAllStateCount',
-        //        tableSelector: '#stateTable',
-        //        pageSizeSelector: '#pageSize', // Make sure you have this in your UI if needed
-        //        columns: [
-        //            {
-        //                data: null,
-        //                render: (data, type, row, meta) => meta.row + 1,
-        //                className: "text-center"
-        //            },
-        //            { data: "StateName" }, // Model property name check karein
-                   
-
-        //            {
-        //                data: "Count",
-        //                className: "text-center",
-        //                render: function (data, type, row) {
-        //                    return `
-        //    <span class="count-link"
-        //          data-stateid="${row.StateId}"
-        //          style="cursor:pointer; color:#0d6efd;">
-        //        ${data}
-        //    </span>`;
-        //                }
-        //            },
-                    
-
-
-
-        //            {
-        //                data: "Id",
-        //                className: "text-center",
-        //                render: function (id, type, row) {
-        //                    return `
-        //                        <button class="btn btn-sm btn-light border p-1 px-2 me-1"
-        //                            onclick="editStateCount(${id})">
-        //                            <i class="bi bi-pencil-square text-primary"></i>
-        //                        </button>
-        //                        <button class="btn btn-sm btn-light border p-1 px-2"
-        //                            onclick="deleteStateCount(${id})">
-        //                            <i class="bi bi-trash text-danger"></i>
-        //                        </button>`;
-        //                }
-        //            }
-        //        ]
-        //    });
-        //}
-
         loadData();
-        //$('#stateTable tbody').on('click', '.count-link', function () {
-        //    let id = $(this).data('id');
-        //    window.location.href = `/Master/addDistrictCount`;
-        //});
+
 
         $('#stateTable tbody').on('click', '.count-link', function () {
             const stateId = $(this).data('stateid');
             window.location.href = `/Master/addDistrictCount?stateId=${stateId}`;
         });
-
-
-
 
         // 3. Form Submit (Save/Update)
         $('#stateForm').on('submit', function (e) {
@@ -258,9 +207,8 @@
         });
     });
 
-    // States ko dropdown mein load karne ke liye
     function bindStateDropdown() {
-        $.get('/api/Admin/getAllState', function (res) { // Maan lijiye ye API hai states list ke liye
+        $.get('/api/Admin/getAllState', function (res) {
             let options = '<option value="">-- Choose State --</option>';
             if (res.success) {
                 res.data.forEach(s => {
@@ -285,7 +233,6 @@
     }
 
     // Delete Function
-
     function deleteStateCount(StateId) {
         Swal.fire({
             title: 'Are you sure?',

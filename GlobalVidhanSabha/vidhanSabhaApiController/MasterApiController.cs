@@ -14,12 +14,12 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
     public class MasterApiController : BaseApiController
     {
         private readonly IAdminService _service;
-       
+
 
         public MasterApiController()
         {
             _service = new AdminService();
-            
+
         }
 
         [HttpGet]
@@ -31,7 +31,7 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
                 var list = await _service.GetAllDesignationsAsync(paging);
                 return list;
             });
-        }    
+        }
 
         [HttpGet]
         [Route("getDesignationByid")]
@@ -39,7 +39,7 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
         {
             return await ProcessRequestAsync(async () =>
             {
-                return await _service.GetDesignationByIdAsync(id); 
+                return await _service.GetDesignationByIdAsync(id);
             });
         }
 
@@ -55,7 +55,7 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
 
             return await ProcessCreateOrUpdateAsync(async () =>
             {
-                int id = await _service.SaveDesignationAsync(model); 
+                int id = await _service.SaveDesignationAsync(model);
                 return id > 0 ? id : (int?)null;
             }, isUpdate);
         }
@@ -77,8 +77,8 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
 
         [HttpGet]
         [Route("getAllStateCount")]
-        public async Task<IHttpActionResult> GetAllStateCount([FromUri] Pagination paging)
-       {
+        public async Task<IHttpActionResult> GetAllStateCount([FromUri] Pagination paging = null)
+        {
             return await ProcessRequestAsync(async () =>
             {
                 return await _service.GetAllStateCountsAsync(paging);
@@ -192,7 +192,7 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
             });
         }
 
-       
+
 
         [HttpGet]
         [Route("getDistrictsByState")]
@@ -201,7 +201,7 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
             return await ProcessRequestAsync(async () =>
             {
                 var districts = await _service.GetDistrictsByStateAsync(stateId);
-                return new { success = true, data = districts }; // NO double nesting
+                return new { success = true, data = districts };
             });
         }
 
@@ -229,14 +229,36 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
 
         }
 
+        //[HttpGet]
+        //[Route("getAllVidhanSabha")]
+        //public async Task<IHttpActionResult> GetAllVidhanSabha([FromUri] Pagination paging, [FromUri] string filter = null)
+        //{
+
+        //    return await ProcessRequestAsync(async () =>
+        //    {
+        //        return await _service.GetAllVidhanSabhaAsync(paging);
+        //    });
+        //}
+
         [HttpGet]
         [Route("getAllVidhanSabha")]
-        public async Task<IHttpActionResult> GetAllVidhanSabha([FromUri] Pagination paging)
+        public async Task<IHttpActionResult> GetAllVidhanSabha(
+    [FromUri] Pagination paging,
+    [FromUri] string filter = null)
         {
-
             return await ProcessRequestAsync(async () =>
             {
-                return await _service.GetAllVidhanSabhaAsync(paging);
+                bool? prabhari = null;
+
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    if (filter.Equals("withPrabhari", StringComparison.OrdinalIgnoreCase))
+                        prabhari = true;
+                    else if (filter.Equals("withoutPrabhari", StringComparison.OrdinalIgnoreCase))
+                        prabhari = false;
+                }
+
+                return await _service.GetAllVidhanSabhaAsync(paging, prabhari);
             });
         }
 
@@ -246,60 +268,87 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
         [Route("SaveVidhanSabhaRegistration")]
         public async Task<IHttpActionResult> SaveVidhanSabhaRegistration()
         {
-            var request = HttpContext.Current.Request;
-
-            var model = new VidhanSabhaRegister
+            try
             {
-                Id = int.TryParse(request.Form["Id"], out var id) ? id : 0,
-                VidhanSabhaName = request.Form["VidhanSabhaName"],
-                Prabhari = request.Form["Prabhari"] == "true",
+                var request = HttpContext.Current.Request;
 
-                Name = request.Form["Name"],
-                Email = request.Form["Email"],
-                PhoneNo = request.Form["PhoneNo"],
-                Education = request.Form["Education"],
-                Address = request.Form["Address"],
-                Profession = request.Form["Profession"],
-
-                StateId = int.TryParse(request.Form["StateId"], out var stateId) ? stateId : 0,
-                DistrictId = int.TryParse(request.Form["DistrictId"], out var districtId) ? districtId : 0,
-
-
-                Category = int.TryParse(request.Form["Category"], out var cat) ? cat : (int?)null,
-                Caste = int.TryParse(request.Form["Caste"], out var caste) ? caste : (int?)null,
-                Status = true
-            };
-
-            model.Username = model.VidhanSabhaName.Substring(0, 4) + model.PhoneNo.Substring(model.PhoneNo.Length - 4);
-            model.Password = Guid.NewGuid().ToString().Substring(0, 8);
-
-
-            // ===== FILE HANDLE =====
-            if (request.Files.Count > 0)
-            {
-                var file = request.Files["Profile"];
-                if (file != null && file.ContentLength > 0)
+                bool.TryParse(request.Form["Prabhari"], out bool isPrabhari);
+                var model = new VidhanSabhaRegister
                 {
-                    string folder = HttpContext.Current.Server.MapPath("~/Uploads/VidhanSabha/");
-                    if (!Directory.Exists(folder))
-                        Directory.CreateDirectory(folder);
+                    Id = int.TryParse(request.Form["Id"], out int id) ? id : 0,
 
-                    string fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                    file.SaveAs(Path.Combine(folder, fileName));
+                    VidhanSabhaName = request.Form["VidhanSabhaName"],
+                    Prabhari = isPrabhari,
 
-                    model.Profile = "/Uploads/VidhanSabha/" + fileName;
+
+                    Name = request.Form["Name"],
+                    Email = request.Form["Email"],
+                    PhoneNo = request.Form["PhoneNo"],
+                    Education = request.Form["Education"],
+                    Address = request.Form["Address"],
+                    Profession = request.Form["Profession"],
+
+                    StateId = int.TryParse(request.Form["StateId"], out int stateId)
+                                ? stateId
+                                : 0,
+
+                    DistrictId = int.TryParse(request.Form["DistrictId"], out int districtId)
+                                ? districtId
+                                : 0,
+
+                    Category = int.TryParse(request.Form["Category"], out int category)
+                                ? category
+                                : (int?)null,
+
+                    Caste = int.TryParse(request.Form["Caste"], out int caste)
+                                ? caste
+                                : (int?)null,
+
+                    Status = true
+                };
+
+                // FILE UPLOAD
+                if (request.Files.Count > 0)
+                {
+                    var file = request.Files["Profile"];
+
+                    if (file != null && file.ContentLength > 0)
+                    {
+                        string folder = HttpContext.Current.Server.MapPath("~/Uploads/VidhanSabha/");
+
+                        if (!Directory.Exists(folder))
+                            Directory.CreateDirectory(folder);
+
+                        string fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+
+                        string fullPath = Path.Combine(folder, fileName);
+
+                        file.SaveAs(fullPath);
+
+                        model.Profile = "/Uploads/VidhanSabha/" + fileName;
+                    }
                 }
+
+                int savedId = await _service.SaveVidhanSabhaRegistrationAsync(model);
+
+                if (savedId > 0)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        message = model.Id > 0 ? "Updated Successfully" : "Added Successfully",
+                        id = savedId
+                    });
+                }
+
+                return BadRequest("Save failed");
             }
-
-            bool isUpdate = model.Id > 0;
-
-            int savedId = await _service.SaveVidhanSabhaRegistrationAsync(model);
-
-            if (savedId > 0)
-                return Ok(new { success = true, id = savedId });
-
-            return BadRequest("Save failed");
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
+
 
         [HttpGet]
         [Route("getVidhanSabhaById")]
@@ -322,20 +371,6 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
             });
         }
 
-      
-
-        //[HttpGet]
-        //[Route("getDistrictByStateCount")]
-        //public async Task<IHttpActionResult> getDistrictByStateCount(int stateId)
-        //{
-        //    return await ProcessRequestAsync(async () =>
-        //    {
-        //        return await _service.GetAllDistrictsDataByStateId(stateId);
-        //   });
-
-        
-
-        //}
 
         [HttpGet]
         [Route("getDistrictByStateCount")]
@@ -366,14 +401,9 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
 
         [HttpGet]
         [Route("getVidhanSabhaByState")]
-        public async Task<IHttpActionResult> GetVidhanSabhaByState([FromUri]  int DistrictId, [FromUri] Pagination paging)
+        public async Task<IHttpActionResult> GetVidhanSabhaByState([FromUri] int DistrictId, [FromUri] Pagination paging)
         {
-            //return await ProcessRequestAsync(async () =>
-            //{
-            //    var data = await _service.GetVidhanSabhaByStateIdAsync(stateId, paging);
 
-            //     return new { success = true, data = data };
-            //});
 
             return await ProcessRequestAsync(async () =>
             {
@@ -388,7 +418,7 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
             return await ProcessRequestAsync(async () =>
             {
                 return await _service.GetStateWiseVidhanSabhaChartAsync();
-               
+
             });
         }
 
@@ -398,13 +428,21 @@ namespace GlobalVidhanSabha.vidhanSabhaApiController
         {
             return await ProcessRequestAsync(async () =>
             {
-                return await  _service.GetDistrictWiseVidhanSabhaChartAsync();
-              
+                return await _service.GetDistrictWiseVidhanSabhaChartAsync();
+
             });
         }
 
+        [HttpGet]
+        [Route("GetDesignationType")]
+        public async Task<IHttpActionResult> GetDesignationType()
+        {
+            return await ProcessRequestAsync(async () =>
+            {
+                return await _service.GetDesignationTypeAsync();
 
+            });
 
-
+        }
     }
-}
+    }

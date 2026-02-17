@@ -43,10 +43,15 @@ namespace VishanSabha.Controllers
                     TempData["LoginSuccess"] = $"Welcome back, {user.Contact}!";
                     return RedirectToAction("MasterDashboard", "Master", new { loginSuccess = 1 });
                 }
-               else if (user.Role == "MLA")
+                //else if (user.Role == "MLA")
+                // {
+                //     TempData["LoginSuccess"] = $"Welcome back, {user.Contact}!";
+                //     return RedirectToAction("Dashboard", "Admin", new { loginSuccess = 1 });
+                // }
+                else if (user.Role == "Prabhari")
                 {
                     TempData["LoginSuccess"] = $"Welcome back, {user.Contact}!";
-                    return RedirectToAction("Dashboard", "Admin", new { loginSuccess = 1 });
+                    return RedirectToAction("PrabhariDashboard", "prabhari", new { loginSuccess = 1 });
                 }
                 else if (user.Role == "SectorIncharge")
                 {

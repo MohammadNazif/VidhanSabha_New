@@ -11,9 +11,7 @@ namespace GlobalVidhanSabha.Models.AdminMain
 {
     public class AdminService : IAdminService
     {
-        //private readonly string conn =
-        //    ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-
+       
         private readonly string conn;
         private SqlConnection con;
 
@@ -283,10 +281,23 @@ namespace GlobalVidhanSabha.Models.AdminMain
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@Action", "GetAll");
-                    cmd.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
-                    cmd.Parameters.AddWithValue("@PageSize", paging.Items);
+                    //cmd.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
+                    //cmd.Parameters.AddWithValue("@PageSize", paging.Items);
+                    //cmd.Parameters.AddWithValue("@Search",
+                    //    string.IsNullOrWhiteSpace(paging.search) ? null : paging.search);
+
+                    // Nullable safe pagination
+                    cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value =
+                        paging?.PageNumber ?? (object)DBNull.Value;
+
+                    cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value =
+                        paging?.Items ?? (object)DBNull.Value;
+
                     cmd.Parameters.AddWithValue("@Search",
-                        string.IsNullOrWhiteSpace(paging.search) ? null : paging.search);
+    string.IsNullOrWhiteSpace(paging?.search)
+        ? (object)DBNull.Value
+        : paging.search);
+
 
                     await con.OpenAsync();
 
@@ -306,7 +317,9 @@ namespace GlobalVidhanSabha.Models.AdminMain
                                 CreatedDate = dr["CreatedDate"] != DBNull.Value
                                     ? Convert.ToDateTime(dr["CreatedDate"])
                                     : (DateTime?)null,
-                                
+
+                                RemainingCount = Convert.ToInt32(dr["RemainingCount"])
+
                             });
                         }
                     }
@@ -486,7 +499,9 @@ namespace GlobalVidhanSabha.Models.AdminMain
                                 DistrictId = Convert.ToInt32(dr["DistrictId"]),
                                 DistrictName = dr["DistrictName"].ToString(),
                                 StateName = dr["StateName"].ToString(),
-                                Count = Convert.ToInt32(dr["Count"])
+                                Count = Convert.ToInt32(dr["Count"]),
+
+                                RemainingCount = Convert.ToInt32(dr["RemainingCount"])
                             });
                         }
                     }
@@ -552,67 +567,128 @@ namespace GlobalVidhanSabha.Models.AdminMain
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@Action",
-                        model.Id > 0 ? "UpdateVidhanSabhaRagitration" : "VidhanSabhaRagitration");
 
+                    string generatedPassword = null;                  
+
+                    if (model.Prabhari)
+                    {
+                        generatedPassword = PasswordGenerator.GeneratePassword(
+                            model.Name,
+                            model.PhoneNo
+                        );
+                    }
+                    cmd.Parameters.AddWithValue("@Action",
+                                 model.Id > 0 ? "UpdateVidhanSabhaRagitration" : "VidhanSabhaRagitration");
+                    //cmd.Parameters.AddWithValue("@Action", "VidhanSabhaRagitration");
                     cmd.Parameters.AddWithValue("@Id", model.Id);
                     cmd.Parameters.AddWithValue("@VidhanSabhaName", model.VidhanSabhaName);
                     cmd.Parameters.AddWithValue("@Prabhari", model.Prabhari);
-
                     cmd.Parameters.AddWithValue("@Name", (object)model.Name ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Email", (object)model.Email ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@PhoneNo", (object)model.PhoneNo ?? DBNull.Value);
-                    //cmd.Parameters.AddWithValue("@Category", (object)model.Category ?? DBNull.Value);
-                    //cmd.Parameters.AddWithValue("@Caste", (object)model.Caste ?? DBNull.Value);
-
-                    cmd.Parameters.Add("@Category", SqlDbType.Int)
-                       .Value = (object)model.Category ?? DBNull.Value; 
-
-                    cmd.Parameters.Add("@Caste", SqlDbType.Int)
-                        .Value = (object)model.Caste ?? DBNull.Value;
-
-                    cmd.Parameters.AddWithValue("@StateId", (object)model.StateId ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@DistrictId", (object)model.DistrictId ?? DBNull.Value);
-
+                    cmd.Parameters.AddWithValue("@Category", (object)model.Category ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Caste", (object)model.Caste ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@StateId", model.StateId);
+                    cmd.Parameters.AddWithValue("@DistrictId", model.DistrictId);
                     cmd.Parameters.AddWithValue("@Profile", (object)model.Profile ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Education", (object)model.Education ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Address", (object)model.Address ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Profession", (object)model.Profession ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@UserName",(object)model.Username??DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Password",(object)model.Password??DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Role", "MLA");
+                    // FIX: Add this line
+                    cmd.Parameters.AddWithValue("@UserName", (object)model.Email ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Password", (object)generatedPassword ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Role", "Prabhari");
 
                     await con.OpenAsync();
 
-                    // 🔹 INSERT
-                    if (model.Id == 0)
-                    {
-                        object result = await cmd.ExecuteScalarAsync();
+                    int newId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
 
-                        if (result == null || result == DBNull.Value)
-                            return 0;
-
-                        return Convert.ToInt32(result);
-                    }
-                    // 🔹 UPDATE
-                    else
+                    if (model.Prabhari && newId > 0)
                     {
-                        await cmd.ExecuteNonQueryAsync();
-                        return model.Id;
+                        await EmailService.SendLoginEmailAsync(
+                            model.Email,
+                            model.Email,
+                            generatedPassword
+                        );
                     }
+
+                    return newId;
                 }
-            }
-            catch (SqlException ex)
-            {
-                // SQL RAISERROR ka message 그대로 forward
-                throw;
             }
             catch (Exception ex)
             {
-                // General error
-                throw new Exception("Error while saving VidhanSabha registration: " + ex.Message);
+                throw new Exception("Error saving VidhanSabha: " + ex.Message);
             }
         }
+
+
+        //public async Task<int> SaveVidhanSabhaRegistrationAsync(VidhanSabhaRegister model)
+        //{
+        //    try
+        //    {
+        //        using (SqlConnection con = new SqlConnection(conn))
+        //        using (SqlCommand cmd = new SqlCommand("usp_DesignationType_CRUD", con))
+        //        {
+        //            cmd.CommandType = CommandType.StoredProcedure;
+
+        //            cmd.Parameters.AddWithValue("@Action",
+        //                model.Id > 0 ? "UpdateVidhanSabhaRagitration" : "VidhanSabhaRagitration");
+
+        //            cmd.Parameters.AddWithValue("@Id", model.Id);
+        //            cmd.Parameters.AddWithValue("@VidhanSabhaName", model.VidhanSabhaName);
+        //            cmd.Parameters.AddWithValue("@Prabhari", model.Prabhari);
+
+        //            cmd.Parameters.AddWithValue("@Name", (object)model.Name ?? DBNull.Value);
+        //            cmd.Parameters.AddWithValue("@Email", (object)model.Email ?? DBNull.Value);
+        //            cmd.Parameters.AddWithValue("@PhoneNo", (object)model.PhoneNo ?? DBNull.Value);
+        //            //cmd.Parameters.AddWithValue("@Category", (object)model.Category ?? DBNull.Value);
+        //            //cmd.Parameters.AddWithValue("@Caste", (object)model.Caste ?? DBNull.Value);
+
+        //            cmd.Parameters.Add("@Category", SqlDbType.Int)
+        //               .Value = (object)model.Category ?? DBNull.Value; 
+
+        //            cmd.Parameters.Add("@Caste", SqlDbType.Int)
+        //                .Value = (object)model.Caste ?? DBNull.Value;
+
+        //            cmd.Parameters.AddWithValue("@StateId", (object)model.StateId ?? DBNull.Value);
+        //            cmd.Parameters.AddWithValue("@DistrictId", (object)model.DistrictId ?? DBNull.Value);
+
+        //            cmd.Parameters.AddWithValue("@Profile", (object)model.Profile ?? DBNull.Value);
+        //            cmd.Parameters.AddWithValue("@Education", (object)model.Education ?? DBNull.Value);
+        //            cmd.Parameters.AddWithValue("@Address", (object)model.Address ?? DBNull.Value);
+        //            cmd.Parameters.AddWithValue("@Profession", (object)model.Profession ?? DBNull.Value);
+
+        //            await con.OpenAsync();
+
+        //            // 🔹 INSERT
+        //            if (model.Id == 0)
+        //            {
+        //                object result = await cmd.ExecuteScalarAsync();
+
+        //                if (result == null || result == DBNull.Value)
+        //                    return 0;
+
+        //                return Convert.ToInt32(result);
+        //            }
+        //            // 🔹 UPDATE
+        //            else
+        //            {
+        //                await cmd.ExecuteNonQueryAsync();
+        //                return model.Id;
+        //            }
+        //        }
+        //    }
+        //    catch (SqlException ex)
+        //    {
+
+        //        throw;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // General error
+        //        throw new Exception("Error while saving VidhanSabha registration: " + ex.Message);
+        //    }
+        //}
 
         public async Task<List<CasteCategory>> GetCasteCategoryAsync()
         {
@@ -667,7 +743,7 @@ namespace GlobalVidhanSabha.Models.AdminMain
             return list;
         }
 
-        public async Task<PagedResult<VidhanSabhaRegister>> GetAllVidhanSabhaAsync(Pagination paging)
+        public async Task<PagedResult<VidhanSabhaRegister>> GetAllVidhanSabhaAsync(Pagination paging, bool? Prabhari = null)
        {
             int totalRecords = 0;
             List<VidhanSabhaRegister> list = new List<VidhanSabhaRegister>();
@@ -683,6 +759,9 @@ namespace GlobalVidhanSabha.Models.AdminMain
                     cmd.Parameters.AddWithValue("@PageSize", paging.Items);
                     cmd.Parameters.AddWithValue("@Search",
                         string.IsNullOrWhiteSpace(paging.search) ? null : paging.search);
+
+                    cmd.Parameters.Add("@Prabhari", SqlDbType.Bit)
+                     .Value = (object)Prabhari ?? DBNull.Value;
 
                     await con.OpenAsync();
 
@@ -763,6 +842,12 @@ namespace GlobalVidhanSabha.Models.AdminMain
                             Name = dr["Name"] as string,
                             Email = dr["Email"] as string,
                             PhoneNo = dr["PhoneNo"] as string,
+
+                            StateId = dr["StateId"] as int?,
+                            DistrictId = dr["DistrictId"] as int?,
+
+                            StateName = dr["StateName"] as string,
+                            DistrictName = dr["DistrictName"] as string,
 
                             Category = dr["Category"] as int?,
                             CategoryName = dr["CategoryName"] as string,
@@ -848,7 +933,11 @@ namespace GlobalVidhanSabha.Models.AdminMain
                                 DistrictId = Convert.ToInt32(dr["DistrictId"]),
                                 DistrictName = dr["DistrictName"].ToString(),
                                 StateName = dr["StateName"].ToString(),
-                                Count = Convert.ToInt32(dr["Count"])
+                                Count = Convert.ToInt32(dr["Count"]),
+
+                                RemainingCount= Convert.ToInt32(dr["RemainingCount"]),
+
+
                             });
                         }
                     }
@@ -902,6 +991,22 @@ namespace GlobalVidhanSabha.Models.AdminMain
                     cmd.Parameters.AddWithValue("@Action", "TotalVidhanSabhaWithoutPrabhari");
                     var result = await cmd.ExecuteScalarAsync();
                     dashboard.TotalVidhanSabhaWithoutPrabhari = result != null ? Convert.ToInt32(result) : 0;
+                }
+
+                using (SqlCommand cmd = new SqlCommand("usp_Dashboard", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Action", "TotalUsedStates");
+                    var result = await cmd.ExecuteScalarAsync();
+                    dashboard.TotalUsedStates = result != null ? Convert.ToInt32(result) : 0;
+                }
+
+                using (SqlCommand cmd = new SqlCommand("usp_Dashboard", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Action", "TotalUsedDistrict");
+                    var result = await cmd.ExecuteScalarAsync();
+                    dashboard.TotalUsedDistrict = result != null ? Convert.ToInt32(result) : 0;
                 }
             }
 
@@ -1024,6 +1129,40 @@ namespace GlobalVidhanSabha.Models.AdminMain
             }
             return list;
         }
+
+
+        public async Task<List<designationMain>> GetDesignationTypeAsync()
+        {
+            var list = new List<designationMain>();
+
+            using (SqlConnection con = new SqlConnection(conn))
+            using (SqlCommand cmd = new SqlCommand("usp_DesignationType_CRUD", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Action", "GetdesignationType");
+
+                await con.OpenAsync();
+
+                using (SqlDataReader dr = await cmd.ExecuteReaderAsync())
+                {
+                    while (await dr.ReadAsync())
+                    {
+                        list.Add(new designationMain
+                        {
+                            DesignationId = dr["DesignationId"] != DBNull.Value
+                                ? Convert.ToInt32(dr["DesignationId"]) : 0,                         
+
+                            DesignationType = dr["DesignationType"]?.ToString(),
+
+                          
+                        });
+                    }
+                }
+            }
+
+            return list;
+        }
+
 
 
     }
